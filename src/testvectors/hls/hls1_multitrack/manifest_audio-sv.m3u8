@@ -1,0 +1,12 @@
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-TARGETDURATION:10
+#EXT-X-MEDIA-SEQUENCE:1
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXTINF:10,
+manifest_audio-sv_00001.ts
+#EXTINF:10,
+manifest_audio-sv_00002.ts
+#EXTINF:10,
+manifest_audio-sv_00003.ts
+#EXT-X-ENDLIST
