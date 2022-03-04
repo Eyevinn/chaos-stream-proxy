@@ -11,6 +11,6 @@ app.register(require("fastify-cors"), {});
 registerRoutes(app);
 
 // Start
-app.listen(PORT, () => {
-  console.log("\nListening on port:", PORT, "\n");
+app.listen(PORT, "0.0.0.0", (err, address) => {
+  console.log(`Server listening on ${address}`);
 });
