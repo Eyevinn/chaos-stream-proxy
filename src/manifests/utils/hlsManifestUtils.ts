@@ -108,7 +108,7 @@ export default function (): HLSManifestTools {
           continue;
         }
 
-        const params = that.utils.segmentUrlParamString(sourceSegURL, corruption);
+        const params = that.utils.segmentUrlParamString(sourceBaseURL + "/", corruption);
         appendQueryParamsToItemURL(item, new URLSearchParams(params), "../../segments/proxy-segment");
       }
       return m3u.toString();
