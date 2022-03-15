@@ -2,7 +2,7 @@ import { ALBResult, ALBEvent, ALBHandler } from "aws-lambda";
 import hlsMasterHandler from "./manifests/handlers/hls/master";
 import hlsMediaHandler from "./manifests/handlers/hls/media";
 import segmentHandler from "./segments/handlers/segment";
-import { generateErrorResponse, refineALBEventQuery } from "./shared/utils";
+import { generateErrorResponse, generateHeartbeatResponse, refineALBEventQuery } from "./shared/utils";
 import { handleOptionsRequest } from "./shared/utils";
 
 export interface ILogger {
@@ -14,7 +14,9 @@ export interface ILogger {
 
 export class AbstractLogger implements ILogger {
   private doLog(level: string, message: string) {
-    console.log(`${level}: ${message}`);
+    if (process.env.NODE_ENV === "development") {
+      console.log(`${level}: ${message}`);
+    }
   }
 
   verbose(message: string) {
@@ -30,7 +32,7 @@ export class AbstractLogger implements ILogger {
   }
 
   error(message: string) {
-    // TODO
+    console.error(message);
   }
 }
 
@@ -59,6 +61,9 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
     } else if (event.httpMethod === "OPTIONS") {
       logger.info("Request for OPTIONS...");
       response = await handleOptionsRequest(event);
+    } else if (event.path.match(/heartbeat$/) && event.httpMethod === "GET") {
+      logger.info("Request for Heartbeat...");
+      response = await generateHeartbeatResponse();
     } else {
       logger.info("Request for missing resource...");
       response = await generateErrorResponse({

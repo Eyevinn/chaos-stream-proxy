@@ -32,6 +32,20 @@ export const generateErrorResponse = (err: ServiceError): Promise<ALBResult> => 
   return Promise.resolve(response);
 };
 
+export const generateHeartbeatResponse = (): Promise<ALBResult> => {
+  let response: ALBResult = {
+    statusCode: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type, Origin",
+    },
+  };
+  response.body = JSON.stringify({ message: "OK! 💚" });
+
+  return Promise.resolve(response);
+};
+
 export const isValidUrl = (string) => {
   if (!string) return false;
   try {
