@@ -7,12 +7,22 @@ export type ServiceError = {
 
 export type TargetIndex = number | "*";
 
+/**
+ * Cherrypicking explicitly what we need to type from
+ * https://github.com/Eyevinn/node-m3u8/blob/master/m3u/Item.js
+ * This obviously needs to be addressed
+ */
+export type M3UItem = {
+  get: (key: "uri") => string | any;
+  set: (key: "uri", value: string) => void;
+};
+
 export type M3U = {
   items: {
-    PlaylistItem: any[];
-    StreamItem: any[];
-    IframeStreamItem: any[];
-    MediaItem: any[];
+    PlaylistItem: M3UItem[];
+    StreamItem: M3UItem[];
+    IframeStreamItem: M3UItem[];
+    MediaItem: M3UItem[];
   };
   properties: {};
   toString(): string;
