@@ -1,7 +1,7 @@
 import fastify from "fastify";
 import { registerRoutes } from "./routes";
 
-const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 8000;
 
 // App
 const app = fastify();
