@@ -8,8 +8,8 @@ import { createReadStream, ReadStream } from "fs";
 import path from "path";
 import hlsMediaHandler from "./media";
 
-describe.only("manifests.handlers.hls.media.ts", () => {
-  describe.only("hlsMediaHandler", () => {
+describe("manifests.handlers.hls.media.ts", () => {
+  describe("hlsMediaHandler", () => {
     let mockBaseURL: string;
     let mockMasterURL: string;
     let mockMediaURL: string;
