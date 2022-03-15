@@ -31,6 +31,7 @@ To try it out go to your favourite HLS video player such as `https://web.player.
 | `/api/v2/manifests/hls/proxy-media`   | GET    | Returns a proxy Media M3U8 file , based on query parameters                                              |
 | `/api/v2/manifests/dash/proxy-master` | GET    | (WORK IN PROGRESS)                                                                                       |
 | `/api/v2/segments/proxy-segment`      | GET    | Applies corruption present in query parameter and may return a 301 redirect to the original segment file |
+| `/`                                   | GET    | Server health check                                                                                      |
 
 ### Query Parameters
 
