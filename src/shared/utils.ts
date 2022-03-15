@@ -1,6 +1,6 @@
 import { Response } from "node-fetch";
 import m3u8 from "@eyevinn/m3u8";
-import { M3U, ServiceError } from "../shared/types";
+import { M3U, ServiceError } from "./types";
 import clone from "clone";
 import { ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
 import { ReadStream } from "fs";
@@ -179,4 +179,4 @@ export function proxyPathBuilder(itemUri: string, urlSearchParams: URLSearchPara
   return `${proxy}${allQueriesString ? `?${allQueriesString}` : ""}`;
 }
 
-export const SERVICE_ORIGIN = process.env.SERVICE_ORIGIN || "http://localhost:4000";
+export const SERVICE_ORIGIN = process.env.SERVICE_ORIGIN || "http://localhost:8000";
