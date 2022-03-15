@@ -61,8 +61,8 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
     } else if (event.httpMethod === "OPTIONS") {
       logger.info("Request for OPTIONS...");
       response = await handleOptionsRequest(event);
-    } else if (event.path.match(/heartbeat$/) && event.httpMethod === "GET") {
-      logger.info("Request for Heartbeat...");
+    } else if (event.path === "/" && event.httpMethod === "GET") {
+      logger.info("Request for Healthcheck...");
       response = await generateHeartbeatResponse();
     } else {
       logger.info("Request for missing resource...");

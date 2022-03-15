@@ -6,7 +6,7 @@ import { generateHeartbeatResponse } from "./shared/utils";
 const apiPrefix = (version: number): string => `api/v${version}`;
 
 export default async function heartbeatRoute(fastify: FastifyInstance) {
-  fastify.get("/heartbeat", async (req, res) => {
+  fastify.get("/", async (req, res) => {
     const response = await generateHeartbeatResponse();
     res.code(response.statusCode).headers(response.headers).send(response.body);
   });
