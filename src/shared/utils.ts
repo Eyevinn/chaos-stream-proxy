@@ -1,12 +1,20 @@
 import { Response } from "node-fetch";
 import m3u8 from "@eyevinn/m3u8";
-import { M3U, ServiceError } from "../shared/types";
+import { M3U, M3UItem, ServiceError } from "../shared/types";
 import { FastifyRequest } from "fastify";
 import clone from "clone";
-import { ALBHandler, ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
+import {
+  ALBHandler,
+  ALBEvent,
+  ALBResult,
+  ALBEventQueryStringParameters,
+} from "aws-lambda";
 import { ReadStream } from "fs";
+import path from "path";
 
-export const handleOptionsRequest = async (event: ALBEvent): Promise<ALBResult> => {
+export const handleOptionsRequest = async (
+  event: ALBEvent
+): Promise<ALBResult> => {
   return {
     statusCode: 204,
     headers: {
@@ -18,7 +26,9 @@ export const handleOptionsRequest = async (event: ALBEvent): Promise<ALBResult> 
   };
 };
 
-export const generateErrorResponse = (err: ServiceError): Promise<ALBResult> => {
+export const generateErrorResponse = (
+  err: ServiceError
+): Promise<ALBResult> => {
   let response: ALBResult = {
     statusCode: err.status,
     headers: {
@@ -70,7 +80,11 @@ export const convertToALBEvent = (req) => {
   return event;
 };
 
-export const unparseableError = (name: string, unparseableQuery: string, format: string) => ({
+export const unparseableError = (
+  name: string,
+  unparseableQuery: string,
+  format: string
+) => ({
   status: 400,
   message: `Incorrect ${name} value format at '${name}=${unparseableQuery}'. Must be: ${name}=${format}`,
 });
@@ -116,7 +130,9 @@ export function parseM3U8Stream(stream: ReadStream): Promise<M3U> {
   });
 }
 
-export function refineALBEventQuery(originalQuery: ALBEventQueryStringParameters) {
+export function refineALBEventQuery(
+  originalQuery: ALBEventQueryStringParameters
+) {
   const queryStringParameters = clone(originalQuery);
   const searchParams = new URLSearchParams(
     Object.keys(queryStringParameters)
@@ -129,24 +145,36 @@ export function refineALBEventQuery(originalQuery: ALBEventQueryStringParameters
   return queryStringParameters;
 }
 
-export function appendQueryParamsToItemURL(item: any, originalQuery: URLSearchParams, itemUrlPrefix: string): void {
-  const allQueries = new URLSearchParams(originalQuery);
-  let baseURL: string = "";
-  // Bygg riktiga Media URL via riktiga Master URL
+type ProxyBasenames = "proxy-media" | "../../segments/proxy-segment";
+
+export function proxyPathBuilder(
+  itemUri: string,
+  urlSearchParams: URLSearchParams,
+  proxy: ProxyBasenames
+): string {
+  const allQueries = new URLSearchParams(urlSearchParams);
+
   const sourceURL = allQueries.get("url");
-  const m: any = sourceURL?.match(/^(.*)\/.*?$/);
-  if (m) {
-    baseURL = m[1] + "/";
+
+  let baseURL: string = path.basename(sourceURL) + "/";
+
+  // const m = sourceURL?.match(/^(.*)\/.*?$/);
+  // if (m && m.length > 1) {
+  //   baseURL = m[1] + "/";
+  // }
+
+  let sourceItemURL: string = itemUri.match(/^http/)
+    ? itemUri
+    : baseURL + itemUri;
+
+  if (sourceItemURL) {
+    allQueries.set("url", sourceItemURL);
   }
-  let sourceItemURL: string;
-  if (item.get("uri").match(/^http/)) {
-    sourceItemURL = item.get("uri");
-  } else {
-    sourceItemURL = baseURL + item.get("uri");
-  }
-  allQueries.set("url", sourceItemURL);
-  // Släng på ny uppdaterad query string på det som stod.
-  item.set("uri", itemUrlPrefix + "?" + allQueries.toString());
+
+  const allQueriesString = allQueries.toString();
+
+  return `${proxy}${allQueriesString ? `?${allQueriesString}` : ""}`;
 }
 
-export const SERVICE_ORIGIN = process.env.SERVICE_ORIGIN || "http://localhost:3000";
+export const SERVICE_ORIGIN =
+  process.env.SERVICE_ORIGIN || "http://localhost:3000";
