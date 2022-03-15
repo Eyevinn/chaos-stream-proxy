@@ -3,18 +3,12 @@ import m3u8 from "@eyevinn/m3u8";
 import { M3U, M3UItem, ServiceError } from "../shared/types";
 import { FastifyRequest } from "fastify";
 import clone from "clone";
-import {
-  ALBHandler,
-  ALBEvent,
-  ALBResult,
-  ALBEventQueryStringParameters,
-} from "aws-lambda";
+import { ALBHandler, ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
 import { ReadStream } from "fs";
 import path from "path";
+import { url } from "inspector";
 
-export const handleOptionsRequest = async (
-  event: ALBEvent
-): Promise<ALBResult> => {
+export const handleOptionsRequest = async (event: ALBEvent): Promise<ALBResult> => {
   return {
     statusCode: 204,
     headers: {
@@ -26,9 +20,7 @@ export const handleOptionsRequest = async (
   };
 };
 
-export const generateErrorResponse = (
-  err: ServiceError
-): Promise<ALBResult> => {
+export const generateErrorResponse = (err: ServiceError): Promise<ALBResult> => {
   let response: ALBResult = {
     statusCode: err.status,
     headers: {
@@ -80,11 +72,7 @@ export const convertToALBEvent = (req) => {
   return event;
 };
 
-export const unparseableError = (
-  name: string,
-  unparseableQuery: string,
-  format: string
-) => ({
+export const unparseableError = (name: string, unparseableQuery: string, format: string) => ({
   status: 400,
   message: `Incorrect ${name} value format at '${name}=${unparseableQuery}'. Must be: ${name}=${format}`,
 });
@@ -130,9 +118,7 @@ export function parseM3U8Stream(stream: ReadStream): Promise<M3U> {
   });
 }
 
-export function refineALBEventQuery(
-  originalQuery: ALBEventQueryStringParameters
-) {
+export function refineALBEventQuery(originalQuery: ALBEventQueryStringParameters) {
   const queryStringParameters = clone(originalQuery);
   const searchParams = new URLSearchParams(
     Object.keys(queryStringParameters)
@@ -147,34 +133,52 @@ export function refineALBEventQuery(
 
 type ProxyBasenames = "proxy-media" | "../../segments/proxy-segment";
 
-export function proxyPathBuilder(
-  itemUri: string,
-  urlSearchParams: URLSearchParams,
-  proxy: ProxyBasenames
-): string {
+/**
+ * Adjust paths based on directory navigation
+ * @param originPath ex. "http://abc.origin.com/streams/vod1/subfolder1/subfolder2"
+ * @param uri ex. "../../subfolder3/media/segment.ts"
+ * @returns ex. [ "http://abc.origin.com/streams/vod1", "subfolder3/media/segment.ts" ]
+ */
+const cleanUpPathAndURI = (originPath: string, uri: string): string[] => {
+  const matchList: string[] | null = uri.match(/\.\.\//g);
+  if (matchList) {
+    const jumpsToParentDir = matchList.length;
+    if (jumpsToParentDir > 0) {
+      let splitPath = originPath.split("/");
+      for (let i = 0; i < jumpsToParentDir; i++) {
+        splitPath.pop();
+      }
+      originPath = splitPath.join("/");
+      let str2split = "";
+      for (let i = 0; i < jumpsToParentDir; i++) {
+        str2split += "../";
+      }
+      uri = uri.split(str2split).pop();
+    }
+  }
+  return [originPath, uri];
+};
+
+export function proxyPathBuilder(itemUri: string, urlSearchParams: URLSearchParams, proxy: ProxyBasenames): string {
+  if (!urlSearchParams) {
+    return "";
+  }
   const allQueries = new URLSearchParams(urlSearchParams);
-
-  const sourceURL = allQueries.get("url");
-
-  let baseURL: string = path.basename(sourceURL) + "/";
-
-  // const m = sourceURL?.match(/^(.*)\/.*?$/);
-  // if (m && m.length > 1) {
-  //   baseURL = m[1] + "/";
-  // }
-
-  let sourceItemURL: string = itemUri.match(/^http/)
-    ? itemUri
-    : baseURL + itemUri;
-
+  let sourceItemURL: string = "";
+  // Do not build an absolute source url If ItemUri is already an absolut url.
+  if (itemUri.match(/^http/)) {
+    sourceItemURL = itemUri;
+  } else {
+    const sourceURL = allQueries.get("url");
+    const baseURL: string = path.dirname(sourceURL);
+    const [_baseURL, _itemUri] = cleanUpPathAndURI(baseURL, itemUri);
+    sourceItemURL = `${_baseURL}/${_itemUri}`;
+  }
   if (sourceItemURL) {
     allQueries.set("url", sourceItemURL);
   }
-
   const allQueriesString = allQueries.toString();
-
   return `${proxy}${allQueriesString ? `?${allQueriesString}` : ""}`;
 }
 
-export const SERVICE_ORIGIN =
-  process.env.SERVICE_ORIGIN || "http://localhost:3000";
+export const SERVICE_ORIGIN = process.env.SERVICE_ORIGIN || "http://localhost:4000";
