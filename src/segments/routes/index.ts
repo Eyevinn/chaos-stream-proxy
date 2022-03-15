@@ -1,6 +1,5 @@
 import { ALBEvent, ALBResult } from "aws-lambda";
 import { FastifyInstance } from "fastify";
-import { GET_ROUTE_URL } from "../constants";
 import segmentHandler from "../handlers/segment";
 import { convertToALBEvent, handleOptionsRequest } from "../../shared/utils";
 

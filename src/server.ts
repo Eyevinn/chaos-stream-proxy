@@ -12,5 +12,5 @@ registerRoutes(app);
 
 // Start
 app.listen(PORT, () => {
-  console.log("\nListening on port:", PORT, "\n");
+  console.log("\nChaos Stream Proxy listening on port:", PORT, "\n");
 });
