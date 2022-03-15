@@ -1,22 +1,27 @@
-# Streaming Corruptor Backend (V2)
+# Chaos Stream Proxy (V1)
 
 A server that acts as middle hand for manifest and segment requests, with the ability of adding corruptions to the manifest file, or messing with segment requests.
 
 It parses the query parameters from the request and applies corruptions as specified.
 
-### Get Started
+Currently supported stream formats:
 
-#### Development
+- HLS
+- ~~MPEG-DASH~~ (Support In Progress)
 
-Requires `NodeJS`, `npm`, and `yarn` (`npm i -g yarn`).
+## Get Started
 
-`yarn` installs dependencies.
+Requires `NodeJS` v12+ and `npm`
 
-`yarn dev` starts the server on port `4000`.
+### For Development
+
+`npm install` installs dependencies.
+
+`npm run dev` starts the server on port `4000`.
 
 Run on a custom port by setting `PORT` in `.env`.
 
-To try it out go to your favourite HLS video player such as https://player.eyevinn.technology and paste the proxied URL. For example if the source / original manifest is located at: `https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8` the proxied URL is `http://localhost:4000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8`.
+To try it out go to your favourite HLS video player such as `https://web.player.eyevinn.technology/index.html` and paste the proxied URL. For example if the source / original manifest is located at: `https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8` the proxied URL is `http://localhost:4000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8`.
 
 ## API
 
@@ -115,7 +120,7 @@ http://localhost:4000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.la
 5. VOD: With segment delay of 1500ms on fifth segment, response code 404 on sixth, and timeout on seventh:
 
 ```
-http://localhost:4000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:4,ms:1500}]&statusCode=[{i:5,code:404}]&timeout=[{i:6}]
+http://localhost:4000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:4,ms:1500}]&statusCode=[{i:5,code:404}]&timeout=[{i:9}]
 ```
 
 6. VOD: With segment delay of 1500ms and response code 400 on sixth (response of 400 will be sent after 1500ms):
