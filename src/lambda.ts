@@ -36,37 +36,21 @@ export class AbstractLogger implements ILogger {
 
 const logger = new AbstractLogger();
 
-export const handler: ALBHandler = async (
-  event: ALBEvent
-): Promise<ALBResult> => {
+export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> => {
   // This is needed because Internet is a bit broken...
-  event.queryStringParameters = refineALBEventQuery(
-    event.queryStringParameters
-  );
+  event.queryStringParameters = refineALBEventQuery(event.queryStringParameters);
   let response: ALBResult;
   try {
-    if (
-      event.path.match(/manifests\/hls\/proxy-master$/) &&
-      event.httpMethod === "GET"
-    ) {
+    if (event.path.match(/manifests\/hls\/proxy-master$/) && event.httpMethod === "GET") {
       logger.info("Request for HLS Proxy-Multivariant Playlist...");
       response = await hlsMasterHandler(event);
-    } else if (
-      event.path.match(/manifests\/hls\/proxy-media$/) &&
-      event.httpMethod === "GET"
-    ) {
+    } else if (event.path.match(/manifests\/hls\/proxy-media$/) && event.httpMethod === "GET") {
       logger.info("Request for HLS Proxy-Media Playlist...");
       response = await hlsMediaHandler(event);
-    } else if (
-      event.path.match(/segments\/proxy-segment$/) &&
-      event.httpMethod === "GET"
-    ) {
+    } else if (event.path.match(/segments\/proxy-segment$/) && event.httpMethod === "GET") {
       logger.info("Request for HLS Proxy-Segment...");
       response = await segmentHandler(event);
-    } else if (
-      event.path.match(/manifests\/dash\/proxy-master$/) &&
-      event.httpMethod === "GET"
-    ) {
+    } else if (event.path.match(/manifests\/dash\/proxy-master$/) && event.httpMethod === "GET") {
       logger.info("Request for DASH Proxy-Manifest...");
       response = await generateErrorResponse({
         status: 404,
