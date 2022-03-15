@@ -5,13 +5,10 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "tsc",
-    "dev": "yarn build && node dist/server.js",
+    "dev": "tsc && node dist/server.js",
     "start": "node dist/server.js",
     "build": "tsc",
-    "postversion": "git push && git push --tags",
-    "lint": "eslint_d '**/*.ts'",
-    "test": "jest --watch",
-    "preversion": "yarn lint"
+    "test": "jest --watch"
   },
   "dependencies": {
     "@eyevinn/m3u8": ">=0.1.2",
@@ -29,7 +26,7 @@
     "@babel/preset-typescript": "^7.7.4",
     "@commitlint/cli": "^16.2.1",
     "@commitlint/config-conventional": "^8.0.0",
-    "@eyevinn/dev-lambda": "^0.1.1",
+    "@eyevinn/dev-lambda": "^0.1.2",
     "@types/aws-lambda": "^8.10.92",
     "@types/jest": "^27.4.0",
     "@types/node": "^17.0.18",
@@ -37,9 +34,9 @@
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.13.0",
     "clone": "^2.1.2",
-    "eslint_d": "^8.0.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.18.0",
+    "eslint_d": "^8.0.0",
     "husky": "^2.7.0",
     "lint-staged": "^12.3.4",
     "ts-jest": "^27.1.3",

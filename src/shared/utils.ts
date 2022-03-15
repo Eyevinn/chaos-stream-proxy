@@ -1,10 +1,10 @@
 import { Response } from "node-fetch";
 import m3u8 from "@eyevinn/m3u8";
-import { M3U, ServiceError } from "../shared/types";
-import { FastifyRequest } from "fastify";
+import { M3U, ServiceError } from "./types";
 import clone from "clone";
-import { ALBHandler, ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
+import { ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
 import { ReadStream } from "fs";
+import path from "path";
 
 export const handleOptionsRequest = async (event: ALBEvent): Promise<ALBResult> => {
   return {
@@ -129,24 +129,54 @@ export function refineALBEventQuery(originalQuery: ALBEventQueryStringParameters
   return queryStringParameters;
 }
 
-export function appendQueryParamsToItemURL(item: any, originalQuery: URLSearchParams, itemUrlPrefix: string): void {
-  const allQueries = new URLSearchParams(originalQuery);
-  let baseURL: string = "";
-  // Bygg riktiga Media URL via riktiga Master URL
-  const sourceURL = allQueries.get("url");
-  const m: any = sourceURL?.match(/^(.*)\/.*?$/);
-  if (m) {
-    baseURL = m[1] + "/";
+type ProxyBasenames = "proxy-media" | "../../segments/proxy-segment";
+
+/**
+ * Adjust paths based on directory navigation
+ * @param originPath ex. "http://abc.origin.com/streams/vod1/subfolder1/subfolder2"
+ * @param uri ex. "../../subfolder3/media/segment.ts"
+ * @returns ex. [ "http://abc.origin.com/streams/vod1", "subfolder3/media/segment.ts" ]
+ */
+const cleanUpPathAndURI = (originPath: string, uri: string): string[] => {
+  const matchList: string[] | null = uri.match(/\.\.\//g);
+  if (matchList) {
+    const jumpsToParentDir = matchList.length;
+    if (jumpsToParentDir > 0) {
+      let splitPath = originPath.split("/");
+      for (let i = 0; i < jumpsToParentDir; i++) {
+        splitPath.pop();
+      }
+      originPath = splitPath.join("/");
+      let str2split = "";
+      for (let i = 0; i < jumpsToParentDir; i++) {
+        str2split += "../";
+      }
+      uri = uri.split(str2split).pop();
+    }
   }
-  let sourceItemURL: string;
-  if (item.get("uri").match(/^http/)) {
-    sourceItemURL = item.get("uri");
+  return [originPath, uri];
+};
+
+export function proxyPathBuilder(itemUri: string, urlSearchParams: URLSearchParams, proxy: ProxyBasenames): string {
+  if (!urlSearchParams) {
+    return "";
+  }
+  const allQueries = new URLSearchParams(urlSearchParams);
+  let sourceItemURL: string = "";
+  // Do not build an absolute source url If ItemUri is already an absolut url.
+  if (itemUri.match(/^http/)) {
+    sourceItemURL = itemUri;
   } else {
-    sourceItemURL = baseURL + item.get("uri");
+    const sourceURL = allQueries.get("url");
+    const baseURL: string = path.dirname(sourceURL);
+    const [_baseURL, _itemUri] = cleanUpPathAndURI(baseURL, itemUri);
+    sourceItemURL = `${_baseURL}/${_itemUri}`;
   }
-  allQueries.set("url", sourceItemURL);
-  // Släng på ny uppdaterad query string på det som stod.
-  item.set("uri", itemUrlPrefix + "?" + allQueries.toString());
+  if (sourceItemURL) {
+    allQueries.set("url", sourceItemURL);
+  }
+  const allQueriesString = allQueries.toString();
+  return `${proxy}${allQueriesString ? `?${allQueriesString}` : ""}`;
 }
 
-export const SERVICE_ORIGIN = process.env.SERVICE_ORIGIN || "http://localhost:3000";
+export const SERVICE_ORIGIN = process.env.SERVICE_ORIGIN || "http://localhost:8000";

@@ -1,11 +1,8 @@
-// import ManifestUtils, { SegmentCorruptorQueryConfig, HLSManifestProxyUtils } from "../../utils/utils";
-import fetch, { Response } from "node-fetch";
-import { ALBHandler, ALBEvent, ALBResult } from "aws-lambda";
+import { ALBEvent, ALBResult } from "aws-lambda";
 import { ServiceError } from "../../shared/types";
 import delaySCC from "../../manifests/utils/corruptions/delay";
 import statusCodeSCC from "../../manifests/utils/corruptions/statusCode";
 import timeoutSCC from "../../manifests/utils/corruptions/timeout";
-import path from "path";
 import { corruptorConfigUtils } from "../../manifests/utils/configs";
 import { generateErrorResponse, isValidUrl, refineALBEventQuery } from "../../shared/utils";
 

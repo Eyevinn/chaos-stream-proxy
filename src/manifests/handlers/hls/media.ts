@@ -1,5 +1,5 @@
 import fetch, { Response } from "node-fetch";
-import { ALBHandler, ALBEvent, ALBResult } from "aws-lambda";
+import { ALBEvent, ALBResult } from "aws-lambda";
 import { ServiceError, M3U } from "../../../shared/types";
 import { generateErrorResponse, isValidUrl, parseM3U8Text, refineALBEventQuery } from "../../../shared/utils";
 import delaySCC from "../../utils/corruptions/delay";
