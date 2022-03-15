@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  chaos-stream-proxy:
+    build: .
+    image: chaos-stream-proxy-api:local
+    environment:
+      - PORT=8000
+    ports:
+      - 8000:8000
