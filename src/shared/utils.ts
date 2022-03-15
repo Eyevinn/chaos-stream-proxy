@@ -1,12 +1,10 @@
 import { Response } from "node-fetch";
 import m3u8 from "@eyevinn/m3u8";
-import { M3U, M3UItem, ServiceError } from "../shared/types";
-import { FastifyRequest } from "fastify";
+import { M3U, ServiceError } from "../shared/types";
 import clone from "clone";
-import { ALBHandler, ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
+import { ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
 import { ReadStream } from "fs";
 import path from "path";
-import { url } from "inspector";
 
 export const handleOptionsRequest = async (event: ALBEvent): Promise<ALBResult> => {
   return {
