@@ -2,8 +2,8 @@ import hlsMasterHandler from "../handlers/hls/master";
 import hlsMediaHandler from "../handlers/hls/media";
 import dashHandler from "../handlers/dash";
 import { FastifyInstance } from "fastify";
-import { ALBHandler, ALBEvent, ALBResult } from "aws-lambda";
-import { convertToALBEvent, handleOptionsRequest } from "../../shared/utils";
+import { ALBResult } from "aws-lambda";
+import { convertToALBEvent } from "../../shared/utils";
 
 export default async function manifestRoutes(fastify: FastifyInstance) {
   fastify.get("/manifests/hls/proxy-master", async (req, res) => {

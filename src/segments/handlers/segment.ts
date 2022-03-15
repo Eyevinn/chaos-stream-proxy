@@ -5,7 +5,6 @@ import { ServiceError } from "../../shared/types";
 import delaySCC from "../../manifests/utils/corruptions/delay";
 import statusCodeSCC from "../../manifests/utils/corruptions/statusCode";
 import timeoutSCC from "../../manifests/utils/corruptions/timeout";
-import path from "path";
 import { corruptorConfigUtils } from "../../manifests/utils/configs";
 import { generateErrorResponse, isValidUrl, refineALBEventQuery } from "../../shared/utils";
 
