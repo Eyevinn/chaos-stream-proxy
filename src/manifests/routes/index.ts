@@ -6,13 +6,13 @@ import { ALBResult } from "aws-lambda";
 import { convertToALBEvent } from "../../shared/utils";
 
 export default async function manifestRoutes(fastify: FastifyInstance) {
-  fastify.get("/manifests/hls/proxy-master", async (req, res) => {
+  fastify.get("/manifests/hls/proxy-master.m3u8", async (req, res) => {
     const event = convertToALBEvent(req);
     const response: ALBResult = await hlsMasterHandler(event);
     res.code(response.statusCode).headers(response.headers).send(response.body);
   });
 
-  fastify.get("/manifests/hls/proxy-media", async (req, res) => {
+  fastify.get("/manifests/hls/proxy-media.m3u8", async (req, res) => {
     const event = convertToALBEvent(req);
     const response: ALBResult = await hlsMediaHandler(event);
     res.code(response.statusCode).headers(response.headers).send(response.body);

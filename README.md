@@ -21,17 +21,17 @@ Requires `NodeJS` v14+ and `npm`
 
 Run on a custom port by setting `PORT` in `.env`.
 
-To try it out go to your favourite HLS video player such as `https://web.player.eyevinn.technology/index.html` and paste the proxied URL. For example if the source / original manifest is located at: `https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8` the proxied URL is `http://localhost:8000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8`.
+To try it out go to your favourite HLS video player such as `https://web.player.eyevinn.technology/index.html` and paste the proxied URL. For example if the source / original manifest is located at: `https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8` the proxied URL is `http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8`.
 
 ## API
 
 | ENDPOINT                              | METHOD | DESCRIPTION                                                                                              |
 | ------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------- |
-| `/api/v2/manifests/hls/proxy-master`  | GET    | Returns a proxy Multivariant M3U8 file, based on query parameters                                        |
-| `/api/v2/manifests/hls/proxy-media`   | GET    | Returns a proxy Media M3U8 file , based on query parameters                                              |
-| `/api/v2/manifests/dash/proxy-master` | GET    | (WORK IN PROGRESS)                                                                                       |
-| `/api/v2/segments/proxy-segment`      | GET    | Applies corruption present in query parameter and may return a 301 redirect to the original segment file |
-| `/`                                   | GET    | Server health check                                                                                      |
+| `/api/v2/manifests/hls/proxy-master.m3u8`  | GET    | Returns a proxy Multivariant M3U8 file, based on query parameters                                        |
+| `/api/v2/manifests/hls/proxy-media.m3u8`   | GET    | Returns a proxy Media M3U8 file , based on query parameters                                              |
+| `/api/v2/manifests/dash/proxy-master`      | GET    | (WORK IN PROGRESS)                                                                                       |
+| `/api/v2/segments/proxy-segment`           | GET    | Applies corruption present in query parameter and may return a 301 redirect to the original segment file |
+| `/`                                        | GET    | Server health check                                                                                      |
 
 ### Query Parameters
 
@@ -50,7 +50,7 @@ Currently, the Stream Corruptor supports 3 types of corruptions for HLS streams.
 
 To specify the configurations for a particular corruption, you will need to add a stringified JSON object as a query parameter to the proxied URL.
 Each corruption has a unique configuration JSON object template. Each object can be used to target one specific segment for corruption.
-e.i. `https://host.stream.corruptor/api/v2/manifests/hls/proxy-master?url=<some_url>?some_corruption=[{i:0},{i:1},{i:2}, ... ,{i:N}]`
+e.i. `https://host.stream.corruptor/api/v2/manifests/hls/proxy-master.m3u8?url=<some_url>?some_corruption=[{i:0},{i:1},{i:2}, ... ,{i:N}]`
 
 Across all coruptions, there are 2 ways to target a segment in a playlist for corruption.
 
@@ -97,43 +97,43 @@ When targeting all segments through the input value of `"*"`, it is possible to 
 1. VOD: With segment timeout on third segment:
 
 ```
-http://localhost:8000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&timeout=[{i:2}]
+http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&timeout=[{i:2}]
 ```
 
 2. VOD: With segment delay of 3000ms on first and second segment:
 
 ```
-http://localhost:8000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:0,ms:3000},{i:1,ms:3000}]
+http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:0,ms:3000},{i:1,ms:3000}]
 ```
 
 3. VOD: With response of status code 404 on all segments:
 
 ```
-http://localhost:8000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&statusCode=[{i:*,code:404}]
+http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&statusCode=[{i:*,code:404}]
 ```
 
 4. VOD: With segment delay of 500ms on all segments (except for third and seventh segment):
 
 ```
-http://localhost:8000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:*,ms:500},{i:2},{i:6}]
+http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:*,ms:500},{i:2},{i:6}]
 ```
 
 5. VOD: With segment delay of 1500ms on fifth segment, response code 404 on sixth, and timeout on seventh:
 
 ```
-http://localhost:8000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:4,ms:1500}]&statusCode=[{i:5,code:404}]&timeout=[{i:9}]
+http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:4,ms:1500}]&statusCode=[{i:5,code:404}]&timeout=[{i:9}]
 ```
 
 6. VOD: With segment delay of 1500ms and response code 400 on sixth (response of 400 will be sent after 1500ms):
 
 ```
-http://localhost:8000/api/v2/manifests/hls/proxy-master?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:5,ms:1500}]&statusCode=[{i:5,code:400}]
+http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:5,ms:1500}]&statusCode=[{i:5,code:400}]
 ```
 
 7. LIVE: With response of status code 404 on segment with sequence number 105:
 
 ```
-http://localhost:8000/api/v2/manifests/hls/proxy-master?url=https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8&statusCode=[{sq:105,code:400}]
+http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8&statusCode=[{sq:105,code:400}]
 ```
 
 ## Production

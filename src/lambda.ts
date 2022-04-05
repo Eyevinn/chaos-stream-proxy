@@ -43,10 +43,10 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
   event.queryStringParameters = refineALBEventQuery(event.queryStringParameters);
   let response: ALBResult;
   try {
-    if (event.path.match(/manifests\/hls\/proxy-master$/) && event.httpMethod === "GET") {
+    if (event.path.match(/manifests\/hls\/proxy-master.m3u8$/) && event.httpMethod === "GET") {
       logger.info("Request for HLS Proxy-Multivariant Playlist...");
       response = await hlsMasterHandler(event);
-    } else if (event.path.match(/manifests\/hls\/proxy-media$/) && event.httpMethod === "GET") {
+    } else if (event.path.match(/manifests\/hls\/proxy-media.m3u8$/) && event.httpMethod === "GET") {
       logger.info("Request for HLS Proxy-Media Playlist...");
       response = await hlsMediaHandler(event);
     } else if (event.path.match(/segments\/proxy-segment$/) && event.httpMethod === "GET") {
