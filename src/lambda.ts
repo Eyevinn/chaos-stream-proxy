@@ -43,27 +43,43 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
   event.queryStringParameters = refineALBEventQuery(event.queryStringParameters);
   let response: ALBResult;
   try {
-    if (event.path.match(/manifests\/hls\/proxy-master.m3u8$/) && event.httpMethod === "GET") {
-      logger.info("Request for HLS Proxy-Multivariant Playlist...");
-      response = await hlsMasterHandler(event);
-    } else if (event.path.match(/manifests\/hls\/proxy-media.m3u8$/) && event.httpMethod === "GET") {
-      logger.info("Request for HLS Proxy-Media Playlist...");
-      response = await hlsMediaHandler(event);
-    } else if (event.path.match(/segments\/proxy-segment$/) && event.httpMethod === "GET") {
-      logger.info("Request for HLS Proxy-Segment...");
-      response = await segmentHandler(event);
-    } else if (event.path.match(/manifests\/dash\/proxy-master$/) && event.httpMethod === "GET") {
-      logger.info("Request for DASH Proxy-Manifest...");
-      response = await generateErrorResponse({
-        status: 404,
-        message: "Endpoint not implemented...",
-      });
+
+    if (event.httpMethod === "GET") {
+      const path =event.path.replace("/api/v2","")
+      switch (path) {
+        case "/manifests/hls/proxy-master.m3u8" :
+          logger.info("Request for HLS Proxy-Multivariant Playlist...");
+          response = await hlsMasterHandler(event);
+          break;
+        case "/manifests/hls/proxy-media.m3u8" :
+          logger.info("Request for HLS Proxy-Media Playlist...");
+          response = await hlsMediaHandler(event);
+          break;
+        case "/segments/proxy-segment" :
+          logger.info("Request for HLS Proxy-Segment...");
+          response = await segmentHandler(event);
+          break;
+        case "/manifests/dash/proxy-master" :
+          logger.info("Request for DASH Proxy-Manifest...");
+          response = await generateErrorResponse({
+            status: 404,
+            message: "Endpoint not implemented...",
+          });
+          break;
+        case "/" :
+          logger.info("Request for Healthcheck...");
+          response = await generateHeartbeatResponse();
+          break;
+        default: 
+          logger.info("Request for missing resource...");
+          response = await generateErrorResponse({
+            status: 404,
+            message: "Resource not found",
+          });
+      } 
     } else if (event.httpMethod === "OPTIONS") {
       logger.info("Request for OPTIONS...");
       response = await handleOptionsRequest(event);
-    } else if (event.path === "/" && event.httpMethod === "GET") {
-      logger.info("Request for Healthcheck...");
-      response = await generateHeartbeatResponse();
     } else {
       logger.info("Request for missing resource...");
       response = await generateErrorResponse({
