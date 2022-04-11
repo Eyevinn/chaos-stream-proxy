@@ -1,10 +1,10 @@
 import { ALBResult, ALBEvent, ALBHandler } from "aws-lambda";
 import hlsMasterHandler from "./manifests/handlers/hls/master";
 import hlsMediaHandler from "./manifests/handlers/hls/media";
-import { RouteConstants } from "./manifests/routes/routeConstants";
 import segmentHandler from "./segments/handlers/segment";
 import { generateErrorResponse, generateHeartbeatResponse, refineALBEventQuery } from "./shared/utils";
 import { handleOptionsRequest } from "./shared/utils";
+import { HLS_PROXY_MASTER, HLS_PROXY_MEDIA, SEGEMTS_PROXY_SEGMENT, DASH_PORXY_MASTER } from "./segments/constants";
 
 export interface ILogger {
   verbose: (message: string) => void;
@@ -48,19 +48,19 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
     if (event.httpMethod === "GET") {
       const path =event.path.replace("/api/v2","")
       switch (path) {
-        case RouteConstants.hlsProxyMaster :
+        case HLS_PROXY_MASTER :
           logger.info("Request for HLS Proxy-Multivariant Playlist...");
           response = await hlsMasterHandler(event);
           break;
-        case RouteConstants.hlsProxyMedia :
+        case HLS_PROXY_MEDIA :
           logger.info("Request for HLS Proxy-Media Playlist...");
           response = await hlsMediaHandler(event);
           break;
-        case RouteConstants.segmentsProxySegment :
+        case SEGEMTS_PROXY_SEGMENT :
           logger.info("Request for HLS Proxy-Segment...");
           response = await segmentHandler(event);
           break;
-        case RouteConstants.dashProxyMaster :
+        case DASH_PORXY_MASTER :
           logger.info("Request for DASH Proxy-Manifest...");
           response = await generateErrorResponse({
             status: 404,
