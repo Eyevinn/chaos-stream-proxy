@@ -2,9 +2,10 @@ import { ALBEvent, ALBResult } from "aws-lambda";
 import { FastifyInstance } from "fastify";
 import segmentHandler from "../handlers/segment";
 import { convertToALBEvent, handleOptionsRequest } from "../../shared/utils";
+import { RouteConstants } from "../../manifests/routes/routeConstants";
 
 export default async function segmentRoutes(fastify: FastifyInstance) {
-  fastify.get("/segments/proxy-segment", async (req, res) => {
+  fastify.get(RouteConstants.segmentsProxySegment, async (req, res) => {
     const event = convertToALBEvent(req);
     const response: ALBResult = await segmentHandler(event);
     if (response === undefined) {
