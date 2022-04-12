@@ -167,6 +167,6 @@ Commit messages are automatically linted via [husky](https://github.com/typicode
 
 ## Scripts
 
-`yarn start` starts the server.
+`npm start` starts the server.
 
 Check `package.json` for available scripts.
