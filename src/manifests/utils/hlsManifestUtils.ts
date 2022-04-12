@@ -82,14 +82,14 @@ export default function (): HLSManifestTools {
       // [Video]
       m3u.items.StreamItem = m3u.items.StreamItem.map((streamItem) => {
         const currentUri = streamItem.get("uri");
-        streamItem.set("uri", proxyPathBuilder(currentUri, originalUrlQuery, "proxy-media"));
+        streamItem.set("uri", proxyPathBuilder(currentUri, originalUrlQuery, "proxy-media.m3u8"));
         return streamItem;
       });
 
       // [Audio/Subtitles/IFrame]
       m3u.items.MediaItem = m3u.items.MediaItem.map((mediaItem) => {
         const currentUri = mediaItem.get("uri");
-        mediaItem.set("uri", proxyPathBuilder(currentUri, originalUrlQuery, "proxy-media"));
+        mediaItem.set("uri", proxyPathBuilder(currentUri, originalUrlQuery, "proxy-media.m3u8"));
         return mediaItem;
       });
 

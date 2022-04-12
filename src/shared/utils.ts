@@ -143,7 +143,7 @@ export function refineALBEventQuery(originalQuery: ALBEventQueryStringParameters
   return queryStringParameters;
 }
 
-type ProxyBasenames = "proxy-media" | "../../segments/proxy-segment";
+type ProxyBasenames = "proxy-media.m3u8" | "../../segments/proxy-segment";
 
 /**
  * Adjust paths based on directory navigation

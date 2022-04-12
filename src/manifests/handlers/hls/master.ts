@@ -49,7 +49,7 @@ export default async function hlsMasterHandler(event: ALBEvent) {
     return {
       statusCode: 200,
       headers: {
-        "Content-Type": "application/x-mpegURL",
+        "Content-Type": "application/vnd.apple.mpegurl",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type, Origin",
       },

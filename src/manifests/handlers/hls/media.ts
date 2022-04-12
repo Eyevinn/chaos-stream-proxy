@@ -41,7 +41,7 @@ export default async function hlsMediaHandler(event: ALBEvent): Promise<ALBResul
     originalMediaManifestResponse.headers.forEach((value, key) => (originalResHeaders[key] = value));
 
     const mediaM3U: M3U = await parseM3U8Text(originalMediaManifestResponse);
-
+    
     const reqQueryParams = new URLSearchParams(event.queryStringParameters);
 
     const manifestUtils = hlsManifestUtils();
@@ -60,7 +60,7 @@ export default async function hlsMediaHandler(event: ALBEvent): Promise<ALBResul
     return {
       statusCode: 200,
       headers: {
-        "Content-Type": "application/x-mpegURL",
+        "Content-Type": "application/vnd.apple.mpegurl",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type, Origin",
       },

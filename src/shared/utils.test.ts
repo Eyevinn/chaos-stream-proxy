@@ -9,8 +9,8 @@ describe("shared.utils", () => {
       const urlSearchParams = new URLSearchParams("url=https://mock.stream.origin.se/hls/vods/asset41/master.m3u8&delay=[{i:3,ms:200}]");
 
       // Act
-      const actual = proxyPathBuilder(itemUri, urlSearchParams, "proxy-media");
-      const expected = `proxy-media?url=${encodeURIComponent("https://mock.stream.origin.se/hls/vods/asset41/video-variants/variant_3.m3u8")}&delay=${encodeURIComponent(
+      const actual = proxyPathBuilder(itemUri, urlSearchParams, "proxy-media.m3u8");
+      const expected = `proxy-media.m3u8?url=${encodeURIComponent("https://mock.stream.origin.se/hls/vods/asset41/video-variants/variant_3.m3u8")}&delay=${encodeURIComponent(
         "[{i:3,ms:200}]"
       )}`;
 
@@ -24,8 +24,8 @@ describe("shared.utils", () => {
       const urlSearchParams = new URLSearchParams("url=https://mock.stream.origin.se/hls/master.m3u8&delay=[{i:3,ms:200}]");
 
       // Act
-      const actual = proxyPathBuilder(itemUri, urlSearchParams, "proxy-media");
-      const expected = `proxy-media?url=${encodeURIComponent("https://different.origin.se/hls/variant_3.m3u8")}&delay=${encodeURIComponent("[{i:3,ms:200}]")}`;
+      const actual = proxyPathBuilder(itemUri, urlSearchParams, "proxy-media.m3u8");
+      const expected = `proxy-media.m3u8?url=${encodeURIComponent("https://different.origin.se/hls/variant_3.m3u8")}&delay=${encodeURIComponent("[{i:3,ms:200}]")}`;
 
       // Assert
       expect(actual).toEqual(expected);
@@ -37,8 +37,8 @@ describe("shared.utils", () => {
       const urlSearchParams = new URLSearchParams("url=https://mock.stream.origin.se/hls/pathA/path1/path2/master.m3u8&delay=[{i:3,ms:200}]");
 
       // Act
-      const actual = proxyPathBuilder(itemUri, urlSearchParams, "proxy-media");
-      const expected = `proxy-media?url=${encodeURIComponent("https://mock.stream.origin.se/hls/pathB/path3/variant_3.m3u8")}&delay=${encodeURIComponent("[{i:3,ms:200}]")}`;
+      const actual = proxyPathBuilder(itemUri, urlSearchParams, "proxy-media.m3u8");
+      const expected = `proxy-media.m3u8?url=${encodeURIComponent("https://mock.stream.origin.se/hls/pathB/path3/variant_3.m3u8")}&delay=${encodeURIComponent("[{i:3,ms:200}]")}`;
 
       // Assert
       expect(actual).toEqual(expected);
@@ -50,7 +50,7 @@ describe("shared.utils", () => {
       const urlSearchParams = null;
 
       // Act
-      const actual = proxyPathBuilder(itemUri, urlSearchParams, "proxy-media");
+      const actual = proxyPathBuilder(itemUri, urlSearchParams, "proxy-media.m3u8");
       const expected = "";
 
       // Assert
