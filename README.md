@@ -19,7 +19,7 @@ Requires `NodeJS` v14+ and `npm`
 
 `npm run dev` starts the server on port `8000`.
 
-Run on a custom port by setting `PORT` in `.env`.
+Run on a custom port by setting the `PORT` environment variable.
 
 To try it out go to your favourite HLS video player such as `https://web.player.eyevinn.technology/index.html` and paste the proxied URL. For example if the source / original manifest is located at: `https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8` the proxied URL is `http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8`.
 
