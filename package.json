@@ -8,7 +8,8 @@
     "dev": "tsc && node dist/server.js",
     "start": "node dist/server.js",
     "build": "tsc",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "deploy:dev": "git tag $(git rev-parse --short HEAD)-dev && git push --tags"
   },
   "dependencies": {
     "@eyevinn/m3u8": ">=0.1.2",
