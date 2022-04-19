@@ -1,0 +1,36 @@
+{
+  "executionRoleArn": "arn:aws:iam::590877988961:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "secretOptions": null,
+        "options": {
+          "awslogs-group": "/ecs/chaos-stream-proxy",
+          "awslogs-region": "eu-north-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "hostPort": 8000,
+          "protocol": "tcp",
+          "containerPort": 8000
+        }
+      ],
+      "image": "590877988961.dkr.ecr.eu-north-1.amazonaws.com/chaos-stream-proxy:latest-dev",
+      "name": "chaos-stream-proxy"
+    }
+  ],
+  "memory": "512",
+  "family": "chaos-stream-proxy",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "networkMode": "awsvpc",
+  "runtimePlatform": {
+    "operatingSystemFamily": "LINUX",
+    "cpuArchitecture": null
+  },
+  "cpu": "256"
+}
