@@ -72,7 +72,7 @@ describe("manifests.handlers.hls.master.ts", () => {
         headers: {
           "Access-Control-Allow-Headers": "Content-Type, Origin",
           "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/x-mpegURL",
+          "Content-Type": "application/vnd.apple.mpegurl",
         },
         body: '{ status: "OK" }', // Add full m3u8 body?
       };
@@ -88,7 +88,7 @@ describe("manifests.handlers.hls.master.ts", () => {
         });
       };
       nock(mockBaseURL).persist().get("/manifest.m3u8").reply(200, getBody, {
-        "Content-Type": "application/x-mpegURL;charset=UTF-8",
+        "Content-Type": "application/vnd.apple.mpegurl;charset=UTF-8",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type, Origin",
       });

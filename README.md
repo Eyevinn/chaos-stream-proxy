@@ -136,7 +136,11 @@ http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-v
 http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8&statusCode=[{sq:105,code:400}]
 ```
 
-## Production
+## Development Environment
+
+To deploy and update development environment create and push a tag with the suffix `-dev`, for example `my-feat-test-dev`. If you run `npm run deploy:dev` it will automatically create a tag based on git revision with the `-dev` suffix and push it.
+
+## Production Environment
 
 TBD
 

@@ -3,3 +3,4 @@ dist/
 .git
 .DS_Store
 dev
+.env

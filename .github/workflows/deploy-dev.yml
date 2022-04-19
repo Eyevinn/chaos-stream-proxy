@@ -1,0 +1,50 @@
+name: Build image and deploy to dev environment
+
+on:
+  push:
+    tags:
+      - '*-dev'
+
+env:
+  AWS_REGION: eu-north-1
+  ECR_REGISTRY: 590877988961.dkr.ecr.eu-north-1.amazonaws.com
+  ECR_REPOSITORY: chaos-stream-proxy
+  ECS_SERVICE: chaos-stream-proxy
+  ECS_CLUSTER: development
+  ECS_TASK_DEFINITION: aws/ecs/taskdef-dev.json
+  CONTAINER_NAME: chaos-stream-proxy
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  buildpushdeploy:
+    name: Build, Push and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Get the tag
+        id: get_tag
+        run: echo ::set-output name=TAG::$(echo $GITHUB_REF | cut -d / -f 3)
+
+      - name: Configure AWS ECR credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build docker image and push to Amazon ECR
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: ${{ env.ECR_REPOSITORY }}
+          registry: ${{ steps.login-ecr.outputs.registry }}
+          dockerfile: Dockerfile
