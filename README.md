@@ -142,7 +142,7 @@ To deploy and update development environment create and push a tag with the suff
 
 ## Production Environment
 
-TBD
+To deploy and update production environment publish a release on GitHub. This will trigger and initiate the workflow to build image and update the production cluster.
 
 ## Technology Stack
 
