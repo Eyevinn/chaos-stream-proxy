@@ -10,7 +10,8 @@
     "build": "tsc",
     "test:watch": "jest --watch",
     "test": "jest",
-    "deploy:dev": "git tag $(git rev-parse --short HEAD)-dev && git push --tags"
+    "deploy:dev": "git tag $(git rev-parse --short HEAD)-dev && git push --tags",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "@eyevinn/m3u8": ">=0.1.2",
