@@ -33,7 +33,7 @@ describe("manifests.handlers.hls.media.ts", () => {
         });
       };
       nock(mockBaseURL).persist().get("/manifest_1.m3u8").reply(200, getMedia, {
-        "Content-Type": "application/x-mpegURL;charset=UTF-8",
+        "Content-Type": "application/vnd.apple.mpegurl;charset=UTF-8",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type, Origin",
       });
@@ -52,7 +52,7 @@ describe("manifests.handlers.hls.media.ts", () => {
         path: "/stream/hls/manifest.m3u8",
         httpMethod: "GET",
         headers: {
-          accept: "application/x-mpegURL;charset=UTF-8",
+          accept: "application/vnd.apple.mpegurl;charset=UTF-8",
           "accept-language": "en-US,en;q=0.8",
           "content-type": "text/plain",
           host: "lambda-846800462-us-east-2.elb.amazonaws.com",
@@ -76,7 +76,7 @@ describe("manifests.handlers.hls.media.ts", () => {
         headers: {
           "Access-Control-Allow-Headers": "Content-Type, Origin",
           "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/x-mpegURL",
+          "Content-Type": "application/vnd.apple.mpegurl",
         },
         body: `#EXTM3U
 #EXT-X-VERSION:3
@@ -159,7 +159,7 @@ https://mock.mock.com/stream/hls/manifest_1_00001.ts
         path: "/stream/hls/manifest.m3u8",
         httpMethod: "GET",
         headers: {
-          accept: "application/x-mpegURL;charset=UTF-8",
+          accept: "application/vnd.apple.mpegurl;charset=UTF-8",
           "accept-language": "en-US,en;q=0.8",
           "content-type": "text/plain",
           host: "lambda-846800462-us-east-2.elb.amazonaws.com",
@@ -208,7 +208,7 @@ https://mock.mock.com/stream/hls/manifest_1_00001.ts
         path: "/stream/hls/manifest_1.m3u8",
         httpMethod: "GET",
         headers: {
-          accept: "application/x-mpegURL;charset=UTF-8",
+          accept: "application/vnd.apple.mpegurl;charset=UTF-8",
           "accept-language": "en-US,en;q=0.8",
           "content-type": "text/plain",
           host: "lambda-846800462-us-east-2.elb.amazonaws.com",
