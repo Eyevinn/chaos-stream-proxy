@@ -44,7 +44,7 @@ To try it out go to your favourite HLS video player such as `https://web.player.
 
 ## Corruptions
 
-Currently, the Stream Corruptor supports 3 types of corruptions for HLS streams. These corruptions may be used in combination of one another.
+Currently, the Chaos Stream Proxy supports 3 types of corruptions for HLS streams. These corruptions may be used in combination of one another.
 
 ### Specifying Corruption Configurations (HLS)
 
@@ -172,3 +172,11 @@ Commit messages are automatically linted via [husky](https://github.com/typicode
 ## Scripts
 
 Check `package.json` for available scripts.
+
+## About Eyevinn Technology
+
+Eyevinn Technology is an independent consultant firm specialized in video and streaming. Independent in a way that we are not commercially tied to any platform or technology vendor.
+
+At Eyevinn, every software developer consultant has a dedicated budget reserved for open source development and contribution to the open source community. This give us room for innovation, team building and personal competence development. And also gives us as a company a way to contribute back to the open source community.
+
+Want to know more about Eyevinn and how it is to work here. Contact us at work@eyevinn.se!
