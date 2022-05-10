@@ -28,6 +28,7 @@ export default async function hlsMediaHandler(event: ALBEvent): Promise<ALBResul
 
   try {
     const originalMediaManifestResponse: Response = await fetch(originalManifestUrl);
+    console.log(originalMediaManifestResponse)
 
     if (!originalMediaManifestResponse.ok) {
       const errorRes: ServiceError = {

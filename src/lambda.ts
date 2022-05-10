@@ -1,10 +1,11 @@
 import { ALBResult, ALBEvent, ALBHandler } from "aws-lambda";
 import hlsMasterHandler from "./manifests/handlers/hls/master";
 import hlsMediaHandler from "./manifests/handlers/hls/media";
+import dashHandler from "./manifests/handlers/dash/index";
 import segmentHandler from "./segments/handlers/segment";
 import { generateErrorResponse, generateHeartbeatResponse, refineALBEventQuery } from "./shared/utils";
 import { handleOptionsRequest } from "./shared/utils";
-import { HLS_PROXY_MASTER, HLS_PROXY_MEDIA, SEGEMTS_PROXY_SEGMENT, DASH_PORXY_MASTER } from "./segments/constants";
+import { HLS_PROXY_MASTER, HLS_PROXY_MEDIA, SEGEMTS_PROXY_SEGMENT, DASH_PORXY_MASTER, DASH_PORXY_SEGMENT } from "./segments/constants";
 
 export interface ILogger {
   verbose: (message: string) => void;
@@ -42,9 +43,9 @@ const logger = new AbstractLogger();
 export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> => {
   // This is needed because Internet is a bit broken...
   event.queryStringParameters = refineALBEventQuery(event.queryStringParameters);
+  console.log("eventpath" + event.path)
   let response: ALBResult;
   try {
-
     if (event.httpMethod === "GET") {
       const path =event.path.replace("/api/v2","")
       switch (path) {
@@ -62,11 +63,12 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
           break;
         case DASH_PORXY_MASTER :
           logger.info("Request for DASH Proxy-Manifest...");
-          response = await generateErrorResponse({
-            status: 404,
-            message: "Endpoint not implemented...",
-          });
+          response = await dashHandler(event);
           break;
+        case DASH_PORXY_SEGMENT :
+        logger.info("Request for DASH Proxy-Manifest...");
+        response = await dashHandler(event);
+        break;
         case "/" :
           logger.info("Request for Healthcheck...");
           response = await generateHeartbeatResponse();
