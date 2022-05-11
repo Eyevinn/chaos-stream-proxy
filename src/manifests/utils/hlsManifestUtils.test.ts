@@ -1,5 +1,5 @@
 import { TargetIndex } from "../../shared/types";
-import { parseM3U8Stream } from "../../shared/utils";
+import { parseM3U8Stream, segmentUrlParamString } from "../../shared/utils";
 import { CorruptorConfig, CorruptorConfigMap, corruptorConfigUtils, SegmentCorruptorQueryConfig } from "./configs";
 import hlsManifestTools from "./hlsManifestUtils";
 import { createReadStream } from "fs";
@@ -131,14 +131,14 @@ https://mock.mock.com/stream/hls/manifest_1_00003.ts
     it("should handle fields object", () => {
       const someMap = new Map<string, CorruptorConfig>();
       someMap.set("test", { fields: { n: 150, s: "hej" }, i: 1, sq: 2 });
-      const query = hlsManifestTools().utils.segmentUrlParamString("hello", someMap);
+      const query = segmentUrlParamString("hello", someMap);
       expect(query).toEqual("url=hello&test={n:150,s:hej}");
     });
 
     it("should handle key with empty fields object", () => {
       const someMap = new Map<string, CorruptorConfig>();
       someMap.set("timeout", { i: 1, sq: 2, fields: {} });
-      const query = hlsManifestTools().utils.segmentUrlParamString("hello", someMap);
+      const query = segmentUrlParamString("hello", someMap);
       expect(query).toEqual("url=hello&timeout=");
     });
   });

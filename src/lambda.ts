@@ -5,7 +5,8 @@ import dashHandler from "./manifests/handlers/dash/index";
 import segmentHandler from "./segments/handlers/segment";
 import { generateErrorResponse, generateHeartbeatResponse, refineALBEventQuery } from "./shared/utils";
 import { handleOptionsRequest } from "./shared/utils";
-import { HLS_PROXY_MASTER, HLS_PROXY_MEDIA, SEGEMTS_PROXY_SEGMENT, DASH_PORXY_MASTER, DASH_PORXY_SEGMENT } from "./segments/constants";
+import { HLS_PROXY_MASTER, HLS_PROXY_MEDIA, SEGEMTS_PROXY_SEGMENT, DASH_PROXY_MASTER, DASH_PROXY_SEGMENT, DASH_PROXY_SEGMENT2 } from "./segments/constants";
+import dashSegmentHandler from "./manifests/handlers/dash/segment";
 
 export interface ILogger {
   verbose: (message: string) => void;
@@ -43,11 +44,14 @@ const logger = new AbstractLogger();
 export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> => {
   // This is needed because Internet is a bit broken...
   event.queryStringParameters = refineALBEventQuery(event.queryStringParameters);
-  console.log("eventpath" + event.path)
   let response: ALBResult;
   try {
     if (event.httpMethod === "GET") {
-      const path =event.path.replace("/api/v2","")
+      let path = event.path.replace("/api/v2","")
+      if (path.includes(DASH_PROXY_SEGMENT)) {
+        path = DASH_PROXY_SEGMENT;
+      }
+      console.log("eventparh ", path)
       switch (path) {
         case HLS_PROXY_MASTER :
           logger.info("Request for HLS Proxy-Multivariant Playlist...");
@@ -61,11 +65,15 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
           logger.info("Request for HLS Proxy-Segment...");
           response = await segmentHandler(event);
           break;
-        case DASH_PORXY_MASTER :
+        case DASH_PROXY_MASTER :
           logger.info("Request for DASH Proxy-Manifest...");
           response = await dashHandler(event);
           break;
-        case DASH_PORXY_SEGMENT :
+        case DASH_PROXY_SEGMENT :
+          logger.info("Request for DASH Proxy-Manifest...");
+          response = await dashSegmentHandler(event);
+        break;
+        case DASH_PROXY_SEGMENT2 :
         logger.info("Request for DASH Proxy-Manifest...");
         response = await dashHandler(event);
         break;

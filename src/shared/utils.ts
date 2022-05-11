@@ -3,6 +3,7 @@ import m3u8 from "@eyevinn/m3u8";
 import { M3U, ServiceError } from "./types";
 import clone from "clone";
 import { ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
+import { CorruptorConfig } from "../manifests/utils/configs"
 import { ReadStream } from "fs";
 import path from "path";
 
@@ -143,7 +144,7 @@ export function refineALBEventQuery(originalQuery: ALBEventQueryStringParameters
   return queryStringParameters;
 }
 
-type ProxyBasenames = "proxy-media.m3u8" | "../../segments/proxy-segment";
+type ProxyBasenames = "proxy-media.m3u8" | "../../segments/proxy-segment" | "proxy-segment/segment_$Number$.mp4";
 
 /**
  * Adjust paths based on directory navigation
@@ -191,6 +192,19 @@ export function proxyPathBuilder(itemUri: string, urlSearchParams: URLSearchPara
   }
   const allQueriesString = allQueries.toString();
   return `${proxy}${allQueriesString ? `?${allQueriesString}` : ""}`;
+}
+
+export function segmentUrlParamString(sourceSegURL: string, configMap: Map<string, CorruptorConfig>): string {
+  let query = `url=${sourceSegURL}`;
+
+  for (let name of configMap.keys()) {
+    const fields = configMap.get(name).fields;
+    const keys = Object.keys(fields);
+    const corruptionInner = keys.map((key) => `${key}:${fields[key]}`).join(",");
+    const values = corruptionInner ? `{${corruptionInner}}` : "";
+    query += `&${name}=${values}`;
+  }
+  return query;
 }
 
 export const SERVICE_ORIGIN = process.env.SERVICE_ORIGIN || "http://localhost:8000";

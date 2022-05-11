@@ -23,7 +23,7 @@ export default async function segmentHandler(event: ALBEvent): Promise<ALBResult
   }
   try {
     const reqQueryParams = new URLSearchParams(event.queryStringParameters);
-
+    //console.log("reqQueryParams----", reqQueryParams)
     const configUtils = corruptorConfigUtils(reqQueryParams);
     configUtils.register(delaySCC).register(statusCodeSCC).register(timeoutSCC);
 

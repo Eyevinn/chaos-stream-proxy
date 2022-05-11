@@ -8,8 +8,8 @@ import timeoutSCC from "../../utils/corruptions/timeout";
 import path from "path";
 import dashManifestUtils from "../../utils/dashManifestUtils";
 import { corruptorConfigUtils } from "../../utils/configs";
-import createPoxyeDashRequest from "../../utils/dashManifestUtils";
-import createProxyDashRequest from "../../utils/dashManifestUtils";
+import createProxyDASHManifest from "../../utils/dashManifestUtils";
+import { isNumberObject } from "util/types";
 
 export default async function dashHandler(event: ALBEvent ): Promise<ALBResult> {
   /**
@@ -26,35 +26,19 @@ export default async function dashHandler(event: ALBEvent ): Promise<ALBResult> 
   }
 
   try {
-    console.log("url", event.queryStringParameters["url"])
-    const originalDashManifestResponse : Response = await fetch(event.queryStringParameters["url"]);
-    console.log("mani", originalDashManifestResponse)
-    if (!originalDashManifestResponse.ok) {
-      const errorRes: ServiceError = {
-        status: originalDashManifestResponse.status,
-        message: "Unsuccessful Source Manifest fetch",
-      };
-      return generateErrorResponse(errorRes);
-    }
-    const originalResHeaders = originalDashManifestResponse.headers;
+  
+     const originalDashManifestResponse : Response = await fetch(event.queryStringParameters["url"]);
+     const responseCopy = await originalDashManifestResponse.clone();
+     if (!originalDashManifestResponse.ok) {
+       const errorRes: ServiceError = {
+         status: originalDashManifestResponse.status,
+         message: "Unsuccessful Source Manifest fetch",
+       };
+       return generateErrorResponse(errorRes);
+     }
     const reqQueryParams = new URLSearchParams(event.queryStringParameters);
-
-    const configUtils = corruptorConfigUtils(reqQueryParams);
-    configUtils.register(delaySCC).register(statusCodeSCC).register(timeoutSCC);
-
-    // TODO: Fixa allt som behövs inför 'dashManifestHandlerUtils'
-
-    /*const [error, allMutations] = configUtils.getAllManifestConfigs(mediaM3U.get("mediaSequence"));
-    if (error) {
-      return generateErrorResponse(error);
-    }*/
-
-    const sourceBaseURL = path.dirname(event.queryStringParameters["url"]);
-    const [match, signedOriginPath] = event.path.match(/^(.*)\/(.*?)$/);
-    console.log("signedpath", signedOriginPath)
-    console.log("source base" , sourceBaseURL)
-    const proxyManifest = createProxyDashRequest(originalDashManifestResponse, signedOriginPath, null);
-
+    const text = await responseCopy.text();
+    const proxyManifest = createProxyDASHManifest(text, reqQueryParams);
 
     return {
       statusCode: 200,
@@ -63,7 +47,7 @@ export default async function dashHandler(event: ALBEvent ): Promise<ALBResult> 
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type, Origin",
       },
-      body: (await proxyManifest).toString(),
+      body:  proxyManifest,
     };
   } catch (err) {
     const errorRes: ServiceError = {
