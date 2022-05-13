@@ -3,7 +3,7 @@ import * as xml2js from "xml2js";
 import path from "path";
 import dashManifestUtils from "./dashManifestUtils";
 import { TargetIndex } from "../../shared/types";
-import { CorruptorConfigMap, CorruptorConfig, IndexedCorruptorConfigMap } from "./configs";
+import { CorruptorConfigMap, CorruptorConfig } from "./configs";
 
 describe("dashManifestTools", () => {
   describe("createProxyDASHManifest", () => {
