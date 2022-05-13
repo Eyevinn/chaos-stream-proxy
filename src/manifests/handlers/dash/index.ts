@@ -2,14 +2,7 @@ import { ALBEvent, ALBResult } from "aws-lambda";
 import fetch, { Response } from "node-fetch";
 import { ServiceError } from "../../../shared/types";
 import { generateErrorResponse, isValidUrl, SERVICE_ORIGIN } from "../../../shared/utils";
-import delaySCC from "../../utils/corruptions/delay";
-import statusCodeSCC from "../../utils/corruptions/statusCode";
-import timeoutSCC from "../../utils/corruptions/timeout";
-import path from "path";
 import dashManifestUtils from "../../utils/dashManifestUtils";
-import { corruptorConfigUtils } from "../../utils/configs";
-import createProxyDASHManifest from "../../utils/dashManifestUtils";
-import { isNumberObject } from "util/types";
 
 export default async function dashHandler(event: ALBEvent ): Promise<ALBResult> {
   /**
@@ -38,7 +31,8 @@ export default async function dashHandler(event: ALBEvent ): Promise<ALBResult> 
      }
     const reqQueryParams = new URLSearchParams(event.queryStringParameters);
     const text = await responseCopy.text();
-    const proxyManifest = createProxyDASHManifest(text, reqQueryParams);
+    const dashUtils = dashManifestUtils();
+    const proxyManifest = dashUtils.createProxyDASHManifest(text, reqQueryParams);
 
     return {
       statusCode: 200,

@@ -7,7 +7,7 @@ It parses the query parameters from the request and applies corruptions as speci
 Currently supported stream formats:
 
 - HLS
-- ~~MPEG-DASH~~ (Support In Progress)
+- MPEG-DASH (MPD)
 
 ## Get Started
 

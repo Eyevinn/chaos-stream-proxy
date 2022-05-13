@@ -45,7 +45,7 @@ export interface CorruptorConfigUtils {
    *
    * Value for each key is a map of all corruptions for selected index (eg key: "delay", value: {ms:150})
    */
-  getAllManifestConfigs: (mseq?: number) => [ServiceError | null, IndexedCorruptorConfigMap | null];
+  getAllManifestConfigs: (mseq?: number, isDash?: boolean) => [ServiceError | null, IndexedCorruptorConfigMap | null];
 
   getAllSegmentConfigs: () => [ServiceError | null, CorruptorConfigMap | null];
 
@@ -78,7 +78,7 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
       }
       return this;
     },
-    getAllManifestConfigs(sourceMseq?: number) {
+    getAllManifestConfigs(sourceMseq?: number, isDash?: boolean) {
       const mseq = sourceMseq || 0;
       const that: CorruptorConfigUtils = this;
       let outputMap = new Map<TargetIndex, Map<string, CorruptorConfig>>();
@@ -110,18 +110,39 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
             outputMap.get(item.i).set(config.name, item);
           }
 
-          // Handle if 'sq' is used instead.
-          if (!outputMap.get(item.sq)) {
-            if (typeof item.sq === "number") {
-              const newIdx = item.sq - mseq;
-              outputMap.set(newIdx, new Map<string, CorruptorConfig>());
-              if (!outputMap.get(newIdx).get(config.name)) {
-                outputMap.get(newIdx).set(config.name, item);
+          if (isDash) {
+            if (!outputMap.get(item.sq)) {
+              const itemIdx = item.sq || item.i;
+              if (typeof itemIdx === "number") {
+                const itemIdx = item.sq || item.i;
+                if (itemIdx === mseq) {
+                  outputMap.set(itemIdx, new Map<string, CorruptorConfig>());
+                  if (!outputMap.get(itemIdx).get(config.name)) {
+                    outputMap.get(itemIdx).set(config.name, item);
+                  }
+                }
+                
+              } else if (itemIdx === "*") {
+                outputMap.set(item.sq, new Map<string, CorruptorConfig>());
+                if (!outputMap.get(item.sq).get(config.name)) {
+                  outputMap.get(item.sq).set(config.name, item);
+                }
               }
-            } else if (item.sq === "*") {
-              outputMap.set(item.sq, new Map<string, CorruptorConfig>());
-              if (!outputMap.get(item.sq).get(config.name)) {
-                outputMap.get(item.sq).set(config.name, item);
+            }
+          } else {
+            // Handle if 'sq' is used instead.
+            if (!outputMap.get(item.sq)) {
+              if (typeof item.sq === "number") {
+                const newIdx = item.sq - mseq;
+                outputMap.set(newIdx, new Map<string, CorruptorConfig>());
+                if (!outputMap.get(newIdx).get(config.name)) {
+                  outputMap.get(newIdx).set(config.name, item);
+                }
+              } else if (item.sq === "*") {
+                outputMap.set(item.sq, new Map<string, CorruptorConfig>());
+                if (!outputMap.get(item.sq).get(config.name)) {
+                  outputMap.get(item.sq).set(config.name, item);
+                }
               }
             }
           }

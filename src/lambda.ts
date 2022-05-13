@@ -5,7 +5,7 @@ import dashHandler from "./manifests/handlers/dash/index";
 import segmentHandler from "./segments/handlers/segment";
 import { generateErrorResponse, generateHeartbeatResponse, refineALBEventQuery } from "./shared/utils";
 import { handleOptionsRequest } from "./shared/utils";
-import { HLS_PROXY_MASTER, HLS_PROXY_MEDIA, SEGEMTS_PROXY_SEGMENT, DASH_PROXY_MASTER, DASH_PROXY_SEGMENT, DASH_PROXY_SEGMENT2 } from "./segments/constants";
+import { HLS_PROXY_MASTER, HLS_PROXY_MEDIA, SEGEMTS_PROXY_SEGMENT, DASH_PROXY_MASTER, DASH_PROXY_SEGMENT } from "./segments/constants";
 import dashSegmentHandler from "./manifests/handlers/dash/segment";
 
 export interface ILogger {
@@ -51,7 +51,6 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
       if (path.includes(DASH_PROXY_SEGMENT)) {
         path = DASH_PROXY_SEGMENT;
       }
-      console.log("eventparh ", path)
       switch (path) {
         case HLS_PROXY_MASTER :
           logger.info("Request for HLS Proxy-Multivariant Playlist...");
@@ -72,10 +71,6 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
         case DASH_PROXY_SEGMENT :
           logger.info("Request for DASH Proxy-Manifest...");
           response = await dashSegmentHandler(event);
-        break;
-        case DASH_PROXY_SEGMENT2 :
-        logger.info("Request for DASH Proxy-Manifest...");
-        response = await dashHandler(event);
         break;
         case "/" :
           logger.info("Request for Healthcheck...");

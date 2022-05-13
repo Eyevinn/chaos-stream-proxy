@@ -6,6 +6,7 @@ import { ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
 import { CorruptorConfig } from "../manifests/utils/configs"
 import { ReadStream } from "fs";
 import path from "path";
+import { CorruptorConfigMap } from "../manifests/utils/configs";
 
 export const handleOptionsRequest = async (event: ALBEvent): Promise<ALBResult> => {
   return {
@@ -194,7 +195,7 @@ export function proxyPathBuilder(itemUri: string, urlSearchParams: URLSearchPara
   return `${proxy}${allQueriesString ? `?${allQueriesString}` : ""}`;
 }
 
-export function segmentUrlParamString(sourceSegURL: string, configMap: Map<string, CorruptorConfig>): string {
+export function segmentUrlParamString(sourceSegURL: string, configMap: CorruptorConfigMap): string {
   let query = `url=${sourceSegURL}`;
 
   for (let name of configMap.keys()) {
