@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MPD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:mpeg:dash:schema:mpd:2011" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd" id="201" type="static" mediaPresentationDuration="PT120.000S" minBufferTime="PT30S" profiles="urn:mpeg:dash:profile:isoff-main:2011">
+  <Period start="PT0.000S" id="1" duration="PT120.000S">
+    <AdaptationSet mimeType="video/mp4" segmentAlignment="true" startWithSAP="1" subsegmentAlignment="true" subsegmentStartsWithSAP="1" bitstreamSwitching="true">
+      <Representation id="1" width="416" height="234" frameRate="24/1" bandwidth="99968" codecs="avc1.64000D">
+        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_1_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_1_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+          <SegmentTimeline>
+            <S t="870" d="144000" r="19"/>
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+      <Representation id="2" width="640" height="360" frameRate="24/1" bandwidth="229952" codecs="avc1.64001E">
+        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_2_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_2_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+          <SegmentTimeline>
+            <S t="870" d="144000" r="19"/>
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+      <Representation id="3" width="768" height="432" frameRate="24/1" bandwidth="329984" codecs="avc1.64001E">
+        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_3_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_3_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+          <SegmentTimeline>
+            <S t="870" d="144000" r="19"/>
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+      <Representation id="4" width="960" height="540" frameRate="24/1" bandwidth="520000" codecs="avc1.64001F">
+        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_4_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_4_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+          <SegmentTimeline>
+            <S t="870" d="144000" r="19"/>
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet mimeType="audio/mp4" segmentAlignment="0" lang="eng">
+      <Label>Stereo</Label>
+      <Representation id="9" bandwidth="192257" audioSamplingRate="44100" codecs="mp4a.40.2">
+        <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
+        <SegmentTemplate timescale="44100" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_audio_9_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_audio_9_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+          <SegmentTimeline>
+            <S t="0" d="266240"/>
+            <S t="266240" d="265215"/>
+            <S t="531455" d="264192"/>
+            <S t="795648" d="265215"/>
+            <S t="1060864" d="264191" r="1"/>
+            <S t="1589247" d="265216"/>
+            <S t="1854464" d="264191"/>
+            <S t="2118656" d="265215"/>
+            <S t="2383872" d="264191"/>
+            <S t="2648063" d="264192"/>
+            <S t="2912256" d="265215"/>
+            <S t="3177472" d="264191"/>
+            <S t="3441663" d="265215"/>
+            <S t="3706879" d="264192"/>
+            <S t="3971072" d="264191"/>
+            <S t="4235264" d="265215"/>
+            <S t="4500479" d="264192"/>
+            <S t="4764672" d="265215"/>
+            <S t="5029888" d="263167"/>
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet mimeType="audio/mp4" segmentAlignment="0" lang="eng">
+      <Label>Surround_aac</Label>
+      <Representation id="11" bandwidth="384810" audioSamplingRate="44100" codecs="mp4a.40.2">
+        <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="6"/>
+        <SegmentTemplate timescale="44100" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_audio_11_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_audio_11_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+          <SegmentTimeline>
+            <S t="0" d="266240"/>
+            <S t="266240" d="265215"/>
+            <S t="531455" d="264192"/>
+            <S t="795648" d="265215"/>
+            <S t="1060864" d="264191" r="1"/>
+            <S t="1589247" d="265216"/>
+            <S t="1854464" d="264191"/>
+            <S t="2118656" d="265215"/>
+            <S t="2383872" d="264191"/>
+            <S t="2648063" d="264192"/>
+            <S t="2912256" d="265215"/>
+            <S t="3177472" d="264191"/>
+            <S t="3441663" d="265215"/>
+            <S t="3706879" d="264192"/>
+            <S t="3971072" d="264191"/>
+            <S t="4235264" d="265215"/>
+            <S t="4500479" d="264192"/>
+            <S t="4764672" d="265215"/>
+            <S t="5029888" d="263167"/>
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+    </AdaptationSet>
+  </Period>
+</MPD>
