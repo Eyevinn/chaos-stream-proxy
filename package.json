@@ -53,7 +53,7 @@
     "Ludwig Thurfjell <ludwig.thurfjell@eyevinn.se> (Eyevinn Technology AB)",
     "Jonas Birmé <jonas.birme@eyevinn.se> (Eyevinn Technology AB)"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "hls",
     "proxy",
