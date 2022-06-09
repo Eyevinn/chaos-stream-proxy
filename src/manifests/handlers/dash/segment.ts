@@ -39,8 +39,6 @@ export default async function dashSegmentHandler(event: ALBEvent): Promise<ALBRe
             }
         }
 
-        const url = decodeURIComponent(event.queryStringParameters.toString());
-
         // Build correct Source Segment url
         const reqSegmentIndexStr = pathtemp.slice(index);
         const segmentUrl = mediaUrl.replace("$Number$", reqSegmentIndexStr);
