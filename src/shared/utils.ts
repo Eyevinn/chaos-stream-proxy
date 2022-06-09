@@ -3,11 +3,9 @@ import m3u8 from "@eyevinn/m3u8";
 import { M3U, ServiceError } from "./types";
 import clone from "clone";
 import { ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
-import { CorruptorConfig } from "../manifests/utils/configs"
 import { ReadStream } from "fs";
 import path from "path";
 import { CorruptorConfigMap } from "../manifests/utils/configs";
-import { stringify } from "querystring";
 
 export const handleOptionsRequest = async (event: ALBEvent): Promise<ALBResult> => {
   return {
