@@ -8,10 +8,11 @@ import path from "path";
 import dashManifestUtils from "../../utils/dashManifestUtils";
 import { corruptorConfigUtils } from "../../utils/configs";
 import segmentHandler from "../../../segments/handlers/segment";
+import { fileURLToPath } from "url";
+import { url } from "inspector";
 
 
 export default async function dashSegmentHandler(event: ALBEvent): Promise<ALBResult> {
-
     /**
   * #1 - const originalUrl = req.body.query("url");
   * #2 - const originalManifest = await fetch(originalUrl);
@@ -28,7 +29,6 @@ export default async function dashSegmentHandler(event: ALBEvent): Promise<ALBRe
     try {
         const urlSearchParams = new URLSearchParams(event.queryStringParameters);
         const mediaUrl = urlSearchParams.get("url");
-
         let pathtemp = path.basename(event.path);
         pathtemp = pathtemp.replace(".mp4", "");
         let index = 0
@@ -38,22 +38,22 @@ export default async function dashSegmentHandler(event: ALBEvent): Promise<ALBRe
                 break;
             }
         }
+
+        const url = decodeURIComponent(event.queryStringParameters.toString());
+
         // Build correct Source Segment url
         const reqSegmentIndexStr = pathtemp.slice(index);
         const segmentUrl = mediaUrl.replace("$Number$", reqSegmentIndexStr);
         const reqSegmentIndexInt = parseInt(reqSegmentIndexStr);
         // Break down Corruption Objects
-
         // Send source URL with a corruption json (if it is appropriate) to segmentHandler...
         const reqQueryParams = new URLSearchParams(urlSearchParams);
-        const configUtils = corruptorConfigUtils(reqQueryParams); //i => sq
+        const configUtils = corruptorConfigUtils(reqQueryParams);
         configUtils.register(delaySCC).register(statusCodeSCC).register(timeoutSCC);
-
         const [error, allMutations] = configUtils.getAllManifestConfigs(reqSegmentIndexInt, true);
         if (error) {
             return generateErrorResponse(error);
         }
-
         const dashUtils = dashManifestUtils()
         let mergedMaps = dashUtils.utils.mergeMap(reqSegmentIndexInt, allMutations);
         const segUrl = new URL(segmentUrl);
@@ -64,7 +64,6 @@ export default async function dashSegmentHandler(event: ALBEvent): Promise<ALBRe
         } else {
             eventParamsString = segmentUrlParamString(cleanSegUrl, mergedMaps);
         }
-
         let segmentHandlerEvent: ALBEvent = convertToALBEvent({
             method: event.httpMethod,
             headers: event.headers,

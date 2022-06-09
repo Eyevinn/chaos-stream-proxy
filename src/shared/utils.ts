@@ -7,6 +7,7 @@ import { CorruptorConfig } from "../manifests/utils/configs"
 import { ReadStream } from "fs";
 import path from "path";
 import { CorruptorConfigMap } from "../manifests/utils/configs";
+import { stringify } from "querystring";
 
 export const handleOptionsRequest = async (event: ALBEvent): Promise<ALBResult> => {
   return {
@@ -67,7 +68,11 @@ export const convertToALBEvent = (req) => {
   if (queryString) {
     for (let pair of queryString.split("&")) {
       const [k, v] = pair.split("=");
-      params[k] = v;
+      let val = decodeURIComponent(v)
+      let key = decodeURIComponent(k)
+      val = val.replace(/\+/g, "")
+      key = key.replace(/\+/g, "")
+      params[key] = val;
     }
   }
   const event: ALBEvent = {

@@ -24,7 +24,7 @@ export default async function manifestRoutes(fastify: FastifyInstance) {
     const response: ALBResult = await dashHandler(event);
     res.code(response.statusCode).headers(response.headers).send(response.body);
   });
-  fastify.get(DASH_PROXY_SEGMENT, async (req, res) => {
+  fastify.get(DASH_PROXY_SEGMENT + "/*", async (req, res) => {
     const event = convertToALBEvent(req);
     const response: ALBResult = await dashSegmentHandler(event);
     res.code(response.statusCode).headers(response.headers).send(response.body);
