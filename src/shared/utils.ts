@@ -5,6 +5,7 @@ import clone from "clone";
 import { ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
 import { ReadStream } from "fs";
 import path from "path";
+import { CorruptorConfigMap } from "../manifests/utils/configs";
 
 export const handleOptionsRequest = async (event: ALBEvent): Promise<ALBResult> => {
   return {
@@ -65,7 +66,11 @@ export const convertToALBEvent = (req) => {
   if (queryString) {
     for (let pair of queryString.split("&")) {
       const [k, v] = pair.split("=");
-      params[k] = v;
+      let val = decodeURIComponent(v)
+      let key = decodeURIComponent(k)
+      val = val.replace(/\+/g, "")
+      key = key.replace(/\+/g, "")
+      params[key] = val;
     }
   }
   const event: ALBEvent = {
@@ -143,7 +148,7 @@ export function refineALBEventQuery(originalQuery: ALBEventQueryStringParameters
   return queryStringParameters;
 }
 
-type ProxyBasenames = "proxy-media.m3u8" | "../../segments/proxy-segment";
+type ProxyBasenames = "proxy-media.m3u8" | "../../segments/proxy-segment" | "proxy-segment/segment_$Number$.mp4";
 
 /**
  * Adjust paths based on directory navigation
@@ -191,6 +196,19 @@ export function proxyPathBuilder(itemUri: string, urlSearchParams: URLSearchPara
   }
   const allQueriesString = allQueries.toString();
   return `${proxy}${allQueriesString ? `?${allQueriesString}` : ""}`;
+}
+
+export function segmentUrlParamString(sourceSegURL: string, configMap: CorruptorConfigMap): string {
+  let query = `url=${sourceSegURL}`;
+
+  for (let name of configMap.keys()) {
+    const fields = configMap.get(name).fields;
+    const keys = Object.keys(fields);
+    const corruptionInner = keys.map((key) => `${key}:${fields[key]}`).join(",");
+    const values = corruptionInner ? `{${corruptionInner}}` : "";
+    query += `&${name}=${values}`;
+  }
+  return query;
 }
 
 export const SERVICE_ORIGIN = process.env.SERVICE_ORIGIN || "http://localhost:8000";

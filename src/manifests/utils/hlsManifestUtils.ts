@@ -1,11 +1,10 @@
 import { M3U, Manifest, ServiceError, TargetIndex } from "../../shared/types";
-import { proxyPathBuilder } from "../../shared/utils";
+import { proxyPathBuilder, segmentUrlParamString } from "../../shared/utils";
 import { CorruptorConfig, CorruptorConfigMap, IndexedCorruptorConfigMap } from "./configs";
 import clone from "clone";
 
 interface HLSManifestUtils {
   mergeMap: (seglemtListSize: number, configsMap: IndexedCorruptorConfigMap) => CorruptorConfigMap[];
-  segmentUrlParamString: (sourceSegURL: string, derper: Map<string, CorruptorConfig>) => string;
 }
 
 export interface HLSManifestTools {
@@ -16,18 +15,6 @@ export interface HLSManifestTools {
 
 export default function (): HLSManifestTools {
   const utils = Object.assign({
-    segmentUrlParamString(sourceSegURL: string, configMap: Map<string, CorruptorConfig>): string {
-      let query = `url=${sourceSegURL}`;
-
-      for (let name of configMap.keys()) {
-        const fields = configMap.get(name).fields;
-        const keys = Object.keys(fields);
-        const corruptionInner = keys.map((key) => `${key}:${fields[key]}`).join(",");
-        const values = corruptionInner ? `{${corruptionInner}}` : "";
-        query += `&${name}=${values}`;
-      }
-      return query;
-    },
     mergeMap(seglemtListSize: number, configsMap: IndexedCorruptorConfigMap): CorruptorConfigMap[] {
       const corruptions = [...new Array(seglemtListSize)].map((_, i) => {
         const d = configsMap.get("*");
@@ -122,7 +109,7 @@ export default function (): HLSManifestTools {
           continue;
         }
 
-        const params = that.utils.segmentUrlParamString(sourceSegURL, corruption);
+        const params = segmentUrlParamString(sourceSegURL, corruption);
         item.set("uri", proxyPathBuilder(item.get("uri"), new URLSearchParams(params), "../../segments/proxy-segment"));
       }
       return m3u.toString();
