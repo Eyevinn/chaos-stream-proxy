@@ -29,7 +29,8 @@ To try it out go to your favourite HLS video player such as `https://web.player.
 | ------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------- |
 | `/api/v2/manifests/hls/proxy-master.m3u8`  | GET    | Returns a proxy Multivariant M3U8 file, based on query parameters                                        |
 | `/api/v2/manifests/hls/proxy-media.m3u8`   | GET    | Returns a proxy Media M3U8 file, based on query parameters                                              |
-| `/api/v2/manifests/dash/proxy-master`      | GET    | (WORK IN PROGRESS)                                                                                       |
+| `/api/v2/manifests/dash/proxy-master`      | GET    | Returns a proxy MPD file, based on query parameters                                             |
+| `/api/v2/manifets/dash/proxy-segment`      | GET    | Applies corruption present in query parameter and may return a 301 redirect to the original segment file |
 | `/api/v2/segments/proxy-segment`           | GET    | Applies corruption present in query parameter and may return a 301 redirect to the original segment file |
 | `/`                                        | GET    | Server health check                                                                                      |
 
@@ -134,6 +135,17 @@ http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-v
 
 ```
 http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8&statusCode=[{sq:105,code:400}]
+```
+
+8. VOD: Example of MPEG-Dash with delay and response code 418:
+```
+http://localhost:8000/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:2,ms:1500}]&statusCode=[{i:2,code:418}]
+
+```
+
+9: LIVE: Example of MPEG-Dash with delay and response code 418:
+```
+http://localhost:8000/api/v2/manifests/dash/proxy-master.mpd?url=https://d2fz24s2fts31b.cloudfront.net/out/v1/3b6879c0836346c2a44c9b4b33520f4e/manifest.mpd&delay=[{i:3,ms:1500}]&statusCode=[{i:10,code:418}]
 ```
 
 ## Development Environment
