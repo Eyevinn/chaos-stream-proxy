@@ -32,7 +32,7 @@ To try it out go to your favourite HLS video player such as `https://web.player.
 | `/api/v2/manifests/hls/proxy-master.m3u8`  | GET    | Returns a proxy Multivariant M3U8 file, based on query parameters                                        |
 | `/api/v2/manifests/hls/proxy-media.m3u8`   | GET    | Returns a proxy Media M3U8 file, based on query parameters                                              |
 | `/api/v2/manifests/dash/proxy-master.mpd`      | GET    | Returns a proxy MPD file, based on query parameters                                             |
-| `/api/v2/manifets/dash/proxy-segment`      | GET    | Applies corruption present in query parameter and may return a 301 redirect to the original segment file |
+| `/api/v2/manifests/dash/proxy-segment`      | GET    | Applies corruption present in query parameter and may return a 301 redirect to the original segment file |
 | `/api/v2/segments/proxy-segment`           | GET    | Applies corruption present in query parameter and may return a 301 redirect to the original segment file |
 | `/`                                        | GET    | Server health check                                                                                      |
 
@@ -58,7 +58,7 @@ e.i. `https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-mas
 Across all coruptions, there are 2 ways to target a segment in a playlist for corruption.
 
 1. `i`: The segments list index in any Media Playlist. For a Media Playlist with 12 segments, `i`=12, would target the last segment.
-2. `sq`: The segments Media Sequence Number. For a Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=112, would target the last segment. When corrupting a live stream it is reccomeneded to target with `sq`.
+2. `sq`: The segments Media Sequence Number. For a Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=112, would target the last segment. When corrupting a live stream it is recommended to target with `sq`.
 
 Below are configuration JSON object templates for the currently supported corruptions. A query should have its value be an array consisting any one of these 3 types of items:
 
