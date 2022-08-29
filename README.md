@@ -23,7 +23,7 @@ Requires `NodeJS` v14+ and `npm`
 
 Run on a custom port by setting the `PORT` environment variable.
 
-To try it out go to your favourite HLS video player such as `https://web.player.eyevinn.technology/index.html` and paste the proxied URL. For example if the source / original manifest is located at: `https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8` the proxied URL is `http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8`.
+To try it out, go to your favourite HLS/MPEG-DASH video player such as `https://web.player.eyevinn.technology/index.html` and paste the proxied URL. For example, if the source / original manifest is located at: `https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8` the proxied URL is `http://localhost:8000/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8`.
 
 ## API
 
@@ -40,16 +40,16 @@ To try it out go to your favourite HLS video player such as `https://web.player.
 
 | PARAMETER    | DESCRIPTION                                                                               |
 | ------------ | ----------------------------------------------------------------------------------------- |
-| `url`        | Url path to the original HLS stream (REQUIRED)                                            |
+| `url`        | Url path to the original HLS/MPEG-DASH stream (REQUIRED)                                  |
 | `delay`      | Delay the response, in milliseconds, for a specific segment request                       |
 | `statusCode` | Replace the response for a specific segment request with a specified status code response |
 | `timeout`    | Force a timeout for the response of a specific segment request                            |
 
 ## Corruptions
 
-Currently, the Chaos Stream Proxy supports 3 types of corruptions for HLS streams. These corruptions may be used in combination of one another.
+Currently, the Chaos Stream Proxy supports 3 types of corruptions for HLS and MPEG-DASH streams. These corruptions may be used in combination with one another.
 
-### Specifying Corruption Configurations (HLS)
+### Specifying Corruption Configurations
 
 To specify the configurations for a particular corruption, you will need to add a stringified JSON object as a query parameter to the proxied URL.
 Each corruption has a unique configuration JSON object template. Each object can be used to target one specific segment for corruption.
@@ -57,16 +57,16 @@ e.i. `https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-mas
 
 Across all coruptions, there are 2 ways to target a segment in a playlist for corruption.
 
-1. `i`: The segments list index in any Media Playlist. For a Media Playlist with 12 segments, `i`=12, would target the last segment.
-2. `sq`: The segments Media Sequence Number. For a Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=112, would target the last segment. When corrupting a live stream it is recommended to target with `sq`.
+1. `i`: The segment's list index in any Media Playlist, with HLS segments starting at 0 and MPEG-DASH segments starting at 1. For a Media Playlist with 12 segments, `i`=11, would target the last segment for HLS and `i`=12, would target the last segment for MPEG-DASH.
+2. `sq`: The segment's Media Sequence Number (**HLS only**). For a Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=111 would target the last segment. When corrupting a live HLS stream it is recommended to target with `sq`.
 
-Below are configuration JSON object templates for the currently supported corruptions. A query should have its value be an array consisting any one of these 3 types of items:
+Below are configuration JSON object templates for the currently supported corruptions. A query should have its value be an array consisting of any one of these 3 types of items:
 
 Delay Corruption:
 
 ```typescript
 {
-    i?: number | "*", // index of target segment in playlist. If "*", then target all segments. (Starts on 0)
+    i?: number | "*", // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
     sq?: number | "*",// media sequence number of target segment in playlist. If "*", then target all segments
     ms?: number,      // time to delay in milliseconds
 }
@@ -76,7 +76,7 @@ Status Code Corruption:
 
 ```typescript
 {
-    i?: number | "*", // index of target segment in playlist. If "*", then target all segments. (Starts on 0)
+    i?: number | "*", // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
     sq? number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
     code?: number,    // code to return in http response status header instead of media file
 }
@@ -86,7 +86,7 @@ Timeout Corruption:
 
 ```typescript
 {
-    i?: number | "*", // index of target segment in playlist. If "*", then target all segments. (Starts on 0)
+    i?: number | "*", // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
     sq?: number | "*",// media sequence number of target segment in playlist. If "*", then target all segments
 }
 ```
@@ -139,15 +139,20 @@ https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8&statusCode=[{sq:105,code:400}]
 ```
 
-8. VOD: Example of MPEG-Dash with delay and response code 418:
+### Example corruptions on MPEG-DASH Streams
+1. VOD: Example of MPEG-DASH with delay of 1500ms and response code 418 on second segment:
 ```
-http://localhost:8000/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:2,ms:1500}]&statusCode=[{i:2,code:418}]
+https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:2,ms:1500}]&statusCode=[{i:2,code:418}]
+```
 
+2. VOD: Example of MPEG-DASH with response code 404 on third segment:
+```
+https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&statusCode=[{i:3,code:404}]
 ```
 
-9: LIVE: Example of MPEG-Dash with delay and response code 418:
+3. VOD: Example of MPEG-DASH with segment delay of 1500ms on all segments (except for first and second segment):
 ```
-http://localhost:8000/api/v2/manifests/dash/proxy-master.mpd?url=https://d2fz24s2fts31b.cloudfront.net/out/v1/3b6879c0836346c2a44c9b4b33520f4e/manifest.mpd&delay=[{i:3,ms:1500}]&statusCode=[{i:10,code:418}]
+https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:*,ms:1500},{i:1},{i:2}]
 ```
 
 ## Development Environment
@@ -232,4 +237,4 @@ Eyevinn Technology is an independent consultant firm specialized in video and st
 
 At Eyevinn, every software developer consultant has a dedicated budget reserved for open source development and contribution to the open source community. This give us room for innovation, team building and personal competence development. And also gives us as a company a way to contribute back to the open source community.
 
-Want to know more about Eyevinn and how it is to work here. Contact us at work@eyevinn.se!
+Want to know more about Eyevinn and how it is to work here? Contact us at work@eyevinn.se!
