@@ -58,7 +58,7 @@ e.i. `https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-mas
 Across all coruptions, there are 2 ways to target a segment in a playlist for corruption.
 
 1. `i`: The segment's list index in any Media Playlist, with HLS segments starting at 0 and MPEG-DASH segments starting at 1. For a Media Playlist with 12 segments, `i`=11, would target the last segment for HLS and `i`=12, would target the last segment for MPEG-DASH.
-2. `sq`: The segment's Media Sequence Number. For a Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=111 would target the last segment for HLS, and `sq`=112 would target the last segment for MPEG-DASH. When corrupting a live stream it is recommended to target with `sq`.
+2. `sq`: The segment's Media Sequence Number (**HLS only**). For a Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=111 would target the last segment. When corrupting a live HLS stream it is recommended to target with `sq`.
 
 Below are configuration JSON object templates for the currently supported corruptions. A query should have its value be an array consisting of any one of these 3 types of items:
 
