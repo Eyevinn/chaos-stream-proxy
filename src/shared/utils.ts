@@ -60,19 +60,10 @@ export const isValidUrl = (string) => {
 };
 
 export const convertToALBEvent = (req) => {
-  // Create ABLEvent from Fastify Request...
-  let params = {};
+  // Create ALBEvent from Fastify Request...
   const [path, queryString] = req.url.split("?");
-  if (queryString) {
-    for (let pair of queryString.split("&")) {
-      const [k, v] = pair.split("=");
-      let val = decodeURIComponent(v)
-      let key = decodeURIComponent(k)
-      val = val.replace(/\+/g, "")
-      key = key.replace(/\+/g, "")
-      params[key] = val;
-    }
-  }
+  const params = Object.fromEntries(new URLSearchParams(queryString));
+
   const event: ALBEvent = {
     requestContext: {
       elb: {
