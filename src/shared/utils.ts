@@ -4,6 +4,7 @@ import { M3U, ServiceError } from "./types";
 import clone from "clone";
 import { ALBEvent, ALBResult, ALBEventQueryStringParameters } from "aws-lambda";
 import { ReadStream } from "fs";
+import { IncomingHttpHeaders } from "http";
 import path from "path";
 import { CorruptorConfigMap } from "../manifests/utils/configs";
 
@@ -59,26 +60,29 @@ export const isValidUrl = (string) => {
   }
 };
 
-export const convertToALBEvent = (req) => {
+export function composeALBEvent(httpMethod: string, url: string, incomingHeaders: IncomingHttpHeaders): ALBEvent {
   // Create ALBEvent from Fastify Request...
-  const [path, queryString] = req.url.split("?");
-  const params = Object.fromEntries(new URLSearchParams(queryString));
+  const [path, queryString] = url.split("?");
+  const queryStringParameters = Object.fromEntries(new URLSearchParams(queryString));
+  const requestContext = { elb: { targetGroupArn: "" }};
+  const headers: Record<string, string> = {};
+  // IncomingHttpHeaders type is Record<string, string|string[]> because set-cookie is an array
+  for (let [name, value] of Object.entries(incomingHeaders)) {
+    if (typeof value === "string") {
+      headers[name] = value;
+    }
+  }
 
-  const event: ALBEvent = {
-    requestContext: {
-      elb: {
-        targetGroupArn: "",
-      },
-    },
-    path: path,
-    httpMethod: req.method,
-    headers: req.headers,
-    queryStringParameters: params,
+  return {
+    requestContext,
+    path,
+    httpMethod,
+    headers,
+    queryStringParameters,
     body: "",
     isBase64Encoded: false,
   };
-  return event;
-};
+}
 
 export const unparseableError = (name: string, unparseableQuery: string, format: string) => ({
   status: 400,
@@ -94,7 +98,7 @@ export async function parseM3U8Text(res: Response): Promise<M3U> {
   */
   let setPlaylistTypeToVod: boolean = false;
   const parser = m3u8.createStream();
-  const responseCopy = await res.clone();
+  const responseCopy = res.clone();
   const m3u8String = await responseCopy.text();
   if (m3u8String.indexOf("#EXT-X-ENDLIST") !== -1) {
     setPlaylistTypeToVod = true;

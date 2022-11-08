@@ -1,6 +1,6 @@
 import { ALBEvent, ALBResult } from "aws-lambda";
 import { ServiceError } from "../../../shared/types";
-import { convertToALBEvent, generateErrorResponse, isValidUrl, segmentUrlParamString } from "../../../shared/utils";
+import { composeALBEvent, generateErrorResponse, isValidUrl, segmentUrlParamString } from "../../../shared/utils";
 import delaySCC from "../../utils/corruptions/delay";
 import statusCodeSCC from "../../utils/corruptions/statusCode";
 import timeoutSCC from "../../utils/corruptions/timeout";
@@ -62,13 +62,11 @@ export default async function dashSegmentHandler(event: ALBEvent): Promise<ALBRe
         } else {
             eventParamsString = segmentUrlParamString(cleanSegUrl, mergedMaps);
         }
-        let segmentHandlerEvent: ALBEvent = convertToALBEvent({
-            method: event.httpMethod,
-            headers: event.headers,
-            url: `${event.path}?${eventParamsString}`
-        });
-        const response = await segmentHandler(segmentHandlerEvent);
-        return response;
+        return await segmentHandler(composeALBEvent(
+            event.httpMethod,
+            `${event.path}?${eventParamsString}`,
+            event.headers,
+        ));
 
     } catch (err) {
         const errorRes: ServiceError = {
