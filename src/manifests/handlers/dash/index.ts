@@ -1,33 +1,31 @@
 import { ALBEvent, ALBResult } from "aws-lambda";
-import fetch, { Response } from "node-fetch";
-import { ServiceError } from "../../../shared/types";
-import { generateErrorResponse, isValidUrl, SERVICE_ORIGIN } from "../../../shared/utils";
+import fetch from "node-fetch";
+import { generateErrorResponse, isValidUrl } from "../../../shared/utils";
 import dashManifestUtils from "../../utils/dashManifestUtils";
 
-export default async function dashHandler(event: ALBEvent ): Promise<ALBResult> {
+export default async function dashHandler(event: ALBEvent): Promise<ALBResult> {
   /**
    * #1 - const originalUrl = req.body.query("url");
    * #2 - const originalManifest = await fetch(originalUrl);
-   * #3 - bygg proxy versionen och bygg responsen med rätt header
+   * #3 - create proxy manifest and return response from it
    */
-  if (!event.queryStringParameters["url"] || !isValidUrl(event.queryStringParameters["url"])) {
-    const errorRes: ServiceError = {
+  const { url } = event.queryStringParameters;
+
+  if (!url || !isValidUrl(url)) {
+    return generateErrorResponse({
       status: 400,
       message: "Missing a valid 'url' query parameter",
-    };
-    return generateErrorResponse(errorRes);
+    });
   }
 
   try {
-  
-     const originalDashManifestResponse : Response = await fetch(event.queryStringParameters["url"]);
-     const responseCopy = await originalDashManifestResponse.clone();
+     const originalDashManifestResponse = await fetch(url);
+     const responseCopy = originalDashManifestResponse.clone();
      if (!originalDashManifestResponse.ok) {
-       const errorRes: ServiceError = {
-         status: originalDashManifestResponse.status,
-         message: "Unsuccessful Source Manifest fetch",
-       };
-       return generateErrorResponse(errorRes);
+       return generateErrorResponse({
+        status: originalDashManifestResponse.status,
+        message: "Unsuccessful Source Manifest fetch",
+      });
      }
     const reqQueryParams = new URLSearchParams(event.queryStringParameters);
     const text = await responseCopy.text();
@@ -41,14 +39,13 @@ export default async function dashHandler(event: ALBEvent ): Promise<ALBResult> 
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type, Origin",
       },
-      body:  proxyManifest,
+      body: proxyManifest,
     };
   } catch (err) {
-    const errorRes: ServiceError = {
+    // for unexpected errors
+    return generateErrorResponse({
       status: 500,
-      message: err.message ? err.message : err,
-    };
-    //för oväntade fel
-    return generateErrorResponse(errorRes);
+      message: err.message || err,
+    });
   }
 }
