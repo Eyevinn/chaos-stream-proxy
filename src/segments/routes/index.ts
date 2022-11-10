@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify";
 import segmentHandler from "../handlers/segment";
 import { composeALBEvent, handleOptionsRequest } from "../../shared/utils";
-import { SEGEMTS_PROXY_SEGMENT } from "../constants";
+import { SEGMENTS_PROXY_SEGMENT } from "../constants";
 
 export default async function segmentRoutes(fastify: FastifyInstance) {
-  fastify.get(SEGEMTS_PROXY_SEGMENT, async (req, res) => {
+  fastify.get(SEGMENTS_PROXY_SEGMENT, async (req, res) => {
     const event = composeALBEvent(req.method, req.url, req.headers);
     const response = await segmentHandler(event);
     if (response === undefined) {
