@@ -9,7 +9,7 @@ import { ServiceError, TargetIndex } from "../../shared/types";
 
 export interface SegmentCorruptorQueryConfig {
   /**
-   * Tror vi måste vara tydliga att poängtera att det måste vara en JSON parseable string... vi kanske vill göra den validering i implementation, idk
+   * Tror vi måste vara tydliga att poängtera att det måste vara en JSON parsable string... vi kanske vill göra den validering i implementation, idk
    */
   getManifestConfigs: (urlValueString: string) => [ServiceError | null, CorruptorConfig[] | null];
   getSegmentConfigs(delayConfigString: string): [ServiceError | null, CorruptorConfig | null];
@@ -55,14 +55,14 @@ export interface CorruptorConfigUtils {
   register: (config: SegmentCorruptorQueryConfig) => CorruptorConfigUtils;
 
   utils: {
-    getJSONParseableString(value: string): string;
+    getJSONParsableString(value: string): string;
   };
 }
 
 export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams): CorruptorConfigUtils {
   return Object.assign({
     utils: {
-      getJSONParseableString(value: string): string {
+      getJSONParsableString(value: string): string {
         return decodeURIComponent(value)
           .replace(/\s/g, "")
           .replace(/({|,)(?:\s*)(?:')?([A-Za-z_$\.][A-Za-z0-9_ \-\.$]*)(?:')?(?:\s*):/g, '$1"$2":')
@@ -95,7 +95,7 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
         }
 
         // JSONify and remove whitespace
-        const parsedSearchParam = that.utils.getJSONParseableString(urlSearchParams.get(config.name));
+        const parsedSearchParam = that.utils.getJSONParsableString(urlSearchParams.get(config.name));
 
         const [error, configList] = config.getManifestConfigs(parsedSearchParam);
         if (error) {
@@ -157,7 +157,7 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
         const that: CorruptorConfigUtils = this;
         if (urlSearchParams.get(SCC.name) !== null) {
           // To make all object key names double quoted and remove whitespace
-          const parsedSearchParam = that.utils.getJSONParseableString(urlSearchParams.get(SCC.name));
+          const parsedSearchParam = that.utils.getJSONParsableString(urlSearchParams.get(SCC.name));
 
           const [error, configResult] = SCC.getSegmentConfigs(parsedSearchParam); // should only contain 1 item this time
           if (error) {

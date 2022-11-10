@@ -84,9 +84,9 @@ export function composeALBEvent(httpMethod: string, url: string, incomingHeaders
   };
 }
 
-export const unparseableError = (name: string, unparseableQuery: string, format: string) => ({
+export const unparsableError = (name: string, unparsableQuery: string, format: string) => ({
   status: 400,
-  message: `Incorrect ${name} value format at '${name}=${unparseableQuery}'. Must be: ${name}=${format}`,
+  message: `Incorrect ${name} value format at '${name}=${unparsableQuery}'. Must be: ${name}=${format}`,
 });
 
 export async function parseM3U8Text(res: Response): Promise<M3U> {

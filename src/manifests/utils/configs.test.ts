@@ -9,7 +9,7 @@ describe("configs", () => {
         const configs = corruptorConfigUtils(new URLSearchParams());
 
         // Act
-        const actual = configs.utils.getJSONParseableString("[{i:0,sq:1,extra:2}]");
+        const actual = configs.utils.getJSONParsableString("[{i:0,sq:1,extra:2}]");
         const expected = JSON.stringify([{ i: 0, sq: 1, extra: 2 }]);
 
         // Assert
@@ -21,7 +21,7 @@ describe("configs", () => {
         const configs = corruptorConfigUtils(new URLSearchParams());
 
         // Act
-        const actual = configs.utils.getJSONParseableString("");
+        const actual = configs.utils.getJSONParsableString("");
 
         const expected = "";
 
@@ -34,7 +34,7 @@ describe("configs", () => {
         const configs = corruptorConfigUtils(new URLSearchParams());
 
         // Act
-        const actual = configs.utils.getJSONParseableString("{i:0,sq:1,extra:2}]");
+        const actual = configs.utils.getJSONParsableString("{i:0,sq:1,extra:2}]");
         const expected = '{"i":0,"sq":1,"extra":2}]';
 
         // Assert

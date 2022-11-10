@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { unparseableError } from "../../../shared/utils";
+import { unparsableError } from "../../../shared/utils";
 import { ServiceError } from "../../../shared/types";
 import { CorruptorConfig, SegmentCorruptorQueryConfig } from "../configs";
 
@@ -129,7 +129,7 @@ const delayConfig: SegmentCorruptorQueryConfig = {
   getSegmentConfigs(delayConfigString: string): [ServiceError | null, CorruptorConfig | null] {
     const config: any = JSON.parse(delayConfigString);
     if (!isValidSegmentConfig(config)) {
-      return [unparseableError("delay", delayConfigString, "{i?:number, sq?:number, ms:number}"), null];
+      return [unparsableError("delay", delayConfigString, "{i?:number, sq?:number, ms:number}"), null];
     }
 
     return [

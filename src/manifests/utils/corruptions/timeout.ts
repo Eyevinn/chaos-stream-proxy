@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { unparseableError } from "../../../shared/utils";
+import { unparsableError } from "../../../shared/utils";
 import { ServiceError, TargetIndex } from "../../../shared/types";
 import { CorruptorConfig, SegmentCorruptorQueryConfig } from "../configs";
 

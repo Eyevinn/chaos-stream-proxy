@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { unparseableError } from "../../../shared/utils";
+import { unparsableError } from "../../../shared/utils";
 import { ServiceError, TargetIndex } from "../../../shared/types";
 import { CorruptorConfig, SegmentCorruptorQueryConfig } from "../configs";
 
@@ -131,7 +131,7 @@ const statusCodeConfig: SegmentCorruptorQueryConfig = {
     const config: any = JSON.parse(satusCodeConfigString);
 
     if (!isValidSegmentConfig(config)) {
-      return [unparseableError("statusCode", satusCodeConfigString, "{i?:number, sq?:number, code:number}"), null];
+      return [unparsableError("statusCode", satusCodeConfigString, "{i?:number, sq?:number, code:number}"), null];
     }
     return [
       null,
