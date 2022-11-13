@@ -42,11 +42,7 @@ function getManifestConfigError(value: { [key: string]: any }): string {
   return "";
 }
 function isValidSegmentConfig(value: object): boolean {
-  const o = value as StatusCodeConfig;
-  if (o.code && typeof o.code !== "number") {
-    return false;
-  }
-  return true;
+  return typeof (value as StatusCodeConfig)?.code === "number";
 }
 
 const statusCodeConfig: SegmentCorruptorQueryConfig = {
@@ -63,75 +59,61 @@ const statusCodeConfig: SegmentCorruptorQueryConfig = {
       ];
     }
 
-    // Verify integrity of array content
-    for (let i = 0; i < configs.length; i++) {
-      const error = getManifestConfigError(configs[i]);
+    const configIndexMap = new Map<TargetIndex, CorruptorConfig>();
+    const configSqMap = new Map<TargetIndex, CorruptorConfig>();
+
+    for (const config of configs) {
+      // Verify integrity of array content
+      const error = getManifestConfigError(config);
       if (error) {
         return [{ message: error, status: 400 }, null];
       }
-    }
 
-    const configIndexMap = new Map();
-    const configSqMap = new Map();
+      const { code, i, sq } = config;
+      const fields = code ? { code } : null;
 
-    for (let i = 0; i < configs.length; i++) {
-      const config = configs[i];
-      const corruptorConfig: CorruptorConfig = {
-        fields: null,
-      };
-
-      if (config.code) {
-        corruptorConfig.fields = {
-          code: config.code,
-        };
-      }
-      // Index default
-      if (config.i === "*") {
-        // If default is already set, we skip
-        if (!configIndexMap.has(config.i) && !configSqMap.has(config.i)) {
-          corruptorConfig.i = config.i;
-          configIndexMap.set(config.i, corruptorConfig);
+      // If * is already set, we skip
+      if (!configIndexMap.has("*") && !configSqMap.has("*")) {
+        // Index
+        if (i === "*") {
+          configIndexMap.set("*", { fields, i });
+        }
+        // Sequence
+        else if (sq === "*") {
+          configSqMap.set("*", { fields, sq });
         }
       }
 
       // Index numeric
-      if (typeof config.i === "number" && !configIndexMap.has(config.i)) {
-        corruptorConfig.i = config.i;
-        configIndexMap.set(config.i, corruptorConfig);
-      }
-
-      // Sequence default
-      if (config.sq === "*") {
-        // If default is already set, we skip
-        if (!configIndexMap.has(config.sq) && !configSqMap.has(config.sq)) {
-          corruptorConfig.sq = config.sq;
-          configSqMap.set(config.sq, corruptorConfig);
-        }
+      if (typeof i === "number" && !configIndexMap.has(i)) {
+        configIndexMap.set(i, { fields, i });
       }
 
       // Sequence numeric
-      if (typeof config.sq === "number" && !configSqMap.has(config.sq)) {
-        corruptorConfig.sq = config.sq;
-        configSqMap.set(config.sq, corruptorConfig);
+      if (typeof sq === "number" && !configSqMap.has(sq)) {
+        configSqMap.set(sq, { fields, sq });
       }
     }
 
-    const corruptorConfigs: CorruptorConfig[] = [];
+    const corruptorConfigs = [
+      ...configIndexMap.values(),
+      ...configSqMap.values(),
+    ];
 
-    for (var value of configIndexMap.values()) {
-      corruptorConfigs.push(value);
-    }
-
-    for (const value of configSqMap.values()) {
-      corruptorConfigs.push(value);
-    }
     return [null, corruptorConfigs];
   },
-  getSegmentConfigs(satusCodeConfigString: string): [ServiceError | null, CorruptorConfig | null] {
-    const config: any = JSON.parse(satusCodeConfigString);
+  getSegmentConfigs(statusCodeConfigString: string): [ServiceError | null, CorruptorConfig | null] {
+    const config = JSON.parse(statusCodeConfigString);
 
     if (!isValidSegmentConfig(config)) {
-      return [unparsableError("statusCode", satusCodeConfigString, "{i?:number, sq?:number, code:number}"), null];
+      return [
+        unparsableError(
+          "statusCode",
+          statusCodeConfigString,
+          "{i?:number, sq?:number, code:number}"
+        ),
+        null
+      ];
     }
     return [
       null,
