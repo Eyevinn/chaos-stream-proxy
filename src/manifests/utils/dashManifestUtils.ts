@@ -1,7 +1,7 @@
 import { Manifest } from "../../shared/types";
 import * as xml2js from "xml2js";
 import { IndexedCorruptorConfigMap, CorruptorConfigMap } from "./configs";
-import { proxyPathBuilder, segmentUrlParamString } from "../../shared/utils";
+import { proxyPathBuilder } from "../../shared/utils";
 
 interface DASHManifestUtils {
     mergeMap: (segmentListSize: number, configsMap: IndexedCorruptorConfigMap) => CorruptorConfigMap;
@@ -13,7 +13,7 @@ export interface DASHManifestTools {
 }
 
 export default function (): DASHManifestTools {
-    const utils = Object.assign({
+    const utils = {
         mergeMap(targetSegmentIndex: number, configsMap: IndexedCorruptorConfigMap): CorruptorConfigMap {
             let outputMap = new Map();
             const d = configsMap.get("*");
@@ -38,8 +38,8 @@ export default function (): DASHManifestTools {
             }
             return outputMap;
         }
-    })
-    return Object.assign({
+    }
+    return {
         utils,
         createProxyDASHManifest(dashManifestText: String, originalUrlQuery: URLSearchParams): string {
             let manifest: string;
@@ -50,22 +50,22 @@ export default function (): DASHManifestTools {
             parser.parseString(dashManifestText, function (err, result) {
                 DASH_JSON = result;
             });
-            DASH_JSON["MPD"]["Period"].map((period) => {
-                period["AdaptationSet"].map((adaptationSet) => {
-                    adaptationSet["Representation"].map((representation) => {
+            DASH_JSON.MPD.Period.map((period) => {
+                period.AdaptationSet.map((adaptationSet) => {
+                    adaptationSet.Representation.map((representation) => {
                         if (representation.SegmentTemplate) {
                             representation.SegmentTemplate.map((segmentTemplate) => {
                                 // Media attr.
-                                const mediaUrl = segmentTemplate["$"]["media"];
+                                const mediaUrl = segmentTemplate.$.media;
 
-                                segmentTemplate["$"]["media"] = proxyPathBuilder(mediaUrl, originalUrlQuery, "proxy-segment/segment_$Number$.mp4");
+                                segmentTemplate.$.media = proxyPathBuilder(mediaUrl, originalUrlQuery, "proxy-segment/segment_$Number$.mp4");
                                 // Initialization attr.
                                 const masterDashUrl = originalUrlQuery.get("url");
-                                const initUrl = segmentTemplate["$"]["initialization"];
+                                const initUrl = segmentTemplate.$.initialization;
                                 if (!initUrl.match(/^http/)) {
                                     try {
                                         const absoluteInitUrl = new URL(initUrl, masterDashUrl).href;
-                                        segmentTemplate["$"]["initialization"] = absoluteInitUrl;
+                                        segmentTemplate.$.initialization = absoluteInitUrl;
                                     } catch (e) {
                                         throw new Error(e);
                                     }
@@ -81,5 +81,5 @@ export default function (): DASHManifestTools {
 
             return manifest;
         }
-    });
+    };
 }
