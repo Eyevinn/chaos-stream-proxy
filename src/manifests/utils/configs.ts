@@ -8,10 +8,7 @@ import { ServiceError, TargetIndex } from "../../shared/types";
 // };
 
 export interface SegmentCorruptorQueryConfig {
-  /**
-   * Tror vi måste vara tydliga att poängtera att det måste vara en JSON parsable string... vi kanske vill göra den validering i implementation, idk
-   */
-  getManifestConfigs: (urlValueString: string) => [ServiceError | null, CorruptorConfig[] | null];
+  getManifestConfigs: (config: Record<string, number|"*">[]) => [ServiceError | null, CorruptorConfig[] | null];
   getSegmentConfigs(delayConfigString: string): [ServiceError | null, CorruptorConfig | null];
   name: string;
 }
@@ -98,9 +95,8 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
 
       for (const config of configs) {
         // JSONify and remove whitespace
-        const parsedSearchParam = that.utils.getJSONParsableString(urlSearchParams.get(config.name));
-
-        const [error, configList] = config.getManifestConfigs(parsedSearchParam);
+        const parsableSearchParam = that.utils.getJSONParsableString(urlSearchParams.get(config.name));
+        const [error, configList] = config.getManifestConfigs(JSON.parse(parsableSearchParam));
         if (error) {
           return [error, null];
         }

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { unparsableError } from "../../../shared/utils";
-import { ServiceError } from "../../../shared/types";
+import { ServiceError, TargetIndex } from "../../../shared/types";
 import { CorruptorConfig, SegmentCorruptorQueryConfig } from "../configs";
 
 interface DelayConfig extends CorruptorConfig {
@@ -47,9 +47,7 @@ function isValidSegmentConfig(value: { [key: string]: any }): boolean {
 }
 
 const delayConfig: SegmentCorruptorQueryConfig = {
-  getManifestConfigs(delayConfigString: string): [ServiceError | null, CorruptorConfig[] | null] {
-    let configs: { [key: string]: any }[] = JSON.parse(delayConfigString);
-
+  getManifestConfigs(configs: Record<string, TargetIndex>[]): [ServiceError | null, CorruptorConfig[] | null] {
     // Verify it's at least an array
     if (!Array.isArray(configs)) {
       return [

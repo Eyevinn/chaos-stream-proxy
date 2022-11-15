@@ -46,8 +46,7 @@ function isValidSegmentConfig(value: object): boolean {
 }
 
 const statusCodeConfig: SegmentCorruptorQueryConfig = {
-  getManifestConfigs(statusCodeConfigString: string): [ServiceError | null, CorruptorConfig[] | null] {
-    const configs: { [key: string]: any }[] = JSON.parse(statusCodeConfigString);
+  getManifestConfigs(configs: Record<string, TargetIndex>[]): [ServiceError | null, CorruptorConfig[] | null] {
     // Verify it's at least an array
     if (!Array.isArray(configs)) {
       return [

@@ -39,8 +39,7 @@ function getManifestConfigError(value: { [key: string]: any }): string {
 }
 
 const timeoutConfig: SegmentCorruptorQueryConfig = {
-  getManifestConfigs(timeoutConfigString: string): [ServiceError | null, CorruptorConfig[] | null] {
-    const configs: any[] = JSON.parse(timeoutConfigString);
+  getManifestConfigs(configs: Record<string, TargetIndex>[]): [ServiceError | null, CorruptorConfig[] | null] {
     // Verify it's at least an array
     if (!Array.isArray(configs)) {
       return [

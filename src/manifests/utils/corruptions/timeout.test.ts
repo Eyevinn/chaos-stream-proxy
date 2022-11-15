@@ -9,10 +9,10 @@ describe("manifest.utils.corruptions.timeout", () => {
     });
     it("should handle valid input", () => {
       // Arrange
-      const timeoutValueString = JSON.stringify([{ i: 0 }, { sq: 0 }]);
+      const timeoutValue = [{ i: 0 }, { sq: 0 }];
 
       // Act
-      const actual = getManifestConfigs(timeoutValueString);
+      const actual = getManifestConfigs(timeoutValue);
       const expected = [
         null,
         [
@@ -27,10 +27,10 @@ describe("manifest.utils.corruptions.timeout", () => {
 
     it("should handle all * indexes", () => {
       // Arrange
-      const timeoutValueString = JSON.stringify([{ i: 0 }, { i: "*" }]);
+      const timeoutValue: Record<string, number | "*">[] = [{ i: 0 }, { i: "*" }];
 
       // Act
-      const actual = getManifestConfigs(timeoutValueString);
+      const actual = getManifestConfigs(timeoutValue);
       const expected = [
         null,
         [
@@ -45,10 +45,10 @@ describe("manifest.utils.corruptions.timeout", () => {
 
     it("should handle all * sequences", () => {
       // Arrange
-      const timeoutValueString = JSON.stringify([{ sq: 0 }, { sq: "*" }]);
+      const timeoutValue: Record<string, number | "*">[] = [{ sq: 0 }, { sq: "*" }];
 
       // Act
-      const actual = getManifestConfigs(timeoutValueString);
+      const actual = getManifestConfigs(timeoutValue);
       const expected = [
         null,
         [
@@ -63,10 +63,10 @@ describe("manifest.utils.corruptions.timeout", () => {
 
     it("should handle no index and no sequence correct", () => {
       // Arrange
-      const timeoutValueString = JSON.stringify([{ irrelevant: 123 }]);
+      const timeoutValue: Record<string, number | "*">[] = [{ irrelevant: 123 }];
 
       // Act
-      const actual = getManifestConfigs(timeoutValueString);
+      const actual = getManifestConfigs(timeoutValue);
       const expected = [
         {
           message: "Incorrect timeout query format. Either 'i' or 'sq' is required in a single query object.",
@@ -81,10 +81,10 @@ describe("manifest.utils.corruptions.timeout", () => {
 
     it("should handle both index and sequence in the query object", () => {
       // Arrange
-      const timeoutValueString = JSON.stringify([{ i: 0, sq: 2 }]);
+      const timeoutValue: Record<string, number | "*">[] = [{ i: 0, sq: 2 }];
 
       // Act
-      const actual = getManifestConfigs(timeoutValueString);
+      const actual = getManifestConfigs(timeoutValue);
       const expected = [
         {
           message: "Incorrect timeout query format. 'i' and 'sq' are mutually exclusive in a single query object.",
@@ -99,10 +99,10 @@ describe("manifest.utils.corruptions.timeout", () => {
 
     it("should handle illegal characters in query object", () => {
       // Arrange
-      const timeoutValueString = JSON.stringify([{ ms: "hehe", i: false, sq: { he: "he" } }]);
+      const timeoutValue = [{ ms: "hehe", i: false, sq: { he: "he" } }] as any;
 
       // Act
-      const actual = getManifestConfigs(timeoutValueString);
+      const actual = getManifestConfigs(timeoutValue);
       const expected = [
         {
           message: "Incorrect timeout query format. Expected format: [{i?:number, sq?:number},...n] where i and sq are mutually exclusive.",
@@ -117,10 +117,10 @@ describe("manifest.utils.corruptions.timeout", () => {
 
     it("should handle invalid format", () => {
       // Arrange
-      const timeoutValueString = JSON.stringify("Fel");
+      const timeoutValue = "Fel" as any;
 
       // Act
-      const actual = getManifestConfigs(timeoutValueString);
+      const actual = getManifestConfigs(timeoutValue);
       const expected = [
         {
           message: "Incorrect timeout query format. Expected format: [{i?:number, sq?:number},...n] where i and sq are mutually exclusive.",
