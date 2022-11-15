@@ -1,5 +1,4 @@
-import { TargetIndex } from "../../shared/types";
-import { corruptorConfigUtils, SegmentCorruptorQueryConfig, CorruptorConfig, CorruptorConfigMap } from "./configs";
+import { corruptorConfigUtils, SegmentCorruptorQueryConfig, CorruptorConfig, CorruptorIndexMap } from "./configs";
 
 describe("configs", () => {
   describe("utils", () => {
@@ -89,18 +88,16 @@ describe("configs", () => {
 
       // Act
       configs.register(config1);
-      const actual = configs.getAllManifestConfigs(0);
-      const expected = [
-        null,
-        new Map<TargetIndex, CorruptorConfigMap>().set(
-          0,
-          new Map<string, CorruptorConfig>().set("test1", {
-            fields: { ms: 150 },
-            i: 0,
-          })
-        ),
-      ];
+      const [err, actual] = configs.getAllManifestConfigs(0);
+      const expected = new CorruptorIndexMap([[
+        0,
+        new Map([["test1", {
+          fields: { ms: 150 },
+          i: 0,
+        }]])
+      ]]);
       // Assert
+      expect(err).toBeNull();
       expect(actual).toEqual(expected);
     });
   });

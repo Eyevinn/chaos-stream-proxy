@@ -59,6 +59,18 @@ export interface CorruptorConfigUtils {
   };
 }
 
+export class CorruptorIndexMap extends Map<TargetIndex, CorruptorConfigMap> {
+  deepSet(index: TargetIndex, configName: string, value: CorruptorConfig, overwrite = true) {
+    if (!this.has(index)) {
+      this.set(index, new Map());
+    }
+    const indexMap = this.get(index);
+    if (overwrite || !indexMap.has(configName)) {
+      indexMap.set(configName, value);
+    }
+  }
+}
+
 export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams): CorruptorConfigUtils {
   return Object.assign({
     utils: {
@@ -78,22 +90,13 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
       }
       return this;
     },
-    getAllManifestConfigs(sourceMseq?: number, isDash?: boolean) {
-      const mseq = sourceMseq || 0;
+    getAllManifestConfigs(mseq = 0, isDash = false) {
       const that: CorruptorConfigUtils = this;
-      let outputMap = new Map<TargetIndex, Map<string, CorruptorConfig>>();
+      const outputMap = new CorruptorIndexMap();
+      const configs = ((this.registered || []) as SegmentCorruptorQueryConfig[])
+        .filter(({ name }) => urlSearchParams.get(name));
 
-      if (!this.registered) {
-        return [null, outputMap];
-      }
-
-      for (let i = 0; i < this.registered.length; i++) {
-        const config: SegmentCorruptorQueryConfig = this.registered[i];
-
-        if (!urlSearchParams.get(config.name)) {
-          continue;
-        }
-
+      for (const config of configs) {
         // JSONify and remove whitespace
         const parsedSearchParam = that.utils.getJSONParsableString(urlSearchParams.get(config.name));
 
@@ -102,48 +105,13 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
           return [error, null];
         }
         configList.forEach((item) => {
-          if (!outputMap.get(item.i)) {
-            outputMap.set(item.i, new Map<string, CorruptorConfig>());
-          }
-          // Only if we haven't already added a corruption for current index, we add it.
-          if (!outputMap.get(item.i).get(config.name)) {
-            outputMap.get(item.i).set(config.name, item);
-          }
-
-          if (isDash) {
-            if (!outputMap.get(item.sq)) {
-              const itemIdx = item.sq || item.i;
-              if (typeof itemIdx === "number") {
-                const itemIdx = item.sq || item.i;
-                if (itemIdx === mseq) {
-                  outputMap.set(itemIdx, new Map<string, CorruptorConfig>());
-                  if (!outputMap.get(itemIdx).get(config.name)) {
-                    outputMap.get(itemIdx).set(config.name, item);
-                  }
-                }
-                
-              } else if (itemIdx === "*") {
-                outputMap.set(item.sq, new Map<string, CorruptorConfig>());
-                if (!outputMap.get(item.sq).get(config.name)) {
-                  outputMap.get(item.sq).set(config.name, item);
-                }
-              }
-            }
-          } else {
-            // Handle if 'sq' is used instead.
-            if (!outputMap.get(item.sq)) {
-              if (typeof item.sq === "number") {
-                const newIdx = item.sq - mseq;
-                outputMap.set(newIdx, new Map<string, CorruptorConfig>());
-                if (!outputMap.get(newIdx).get(config.name)) {
-                  outputMap.get(newIdx).set(config.name, item);
-                }
-              } else if (item.sq === "*") {
-                outputMap.set(item.sq, new Map<string, CorruptorConfig>());
-                if (!outputMap.get(item.sq).get(config.name)) {
-                  outputMap.get(item.sq).set(config.name, item);
-                }
-              }
+          if (item.i != undefined) {
+            outputMap.deepSet(item.i, config.name, item, false);
+          } else if (item.sq != undefined) {
+            if (item.sq === "*" || (isDash && item.sq === mseq)) {
+              outputMap.deepSet(item.sq, config.name, item, false);
+            } else {
+              outputMap.deepSet(item.sq - mseq, config.name, item, false);
             }
           }
         });
