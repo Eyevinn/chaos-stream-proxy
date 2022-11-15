@@ -109,7 +109,7 @@ describe("manifest.utils.corruptions.statusCode", () => {
       const actual = getManifestConfigs(statusValue);
       const expected = [
         {
-          message: "Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, code:number},...n] where i and sq are mutually exclusive.",
+          message: "Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, br?:number, code:number}, ...n] where i and sq are mutually exclusive.",
           status: 400,
         },
         null,
@@ -127,7 +127,7 @@ describe("manifest.utils.corruptions.statusCode", () => {
       const actual = getManifestConfigs(statusValue);
       const expected = [
         {
-          message: "Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, code:number},...n] where i and sq are mutually exclusive.",
+          message: "Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, br?:number, code:number}, ...n] where i and sq are mutually exclusive.",
           status: 400,
         },
         null,

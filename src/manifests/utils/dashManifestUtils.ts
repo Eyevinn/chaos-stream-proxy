@@ -57,8 +57,13 @@ export default function (): DASHManifestTools {
                             representation.SegmentTemplate.map((segmentTemplate) => {
                                 // Media attr.
                                 const mediaUrl = segmentTemplate.$.media;
+                                // Clone params to avoid mutating input argument
+                                const urlQuery = new URLSearchParams(originalUrlQuery);
+                                if (representation.$.bandwidth) {
+                                    urlQuery.set("bitrate", representation.$.bandwidth);
+                                }
 
-                                segmentTemplate.$.media = proxyPathBuilder(mediaUrl, originalUrlQuery, "proxy-segment/segment_$Number$.mp4");
+                                segmentTemplate.$.media = proxyPathBuilder(mediaUrl, urlQuery, "proxy-segment/segment_$Number$.mp4");
                                 // Initialization attr.
                                 const masterDashUrl = originalUrlQuery.get("url");
                                 const initUrl = segmentTemplate.$.initialization;

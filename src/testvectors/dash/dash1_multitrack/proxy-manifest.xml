@@ -3,28 +3,28 @@
   <Period start="PT0.000S" id="1" duration="PT120.000S">
     <AdaptationSet mimeType="video/mp4" segmentAlignment="true" startWithSAP="1" subsegmentAlignment="true" subsegmentStartsWithSAP="1" bitstreamSwitching="true">
       <Representation id="1" width="416" height="234" frameRate="24/1" bandwidth="99968" codecs="avc1.64000D">
-        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_1_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_1_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_1_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&amp;bitrate=99968" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_1_0_init.mp4" startNumber="1" presentationTimeOffset="0">
           <SegmentTimeline>
             <S t="870" d="144000" r="19"/>
           </SegmentTimeline>
         </SegmentTemplate>
       </Representation>
       <Representation id="2" width="640" height="360" frameRate="24/1" bandwidth="229952" codecs="avc1.64001E">
-        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_2_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_2_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_2_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&amp;bitrate=229952" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_2_0_init.mp4" startNumber="1" presentationTimeOffset="0">
           <SegmentTimeline>
             <S t="870" d="144000" r="19"/>
           </SegmentTimeline>
         </SegmentTemplate>
       </Representation>
       <Representation id="3" width="768" height="432" frameRate="24/1" bandwidth="329984" codecs="avc1.64001E">
-        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_3_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_3_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_3_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&amp;bitrate=329984" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_3_0_init.mp4" startNumber="1" presentationTimeOffset="0">
           <SegmentTimeline>
             <S t="870" d="144000" r="19"/>
           </SegmentTimeline>
         </SegmentTemplate>
       </Representation>
       <Representation id="4" width="960" height="540" frameRate="24/1" bandwidth="520000" codecs="avc1.64001F">
-        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_4_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_4_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+        <SegmentTemplate timescale="24000" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_video_4_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&amp;bitrate=520000" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_video_4_0_init.mp4" startNumber="1" presentationTimeOffset="0">
           <SegmentTimeline>
             <S t="870" d="144000" r="19"/>
           </SegmentTimeline>
@@ -35,7 +35,7 @@
       <Label>Stereo</Label>
       <Representation id="9" bandwidth="192257" audioSamplingRate="44100" codecs="mp4a.40.2">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
-        <SegmentTemplate timescale="44100" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_audio_9_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_audio_9_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+        <SegmentTemplate timescale="44100" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_audio_9_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&amp;bitrate=192257" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_audio_9_0_init.mp4" startNumber="1" presentationTimeOffset="0">
           <SegmentTimeline>
             <S t="0" d="266240"/>
             <S t="266240" d="265215"/>
@@ -64,7 +64,7 @@
       <Label>Surround_aac</Label>
       <Representation id="11" bandwidth="384810" audioSamplingRate="44100" codecs="mp4a.40.2">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="6"/>
-        <SegmentTemplate timescale="44100" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_audio_11_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_audio_11_0_init.mp4" startNumber="1" presentationTimeOffset="0">
+        <SegmentTemplate timescale="44100" media="proxy-segment/segment_$Number$.mp4?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fdash%2Fvods%2Fasset44%2Findex_audio_11_0_%24Number%24.mp4&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&amp;bitrate=384810" initialization="https://mock.mock.com/stream/dash/vods/asset44/index_audio_11_0_init.mp4" startNumber="1" presentationTimeOffset="0">
           <SegmentTimeline>
             <S t="0" d="266240"/>
             <S t="266240" d="265215"/>

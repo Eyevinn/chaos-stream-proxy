@@ -8,7 +8,7 @@ interface DelayConfig extends CorruptorConfig {
 }
 
 // TODO:Flytta till en i en constants fil, och gruppera med and
-const delayExpectedQueryFormatMsg = "Incorrect delay query format. Expected format: [{i?:number, sq?:number, ms:number},...n] where i and sq are mutually exclusive.";
+const delayExpectedQueryFormatMsg = "Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.";
 
 function getManifestConfigError(value: { [key: string]: any }): string {
   const o = value as DelayConfig;

@@ -115,7 +115,7 @@ describe("manifest.utils.corruptions.delay", () => {
       const actual = getManifestConfigs(delayValue);
       const expected = [
         {
-          message: "Incorrect delay query format. Expected format: [{i?:number, sq?:number, ms:number},...n] where i and sq are mutually exclusive.",
+          message: "Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.",
           status: 400,
         },
         null,
@@ -133,7 +133,7 @@ describe("manifest.utils.corruptions.delay", () => {
       const actual = getManifestConfigs(delayValue);
       const expected = [
         {
-          message: "Incorrect delay query format. Expected format: [{i?:number, sq?:number, ms:number},...n] where i and sq are mutually exclusive.",
+          message: "Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.",
           status: 400,
         },
         null,

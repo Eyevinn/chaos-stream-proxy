@@ -105,7 +105,7 @@ describe("manifest.utils.corruptions.timeout", () => {
       const actual = getManifestConfigs(timeoutValue);
       const expected = [
         {
-          message: "Incorrect timeout query format. Expected format: [{i?:number, sq?:number},...n] where i and sq are mutually exclusive.",
+          message: "Incorrect timeout query format. Expected format: [{i?:number, sq?:number, br?:number}, ...n] where i and sq are mutually exclusive.",
           status: 400,
         },
         null,
@@ -123,7 +123,7 @@ describe("manifest.utils.corruptions.timeout", () => {
       const actual = getManifestConfigs(timeoutValue);
       const expected = [
         {
-          message: "Incorrect timeout query format. Expected format: [{i?:number, sq?:number},...n] where i and sq are mutually exclusive.",
+          message: "Incorrect timeout query format. Expected format: [{i?:number, sq?:number, br?:number}, ...n] where i and sq are mutually exclusive.",
           status: 400,
         },
         null,

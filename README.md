@@ -66,9 +66,10 @@ Delay Corruption:
 
 ```typescript
 {
-    i?: number | "*", // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
-    sq?: number | "*",// media sequence number of target segment in playlist. If "*", then target all segments
-    ms?: number,      // time to delay in milliseconds
+    i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
+    sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
+    ms?: number,       // time to delay in milliseconds
+    br?: number | "*", // apply only to specific bitrate
 }
 ```
 
@@ -76,9 +77,10 @@ Status Code Corruption:
 
 ```typescript
 {
-    i?: number | "*", // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
-    sq? number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
-    code?: number,    // code to return in http response status header instead of media file
+    i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
+    sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
+    code?: number,     // code to return in http response status header instead of media file
+    br?: number | "*", // apply only to specific bitrate
 }
 ```
 
@@ -86,8 +88,9 @@ Timeout Corruption:
 
 ```typescript
 {
-    i?: number | "*", // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
-    sq?: number | "*",// media sequence number of target segment in playlist. If "*", then target all segments
+    i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
+    sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
+    br?: number | "*", // apply only to specific bitrate
 }
 ```
 
@@ -127,10 +130,11 @@ https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:4,ms:1500}]&statusCode=[{i:5,code:404}]&timeout=[{i:9}]
 ```
 
-6. VOD: With segment delay of 1500ms and response code 400 on sixth (response of 400 will be sent after 1500ms):
+6. VOD: With segment delay of 1500ms on sixth segment, followed by a response code 400 if the bitrate is 2426000:
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:5,ms:1500}]&statusCode=[{i:5,code:400}]
+https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:5,ms:1500}]&statusCode=[{i:5,code:400,br:2426000}]
+
 ```
 
 7. LIVE: With response of status code 404 on segment with sequence number 105:

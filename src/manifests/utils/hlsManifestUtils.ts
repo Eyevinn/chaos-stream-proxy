@@ -68,8 +68,14 @@ export default function (): HLSManifestTools {
 
       // [Video]
       m3u.items.StreamItem = m3u.items.StreamItem.map((streamItem) => {
+        const bitRate = (streamItem as any)?.attributes?.attributes?.bandwidth;
         const currentUri = streamItem.get("uri");
-        streamItem.set("uri", proxyPathBuilder(currentUri, originalUrlQuery, "proxy-media.m3u8"));
+        // Clone params to avoid mutating input argument
+        const urlQuery = new URLSearchParams(originalUrlQuery);
+        if (bitRate) {
+          urlQuery.set("bitrate", bitRate);
+        }
+        streamItem.set("uri", proxyPathBuilder(currentUri, urlQuery, "proxy-media.m3u8"));
         return streamItem;
       });
 

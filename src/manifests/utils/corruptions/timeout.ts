@@ -1,14 +1,13 @@
-/* eslint-disable */
-import { unparsableError } from "../../../shared/utils";
 import { ServiceError, TargetIndex } from "../../../shared/types";
 import { CorruptorConfig, SegmentCorruptorQueryConfig } from "../configs";
 
 // TODO:Flytta till en i en constants fil, och gruppera med and
-const timeoutExpectedQueryFormatMsg = "Incorrect timeout query format. Expected format: [{i?:number, sq?:number},...n] where i and sq are mutually exclusive.";
+const timeoutExpectedQueryFormatMsg = "Incorrect timeout query format. Expected format: [{i?:number, sq?:number, br?:number}, ...n] where i and sq are mutually exclusive.";
 
 interface TimeoutConfig {
   i?: TargetIndex;
   sq?: TargetIndex;
+  br?: TargetIndex;
   ch?: number;
 }
 

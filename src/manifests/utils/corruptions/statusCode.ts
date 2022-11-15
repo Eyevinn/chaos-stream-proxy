@@ -4,7 +4,7 @@ import { ServiceError, TargetIndex } from "../../../shared/types";
 import { CorruptorConfig, SegmentCorruptorQueryConfig } from "../configs";
 
 // TODO:Flytta till en i en constants fil, och gruppera med and
-const statusCodeExpectedQueryFormatMsg = "Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, code:number},...n] where i and sq are mutually exclusive.";
+const statusCodeExpectedQueryFormatMsg = "Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, br?:number, code:number}, ...n] where i and sq are mutually exclusive.";
 
 interface StatusCodeConfig {
   i?: TargetIndex;
@@ -109,7 +109,7 @@ const statusCodeConfig: SegmentCorruptorQueryConfig = {
         unparsableError(
           "statusCode",
           statusCodeConfigString,
-          "{i?:number, sq?:number, code:number}"
+          "{i?:number, sq?:number, br?:string, code:number}"
         ),
         null
       ];

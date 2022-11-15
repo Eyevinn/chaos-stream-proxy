@@ -17,6 +17,7 @@ export interface SegmentCorruptorQueryConfig {
 export interface CorruptorConfig {
   i?: TargetIndex;
   sq?: TargetIndex;
+  br?: TargetIndex;
   /**
    * - If fields is null, it means it's a no-op and ignored when parsing to query string
    * It's primarely used to indicate when the default * index operator should be overridden
@@ -92,11 +93,19 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
       const outputMap = new CorruptorIndexMap();
       const configs = ((this.registered || []) as SegmentCorruptorQueryConfig[])
         .filter(({ name }) => urlSearchParams.get(name));
+      const segmentBitrate = Number(urlSearchParams.get("bitrate"));
 
       for (const config of configs) {
         // JSONify and remove whitespace
         const parsableSearchParam = that.utils.getJSONParsableString(urlSearchParams.get(config.name));
-        const [error, configList] = config.getManifestConfigs(JSON.parse(parsableSearchParam));
+        let params = JSON.parse(parsableSearchParam);
+
+        // If bitrate is set, filter out segments that doesn't match
+        if (Array.isArray(params)) {
+          params = params.filter((config) => !config?.br || config?.br === "*" || config?.br === segmentBitrate);
+        }
+
+        const [error, configList] = config.getManifestConfigs(params);
         if (error) {
           return [error, null];
         }
