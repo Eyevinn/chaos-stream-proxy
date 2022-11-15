@@ -4,7 +4,7 @@ import { CorruptorConfig, CorruptorConfigMap, IndexedCorruptorConfigMap } from "
 import clone from "clone";
 
 interface HLSManifestUtils {
-  mergeMap: (seglemtListSize: number, configsMap: IndexedCorruptorConfigMap) => CorruptorConfigMap[];
+  mergeMap: (segmentListSize: number, configsMap: IndexedCorruptorConfigMap) => CorruptorConfigMap[];
 }
 
 export interface HLSManifestTools {
@@ -15,8 +15,8 @@ export interface HLSManifestTools {
 
 export default function (): HLSManifestTools {
   const utils = Object.assign({
-    mergeMap(seglemtListSize: number, configsMap: IndexedCorruptorConfigMap): CorruptorConfigMap[] {
-      const corruptions = [...new Array(seglemtListSize)].map((_, i) => {
+    mergeMap(segmentListSize: number, configsMap: IndexedCorruptorConfigMap): CorruptorConfigMap[] {
+      const corruptions = [...new Array(segmentListSize)].map((_, i) => {
         const d = configsMap.get("*");
         if (!d) {
           return null;

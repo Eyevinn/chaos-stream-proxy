@@ -4,7 +4,7 @@ import { IndexedCorruptorConfigMap, CorruptorConfigMap } from "./configs";
 import { proxyPathBuilder, segmentUrlParamString } from "../../shared/utils";
 
 interface DASHManifestUtils {
-    mergeMap: (seglemtListSize: number, configsMap: IndexedCorruptorConfigMap) => CorruptorConfigMap;
+    mergeMap: (segmentListSize: number, configsMap: IndexedCorruptorConfigMap) => CorruptorConfigMap;
 }
 
 export interface DASHManifestTools {
