@@ -29,16 +29,19 @@ export default async function segmentHandler(event: ALBEvent): Promise<ALBResult
     }
     // apply Timeout
     if (allSegmentCorr.get("timeout")) {
+      console.log(`Timing out ${query.url}`);
       return;
     }
     // apply Delay
     if (allSegmentCorr.get("delay")) {
-      const delayMs = Number(allSegmentCorr.get("delay").fields?.ms);
-      await sleep(delayMs); // TODO Medela kanske?
+      const delay = Number(allSegmentCorr.get("delay").fields?.ms);
+      console.log(`Applying ${delay}ms delay to ${query.url}`);
+      await sleep(delay);
     }
     // apply Status Code
     if (allSegmentCorr.get("statusCode") && allSegmentCorr.get("statusCode").fields.code !== "undefined") {
       const code = <number>allSegmentCorr.get("statusCode").fields.code;
+      console.log(`Applying corruption with status ${code} to ${query.url}`);
       return {
         statusCode: code,
         headers: {
