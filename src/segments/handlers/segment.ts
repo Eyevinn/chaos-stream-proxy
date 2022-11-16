@@ -54,7 +54,7 @@ export default async function segmentHandler(event: ALBEvent): Promise<ALBResult
     }
     // Redirect to Source File
     return {
-      statusCode: 301,
+      statusCode: 302,
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type, Origin",

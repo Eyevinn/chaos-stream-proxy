@@ -10,11 +10,11 @@ export default async function segmentRoutes(fastify: FastifyInstance) {
     if (response === undefined) {
       return;
     }
-    if (response.statusCode === 301) {
+    if (response.statusCode === 302) {
       res.headers({
         "Access-Control-Allow-Origin": "*",
       });
-      res.redirect(301, response.headers.Location as string);
+      res.redirect(302, response.headers.Location as string);
       return;
     }
     res.code(response.statusCode).headers(response.headers).send(response.body);
