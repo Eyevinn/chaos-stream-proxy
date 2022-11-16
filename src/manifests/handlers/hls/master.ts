@@ -5,7 +5,6 @@ import { isValidUrl, parseM3U8Text, refineALBEventQuery, generateErrorResponse }
 
 // To be able to reuse the handlers for AWS lambda function - input should be ALBEvent
 export default async function hlsMasterHandler(event: ALBEvent) {
-  // This is needed because the internet is a bit broken...
   event.queryStringParameters = refineALBEventQuery(event.queryStringParameters);
 
   if (!event.queryStringParameters["url"] || !isValidUrl(event.queryStringParameters["url"])) {

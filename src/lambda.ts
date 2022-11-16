@@ -42,7 +42,6 @@ export class AbstractLogger implements ILogger {
 const logger = new AbstractLogger();
 
 export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> => {
-  // This is needed because Internet is a bit broken...
   event.queryStringParameters = refineALBEventQuery(event.queryStringParameters);
   let response: ALBResult;
   try {

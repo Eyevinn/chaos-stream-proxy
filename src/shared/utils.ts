@@ -130,6 +130,8 @@ export function parseM3U8Stream(stream: ReadStream): Promise<M3U> {
   });
 }
 
+// @todo: Clarify what this function actually does
+// Older comment: "This is needed because the internet is a bit broken..."
 export function refineALBEventQuery(originalQuery: ALBEventQueryStringParameters) {
   const queryStringParameters = clone(originalQuery);
   const searchParams = new URLSearchParams(

@@ -11,8 +11,6 @@ import { corruptorConfigUtils } from "../../utils/configs";
 
 export default async function hlsMediaHandler(event: ALBEvent): Promise<ALBResult> {
   // To be able to reuse the handlers for AWS lambda function - input should be ALBEvent
-
-  // This is needed because Internet is a bit broken...
   event.queryStringParameters = refineALBEventQuery(event.queryStringParameters);
 
   const originalManifestUrl = event.queryStringParameters["url"];
