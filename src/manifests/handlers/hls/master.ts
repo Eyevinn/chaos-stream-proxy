@@ -5,16 +5,16 @@ import { isValidUrl, parseM3U8Text, refineALBEventQuery, generateErrorResponse }
 
 // To be able to reuse the handlers for AWS lambda function - input should be ALBEvent
 export default async function hlsMasterHandler(event: ALBEvent) {
-  event.queryStringParameters = refineALBEventQuery(event.queryStringParameters);
+  const query = refineALBEventQuery(event.queryStringParameters);
 
-  if (!event.queryStringParameters["url"] || !isValidUrl(event.queryStringParameters["url"])) {
+  if (!query.url || !isValidUrl(query.url)) {
     return generateErrorResponse({
       status: 400,
       message: "Missing a valid 'url' query parameter",
     });
   }
   try {
-    const originalMasterManifestResponse = await fetch(event.queryStringParameters["url"]);
+    const originalMasterManifestResponse = await fetch(query.url);
     if (!originalMasterManifestResponse.ok) {
       return generateErrorResponse({
         status: originalMasterManifestResponse.status,
@@ -33,7 +33,7 @@ export default async function hlsMasterHandler(event: ALBEvent) {
       });
     }
 
-    const reqQueryParams = new URLSearchParams(event.queryStringParameters);
+    const reqQueryParams = new URLSearchParams(query);
     const manifestUtils = hlsManifestUtils();
     const proxyManifest = manifestUtils.createProxyMasterManifest(masterM3U, reqQueryParams);
 
