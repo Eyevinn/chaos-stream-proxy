@@ -26,7 +26,10 @@ export default async function manifestRoutes(fastify: FastifyInstance) {
   fastify.get(DASH_PROXY_SEGMENT + "/*", async (req, res) => {
     const event = composeALBEvent(req.method, req.url, req.headers);
     const response = await dashSegmentHandler(event);
-    res.code(response.statusCode).headers(response.headers).send(response.body);
+    // If response is undefined it means the request was intentionally timed out and we must not respond
+    if (response) {
+      res.code(response.statusCode).headers(response.headers).send(response.body);
+    }
   });
 
 }
