@@ -8,6 +8,8 @@ import { IncomingHttpHeaders } from "http";
 import path from "path";
 import { CorruptorConfigMap } from "../manifests/utils/configs";
 
+const { version } = require("../../package.json");
+
 export const handleOptionsRequest = async (event: ALBEvent): Promise<ALBResult> => {
   return {
     statusCode: 204,
@@ -43,7 +45,7 @@ export const generateHeartbeatResponse = (): Promise<ALBResult> => {
       "Access-Control-Allow-Headers": "Content-Type, Origin",
     },
   };
-  response.body = JSON.stringify({ message: "OK! 💚" });
+  response.body = JSON.stringify({ message: "OK! 💚", version });
 
   return Promise.resolve(response);
 };
