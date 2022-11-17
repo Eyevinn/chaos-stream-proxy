@@ -1,6 +1,6 @@
 /* eslint-disable */
-import { unparseableError } from "../../../shared/utils";
-import { ServiceError } from "../../../shared/types";
+import { unparsableError } from "../../../shared/utils";
+import { ServiceError, TargetIndex } from "../../../shared/types";
 import { CorruptorConfig, SegmentCorruptorQueryConfig } from "../configs";
 
 interface DelayConfig extends CorruptorConfig {
@@ -8,7 +8,7 @@ interface DelayConfig extends CorruptorConfig {
 }
 
 // TODO:Flytta till en i en constants fil, och gruppera med and
-const delayExpectedQueryFormatMsg = "Incorrect delay query format. Expected format: [{i?:number, sq?:number, ms:number},...n] where i and sq are mutually exclusive.";
+const delayExpectedQueryFormatMsg = "Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.";
 
 function getManifestConfigError(value: { [key: string]: any }): string {
   const o = value as DelayConfig;
@@ -47,9 +47,7 @@ function isValidSegmentConfig(value: { [key: string]: any }): boolean {
 }
 
 const delayConfig: SegmentCorruptorQueryConfig = {
-  getManifestConfigs(delayConfigString: string): [ServiceError | null, CorruptorConfig[] | null] {
-    let configs: { [key: string]: any }[] = JSON.parse(delayConfigString);
-
+  getManifestConfigs(configs: Record<string, TargetIndex>[]): [ServiceError | null, CorruptorConfig[] | null] {
     // Verify it's at least an array
     if (!Array.isArray(configs)) {
       return [
@@ -129,7 +127,7 @@ const delayConfig: SegmentCorruptorQueryConfig = {
   getSegmentConfigs(delayConfigString: string): [ServiceError | null, CorruptorConfig | null] {
     const config: any = JSON.parse(delayConfigString);
     if (!isValidSegmentConfig(config)) {
-      return [unparseableError("delay", delayConfigString, "{i?:number, sq?:number, ms:number}"), null];
+      return [unparsableError("delay", delayConfigString, "{i?:number, sq?:number, ms:number}"), null];
     }
 
     return [

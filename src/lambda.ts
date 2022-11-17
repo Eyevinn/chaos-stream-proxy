@@ -5,7 +5,7 @@ import dashHandler from "./manifests/handlers/dash/index";
 import segmentHandler from "./segments/handlers/segment";
 import { generateErrorResponse, generateHeartbeatResponse, refineALBEventQuery } from "./shared/utils";
 import { handleOptionsRequest } from "./shared/utils";
-import { HLS_PROXY_MASTER, HLS_PROXY_MEDIA, SEGEMTS_PROXY_SEGMENT, DASH_PROXY_MASTER, DASH_PROXY_SEGMENT } from "./segments/constants";
+import { HLS_PROXY_MASTER, HLS_PROXY_MEDIA, SEGMENTS_PROXY_SEGMENT, DASH_PROXY_MASTER, DASH_PROXY_SEGMENT } from "./segments/constants";
 import dashSegmentHandler from "./manifests/handlers/dash/segment";
 
 export interface ILogger {
@@ -42,7 +42,6 @@ export class AbstractLogger implements ILogger {
 const logger = new AbstractLogger();
 
 export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> => {
-  // This is needed because Internet is a bit broken...
   event.queryStringParameters = refineALBEventQuery(event.queryStringParameters);
   let response: ALBResult;
   try {
@@ -60,7 +59,7 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
           logger.info("Request for HLS Proxy-Media Playlist...");
           response = await hlsMediaHandler(event);
           break;
-        case SEGEMTS_PROXY_SEGMENT :
+        case SEGMENTS_PROXY_SEGMENT :
           logger.info("Request for HLS Proxy-Segment...");
           response = await segmentHandler(event);
           break;

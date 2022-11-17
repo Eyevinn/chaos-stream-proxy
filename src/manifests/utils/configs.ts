@@ -8,10 +8,7 @@ import { ServiceError, TargetIndex } from "../../shared/types";
 // };
 
 export interface SegmentCorruptorQueryConfig {
-  /**
-   * Tror vi måste vara tydliga att poängtera att det måste vara en JSON parseable string... vi kanske vill göra den validering i implementation, idk
-   */
-  getManifestConfigs: (urlValueString: string) => [ServiceError | null, CorruptorConfig[] | null];
+  getManifestConfigs: (config: Record<string, number|"*">[]) => [ServiceError | null, CorruptorConfig[] | null];
   getSegmentConfigs(delayConfigString: string): [ServiceError | null, CorruptorConfig | null];
   name: string;
 }
@@ -20,6 +17,7 @@ export interface SegmentCorruptorQueryConfig {
 export interface CorruptorConfig {
   i?: TargetIndex;
   sq?: TargetIndex;
+  br?: TargetIndex;
   /**
    * - If fields is null, it means it's a no-op and ignored when parsing to query string
    * It's primarely used to indicate when the default * index operator should be overridden
@@ -55,14 +53,26 @@ export interface CorruptorConfigUtils {
   register: (config: SegmentCorruptorQueryConfig) => CorruptorConfigUtils;
 
   utils: {
-    getJSONParseableString(value: string): string;
+    getJSONParsableString(value: string): string;
   };
+}
+
+export class CorruptorIndexMap extends Map<TargetIndex, CorruptorConfigMap> {
+  deepSet(index: TargetIndex, configName: string, value: CorruptorConfig, overwrite = true) {
+    if (!this.has(index)) {
+      this.set(index, new Map());
+    }
+    const indexMap = this.get(index);
+    if (overwrite || !indexMap.has(configName)) {
+      indexMap.set(configName, value);
+    }
+  }
 }
 
 export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams): CorruptorConfigUtils {
   return Object.assign({
     utils: {
-      getJSONParseableString(value: string): string {
+      getJSONParsableString(value: string): string {
         return decodeURIComponent(value)
           .replace(/\s/g, "")
           .replace(/({|,)(?:\s*)(?:')?([A-Za-z_$\.][A-Za-z0-9_ \-\.$]*)(?:')?(?:\s*):/g, '$1"$2":')
@@ -78,72 +88,35 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
       }
       return this;
     },
-    getAllManifestConfigs(sourceMseq?: number, isDash?: boolean) {
-      const mseq = sourceMseq || 0;
+    getAllManifestConfigs(mseq = 0, isDash = false) {
       const that: CorruptorConfigUtils = this;
-      let outputMap = new Map<TargetIndex, Map<string, CorruptorConfig>>();
+      const outputMap = new CorruptorIndexMap();
+      const configs = ((this.registered || []) as SegmentCorruptorQueryConfig[])
+        .filter(({ name }) => urlSearchParams.get(name));
+      const segmentBitrate = Number(urlSearchParams.get("bitrate"));
 
-      if (!this.registered) {
-        return [null, outputMap];
-      }
+      for (const config of configs) {
+        // JSONify and remove whitespace
+        const parsableSearchParam = that.utils.getJSONParsableString(urlSearchParams.get(config.name));
+        let params = JSON.parse(parsableSearchParam);
 
-      for (let i = 0; i < this.registered.length; i++) {
-        const config: SegmentCorruptorQueryConfig = this.registered[i];
-
-        if (!urlSearchParams.get(config.name)) {
-          continue;
+        // If bitrate is set, filter out segments that doesn't match
+        if (Array.isArray(params)) {
+          params = params.filter((config) => !config?.br || config?.br === "*" || config?.br === segmentBitrate);
         }
 
-        // JSONify and remove whitespace
-        const parsedSearchParam = that.utils.getJSONParseableString(urlSearchParams.get(config.name));
-
-        const [error, configList] = config.getManifestConfigs(parsedSearchParam);
+        const [error, configList] = config.getManifestConfigs(params);
         if (error) {
           return [error, null];
         }
         configList.forEach((item) => {
-          if (!outputMap.get(item.i)) {
-            outputMap.set(item.i, new Map<string, CorruptorConfig>());
-          }
-          // Only if we haven't already added a corruption for current index, we add it.
-          if (!outputMap.get(item.i).get(config.name)) {
-            outputMap.get(item.i).set(config.name, item);
-          }
-
-          if (isDash) {
-            if (!outputMap.get(item.sq)) {
-              const itemIdx = item.sq || item.i;
-              if (typeof itemIdx === "number") {
-                const itemIdx = item.sq || item.i;
-                if (itemIdx === mseq) {
-                  outputMap.set(itemIdx, new Map<string, CorruptorConfig>());
-                  if (!outputMap.get(itemIdx).get(config.name)) {
-                    outputMap.get(itemIdx).set(config.name, item);
-                  }
-                }
-                
-              } else if (itemIdx === "*") {
-                outputMap.set(item.sq, new Map<string, CorruptorConfig>());
-                if (!outputMap.get(item.sq).get(config.name)) {
-                  outputMap.get(item.sq).set(config.name, item);
-                }
-              }
-            }
-          } else {
-            // Handle if 'sq' is used instead.
-            if (!outputMap.get(item.sq)) {
-              if (typeof item.sq === "number") {
-                const newIdx = item.sq - mseq;
-                outputMap.set(newIdx, new Map<string, CorruptorConfig>());
-                if (!outputMap.get(newIdx).get(config.name)) {
-                  outputMap.get(newIdx).set(config.name, item);
-                }
-              } else if (item.sq === "*") {
-                outputMap.set(item.sq, new Map<string, CorruptorConfig>());
-                if (!outputMap.get(item.sq).get(config.name)) {
-                  outputMap.get(item.sq).set(config.name, item);
-                }
-              }
+          if (item.i != undefined) {
+            outputMap.deepSet(item.i, config.name, item, false);
+          } else if (item.sq != undefined) {
+            if (item.sq === "*" || (isDash && item.sq === mseq)) {
+              outputMap.deepSet(item.sq, config.name, item, false);
+            } else {
+              outputMap.deepSet(item.sq - mseq, config.name, item, false);
             }
           }
         });
@@ -157,7 +130,7 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
         const that: CorruptorConfigUtils = this;
         if (urlSearchParams.get(SCC.name) !== null) {
           // To make all object key names double quoted and remove whitespace
-          const parsedSearchParam = that.utils.getJSONParseableString(urlSearchParams.get(SCC.name));
+          const parsedSearchParam = that.utils.getJSONParsableString(urlSearchParams.get(SCC.name));
 
           const [error, configResult] = SCC.getSegmentConfigs(parsedSearchParam); // should only contain 1 item this time
           if (error) {

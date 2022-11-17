@@ -9,14 +9,14 @@ describe("manifest.utils.corruptions.statusCode", () => {
     });
     it("should handle valid input", () => {
       // Arrange
-      const statusValueString = JSON.stringify([
+      const statusValue = [
         { i: 0, code: 150 },
         { i: 0, code: 500 },
         { sq: 0, code: 1500 },
-      ]);
+      ];
 
       // Act
-      const actual = getManifestConfigs(statusValueString);
+      const actual = getManifestConfigs(statusValue);
       const expected = [
         null,
         [
@@ -31,10 +31,10 @@ describe("manifest.utils.corruptions.statusCode", () => {
 
     it("should handle all * indexes", () => {
       // Arrange
-      const statusValueString = JSON.stringify([{ i: "*", code: 150 }, { i: 0 }]);
+      const statusValue: Record<string, number | "*">[] = [{ i: "*", code: 150 }, { i: 0 }];
 
       // Act
-      const actual = getManifestConfigs(statusValueString);
+      const actual = getManifestConfigs(statusValue);
       const expected = [
         null,
         [
@@ -49,10 +49,10 @@ describe("manifest.utils.corruptions.statusCode", () => {
 
     it("should handle all * sequences", () => {
       // Arrange
-      const statusValueString = JSON.stringify([{ sq: "*", code: 150 }, { sq: 0 }]);
+      const statusValue: Record<string, number | "*">[] = [{ sq: "*", code: 150 }, { sq: 0 }];
 
       // Act
-      const actual = getManifestConfigs(statusValueString);
+      const actual = getManifestConfigs(statusValue);
       const expected = [
         null,
         [
@@ -67,10 +67,10 @@ describe("manifest.utils.corruptions.statusCode", () => {
 
     it("should handle no index and no sequence correct", () => {
       // Arrange
-      const statusValueString = JSON.stringify([{ code: 150 }]);
+      const statusValue = [{ code: 150 }];
 
       // Act
-      const actual = getManifestConfigs(statusValueString);
+      const actual = getManifestConfigs(statusValue);
       const expected = [
         {
           message: "Incorrect statusCode query format. Either 'i' or 'sq' is required in a single query object.",
@@ -85,10 +85,10 @@ describe("manifest.utils.corruptions.statusCode", () => {
 
     it("should handle both index and sequence in the query object", () => {
       // Arrange
-      const statusValueString = JSON.stringify([{ code: 150, i: 0, sq: 2 }]);
+      const statusValue = [{ code: 150, i: 0, sq: 2 }];
 
       // Act
-      const actual = getManifestConfigs(statusValueString);
+      const actual = getManifestConfigs(statusValue);
       const expected = [
         {
           message: "Incorrect statusCode query format. 'i' and 'sq' are mutually exclusive in a single query object.",
@@ -103,13 +103,13 @@ describe("manifest.utils.corruptions.statusCode", () => {
 
     it("should handle illegal characters in query object", () => {
       // Arrange
-      const statusValueString = JSON.stringify([{ code: "hehe", i: false, sq: { he: "he" } }]);
+      const statusValue = [{ code: "hehe", i: false, sq: { he: "he" } }] as any;
 
       // Act
-      const actual = getManifestConfigs(statusValueString);
+      const actual = getManifestConfigs(statusValue);
       const expected = [
         {
-          message: "Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, code:number},...n] where i and sq are mutually exclusive.",
+          message: "Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, br?:number, code:number}, ...n] where i and sq are mutually exclusive.",
           status: 400,
         },
         null,
@@ -121,13 +121,13 @@ describe("manifest.utils.corruptions.statusCode", () => {
 
     it("should handle invalid format", () => {
       // Arrange
-      const statusValueString = JSON.stringify("Faulty");
+      const statusValue = "Faulty" as any;
 
       // Act
-      const actual = getManifestConfigs(statusValueString);
+      const actual = getManifestConfigs(statusValue);
       const expected = [
         {
-          message: "Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, code:number},...n] where i and sq are mutually exclusive.",
+          message: "Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, br?:number, code:number}, ...n] where i and sq are mutually exclusive.",
           status: 400,
         },
         null,
@@ -139,13 +139,13 @@ describe("manifest.utils.corruptions.statusCode", () => {
 
     it("should handle multiple defaults *", () => {
       // Arrange
-      const statusValueString = JSON.stringify([
+      const statusValue: Record<string, number | "*">[]  = [
         { code: 400, i: "*" },
         { code: 401, sq: "*" },
         { code: 404, i: "*" },
-      ]);
+      ];
       // Act
-      const actual = getManifestConfigs(statusValueString);
+      const actual = getManifestConfigs(statusValue);
       const expected = [
         null,
         [

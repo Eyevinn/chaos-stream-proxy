@@ -157,7 +157,7 @@ describe("segments.handlers.segment", () => {
       expect(true).toEqual(true);
     });
 
-    it("should return code 301 normally", async () => {
+    it("should return code 302 normally", async () => {
       // Arrange
       const queryParams = {
         url: "http://mock.mock.com/segment_1.ts",
@@ -192,7 +192,7 @@ describe("segments.handlers.segment", () => {
 
       // Assert
       const expected: ALBResult = {
-        statusCode: 301,
+        statusCode: 302,
         headers: {
           "Access-Control-Allow-Headers": "Content-Type, Origin",
           "Access-Control-Allow-Origin": "*",

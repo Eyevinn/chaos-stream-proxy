@@ -4,7 +4,7 @@ import { CorruptorConfig, CorruptorConfigMap, IndexedCorruptorConfigMap } from "
 import clone from "clone";
 
 interface HLSManifestUtils {
-  mergeMap: (seglemtListSize: number, configsMap: IndexedCorruptorConfigMap) => CorruptorConfigMap[];
+  mergeMap: (segmentListSize: number, configsMap: IndexedCorruptorConfigMap) => CorruptorConfigMap[];
 }
 
 export interface HLSManifestTools {
@@ -15,8 +15,8 @@ export interface HLSManifestTools {
 
 export default function (): HLSManifestTools {
   const utils = Object.assign({
-    mergeMap(seglemtListSize: number, configsMap: IndexedCorruptorConfigMap): CorruptorConfigMap[] {
-      const corruptions = [...new Array(seglemtListSize)].map((_, i) => {
+    mergeMap(segmentListSize: number, configsMap: IndexedCorruptorConfigMap): CorruptorConfigMap[] {
+      const corruptions = [...new Array(segmentListSize)].map((_, i) => {
         const d = configsMap.get("*");
         if (!d) {
           return null;
@@ -68,8 +68,14 @@ export default function (): HLSManifestTools {
 
       // [Video]
       m3u.items.StreamItem = m3u.items.StreamItem.map((streamItem) => {
+        const bitRate = (streamItem as any)?.attributes?.attributes?.bandwidth;
         const currentUri = streamItem.get("uri");
-        streamItem.set("uri", proxyPathBuilder(currentUri, originalUrlQuery, "proxy-media.m3u8"));
+        // Clone params to avoid mutating input argument
+        const urlQuery = new URLSearchParams(originalUrlQuery);
+        if (bitRate) {
+          urlQuery.set("bitrate", bitRate);
+        }
+        streamItem.set("uri", proxyPathBuilder(currentUri, urlQuery, "proxy-media.m3u8"));
         return streamItem;
       });
 

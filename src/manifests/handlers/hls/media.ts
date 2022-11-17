@@ -1,6 +1,5 @@
 import fetch, { Response } from "node-fetch";
 import { ALBEvent, ALBResult } from "aws-lambda";
-import { ServiceError, M3U } from "../../../shared/types";
 import { generateErrorResponse, isValidUrl, parseM3U8Text, refineALBEventQuery } from "../../../shared/utils";
 import delaySCC from "../../utils/corruptions/delay";
 import statusCodeSCC from "../../utils/corruptions/statusCode";
@@ -11,38 +10,30 @@ import { corruptorConfigUtils } from "../../utils/configs";
 
 export default async function hlsMediaHandler(event: ALBEvent): Promise<ALBResult> {
   // To be able to reuse the handlers for AWS lambda function - input should be ALBEvent
-
-  // This is needed because Internet is a bit broken...
-  event.queryStringParameters = refineALBEventQuery(event.queryStringParameters);
-
-  const originalManifestUrl = event.queryStringParameters["url"];
+  const query = refineALBEventQuery(event.queryStringParameters);
 
   // Check for original manifest url in query params
-  if (!isValidUrl(originalManifestUrl)) {
-    const errorRes: ServiceError = {
+  if (!isValidUrl(query.url)) {
+    return generateErrorResponse({
       status: 400,
       message: "Missing a valid 'url' query parameter",
-    };
-    return generateErrorResponse(errorRes);
+    });
   }
 
   try {
-    const originalMediaManifestResponse: Response = await fetch(originalManifestUrl);
+    const originalMediaManifestResponse: Response = await fetch(query.url);
     if (!originalMediaManifestResponse.ok) {
-      const errorRes: ServiceError = {
+      return generateErrorResponse({
         status: originalMediaManifestResponse.status,
         message: "Unsuccessful Source Manifest fetch",
-      };
-      return generateErrorResponse(errorRes);
+      });
     }
 
     const originalResHeaders = {};
     originalMediaManifestResponse.headers.forEach((value, key) => (originalResHeaders[key] = value));
 
-    const mediaM3U: M3U = await parseM3U8Text(originalMediaManifestResponse);
-    
-    const reqQueryParams = new URLSearchParams(event.queryStringParameters);
-
+    const mediaM3U = await parseM3U8Text(originalMediaManifestResponse);
+    const reqQueryParams = new URLSearchParams(query);
     const manifestUtils = hlsManifestUtils();
     const configUtils = corruptorConfigUtils(reqQueryParams);
 
@@ -53,8 +44,8 @@ export default async function hlsMediaHandler(event: ALBEvent): Promise<ALBResul
       return generateErrorResponse(error);
     }
 
-    const sourceBaseURL = path.dirname(event.queryStringParameters["url"]);
-    const proxyManifest: string = manifestUtils.createProxyMediaManifest(mediaM3U, sourceBaseURL, allMutations);
+    const sourceBaseURL = path.dirname(query.url);
+    const proxyManifest = manifestUtils.createProxyMediaManifest(mediaM3U, sourceBaseURL, allMutations);
 
     return {
       statusCode: 200,
@@ -66,11 +57,10 @@ export default async function hlsMediaHandler(event: ALBEvent): Promise<ALBResul
       body: proxyManifest,
     };
   } catch (err) {
-    const errorRes: ServiceError = {
+    // Unexpected errors
+    return generateErrorResponse({
       status: 500,
-      message: err.message ? err.message : err,
-    };
-    //för oväntade fel
-    return generateErrorResponse(errorRes);
+      message: err.message || err,
+    });
   }
 }
