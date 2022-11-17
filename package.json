@@ -1,6 +1,6 @@
 {
   "name": "@eyevinn/chaos-stream-proxy",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Add some chaos to your HTTP streams to validate player behaviour",
   "main": "index.js",
   "scripts": {
