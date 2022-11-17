@@ -62,6 +62,10 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
         case SEGMENTS_PROXY_SEGMENT :
           logger.info("Request for HLS Proxy-Segment...");
           response = await segmentHandler(event);
+          // If response is undefined it means the request was intentionally timed out and we must not respond
+          if (!response) {
+            return;
+          }
           break;
         case DASH_PROXY_MASTER :
           logger.info("Request for DASH Proxy-Manifest...");
@@ -70,6 +74,10 @@ export const handler: ALBHandler = async (event: ALBEvent): Promise<ALBResult> =
         case DASH_PROXY_SEGMENT :
           logger.info("Request for DASH Proxy-Manifest...");
           response = await dashSegmentHandler(event);
+          // If response is undefined it means the request was intentionally timed out and we must not respond
+          if (!response) {
+            return;
+          }
         break;
         case "/" :
           logger.info("Request for Healthcheck...");
