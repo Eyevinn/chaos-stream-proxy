@@ -1,7 +1,3 @@
-import { TargetIndex } from '../../shared/types';
-import { parseM3U8Stream } from '../../shared/utils';
-import { createReadStream } from 'fs';
-import path from 'path';
 import { ALBEvent, ALBResult } from 'aws-lambda';
 import segmentHandler from './segment';
 

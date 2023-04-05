@@ -1,10 +1,6 @@
-import { M3U, Manifest, ServiceError, TargetIndex } from '../../shared/types';
+import { M3U, Manifest } from '../../shared/types';
 import { proxyPathBuilder, segmentUrlParamString } from '../../shared/utils';
-import {
-  CorruptorConfig,
-  CorruptorConfigMap,
-  IndexedCorruptorConfigMap
-} from './configs';
+import { CorruptorConfigMap, IndexedCorruptorConfigMap } from './configs';
 import clone from 'clone';
 
 interface HLSManifestUtils {
@@ -18,6 +14,7 @@ export interface HLSManifestTools {
   createProxyMediaManifest: (
     originalM3U: M3U,
     sourceBaseURL: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutations: any
   ) => Manifest; // look def again
   createProxyMasterManifest: (
@@ -33,13 +30,13 @@ export default function (): HLSManifestTools {
       segmentListSize: number,
       configsMap: IndexedCorruptorConfigMap
     ): CorruptorConfigMap[] {
-      const corruptions = [...new Array(segmentListSize)].map((_, i) => {
+      const corruptions = [...new Array(segmentListSize)].map(() => {
         const d = configsMap.get('*');
         if (!d) {
           return null;
         }
         const c: CorruptorConfigMap = new Map();
-        for (let name of d.keys()) {
+        for (const name of d.keys()) {
           const { fields } = d.get(name);
           c.set(name, { fields: { ...fields } });
         }
@@ -53,7 +50,7 @@ export default function (): HLSManifestTools {
 
         if (configCorruptions) {
           // Map values always take precedence
-          for (let name of configCorruptions.keys()) {
+          for (const name of configCorruptions.keys()) {
             if (!corruptions[i]) {
               corruptions[i] = new Map();
             }
@@ -88,6 +85,7 @@ export default function (): HLSManifestTools {
 
       // [Video]
       m3u.items.StreamItem = m3u.items.StreamItem.map((streamItem) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const bitRate = (streamItem as any)?.attributes?.attributes?.bandwidth;
         const currentUri = streamItem.get('uri');
         // Clone params to avoid mutating input argument
@@ -124,6 +122,7 @@ export default function (): HLSManifestTools {
       sourceBaseURL: string,
       configsMap: IndexedCorruptorConfigMap
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const that: HLSManifestTools = this;
 
       const m3u: M3U = clone(originalM3U);

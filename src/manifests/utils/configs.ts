@@ -90,7 +90,7 @@ export const corruptorConfigUtils = function (
         return decodeURIComponent(value)
           .replace(/\s/g, '')
           .replace(
-            /({|,)(?:\s*)(?:')?([A-Za-z_$\.][A-Za-z0-9_ \-\.$]*)(?:')?(?:\s*):/g,
+            /({|,)(?:\s*)(?:')?([A-Za-z_$.][A-Za-z0-9_ \-.$]*)(?:')?(?:\s*):/g,
             '$1"$2":'
           )
           .replace(/:\*/g, ':"*"');
@@ -106,6 +106,7 @@ export const corruptorConfigUtils = function (
       return this;
     },
     getAllManifestConfigs(mseq = 0, isDash = false) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const that: CorruptorConfigUtils = this;
       const outputMap = new CorruptorIndexMap();
       const configs = (
@@ -150,6 +151,7 @@ export const corruptorConfigUtils = function (
       const outputMap = new Map();
       for (let i = 0; i < this.registered.length; i++) {
         const SCC = this.registered[i];
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that: CorruptorConfigUtils = this;
         if (urlSearchParams.get(SCC.name) !== null) {
           // To make all object key names double quoted and remove whitespace

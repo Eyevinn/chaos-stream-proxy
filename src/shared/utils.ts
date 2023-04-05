@@ -8,11 +8,10 @@ import { IncomingHttpHeaders } from 'http';
 import path from 'path';
 import { CorruptorConfigMap } from '../manifests/utils/configs';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require('../../package.json');
 
-export const handleOptionsRequest = async (
-  event: ALBEvent
-): Promise<ALBResult> => {
+export const handleOptionsRequest = async (): Promise<ALBResult> => {
   return {
     statusCode: 204,
     headers: {
@@ -27,7 +26,7 @@ export const handleOptionsRequest = async (
 export const generateErrorResponse = (
   err: ServiceError
 ): Promise<ALBResult> => {
-  let response: ALBResult = {
+  const response: ALBResult = {
     statusCode: err.status,
     headers: {
       'Content-Type': 'application/json',
@@ -41,7 +40,7 @@ export const generateErrorResponse = (
 };
 
 export const generateHeartbeatResponse = (): Promise<ALBResult> => {
-  let response: ALBResult = {
+  const response: ALBResult = {
     statusCode: 200,
     headers: {
       'Content-Type': 'application/json',
@@ -79,7 +78,7 @@ export function composeALBEvent(
   const requestContext = { elb: { targetGroupArn: '' } };
   const headers: Record<string, string> = {};
   // IncomingHttpHeaders type is Record<string, string|string[]> because set-cookie is an array
-  for (let [name, value] of Object.entries(incomingHeaders)) {
+  for (const [name, value] of Object.entries(incomingHeaders)) {
     if (typeof value === 'string') {
       headers[name] = value;
     }
@@ -112,7 +111,7 @@ export async function parseM3U8Text(res: Response): Promise<M3U> {
    We set PLAYLIST-TYPE here if that is the case to ensure,
    that 'm3u.toString()' will later return a m3u8 string with the endlist tag.
   */
-  let setPlaylistTypeToVod: boolean = false;
+  let setPlaylistTypeToVod = false;
   const parser = m3u8.createStream();
   const responseCopy = res.clone();
   const m3u8String = await responseCopy.text();
@@ -120,7 +119,7 @@ export async function parseM3U8Text(res: Response): Promise<M3U> {
     setPlaylistTypeToVod = true;
   }
   res.body.pipe(parser);
-  return new Promise<any>((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     parser.on('m3u', (m3u: M3U) => {
       if (setPlaylistTypeToVod && m3u.get('playlistType') !== 'VOD') {
         m3u.set('playlistType', 'VOD');
@@ -157,7 +156,7 @@ export function refineALBEventQuery(
       .map((k) => `${k}=${queryStringParameters[k]}`)
       .join('&')
   );
-  for (let k of searchParams.keys()) {
+  for (const k of searchParams.keys()) {
     queryStringParameters[k] = searchParams.get(k);
   }
   return queryStringParameters;
@@ -179,7 +178,7 @@ const cleanUpPathAndURI = (originPath: string, uri: string): string[] => {
   if (matchList) {
     const jumpsToParentDir = matchList.length;
     if (jumpsToParentDir > 0) {
-      let splitPath = originPath.split('/');
+      const splitPath = originPath.split('/');
       for (let i = 0; i < jumpsToParentDir; i++) {
         splitPath.pop();
       }
@@ -203,7 +202,7 @@ export function proxyPathBuilder(
     return '';
   }
   const allQueries = new URLSearchParams(urlSearchParams);
-  let sourceItemURL: string = '';
+  let sourceItemURL = '';
   // Do not build an absolute source url If ItemUri is already an absolut url.
   if (itemUri.match(/^http/)) {
     sourceItemURL = itemUri;
@@ -226,7 +225,7 @@ export function segmentUrlParamString(
 ): string {
   let query = `url=${sourceSegURL}`;
 
-  for (let name of configMap.keys()) {
+  for (const name of configMap.keys()) {
     const fields = configMap.get(name).fields;
     const keys = Object.keys(fields);
     const corruptionInner = keys

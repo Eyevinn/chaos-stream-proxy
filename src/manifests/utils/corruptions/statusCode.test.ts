@@ -2,7 +2,7 @@ import statusCodeConfig from './statusCode';
 
 describe('manifest.utils.corruptions.statusCode', () => {
   describe('getManifestConfigs', () => {
-    const { getManifestConfigs, getSegmentConfigs, name } = statusCodeConfig;
+    const { getManifestConfigs, name } = statusCodeConfig;
     it('should have correct name', () => {
       // Assert
       expect(name).toEqual('statusCode');
@@ -111,6 +111,7 @@ describe('manifest.utils.corruptions.statusCode', () => {
 
     it('should handle illegal characters in query object', () => {
       // Arrange
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const statusValue = [{ code: 'hehe', i: false, sq: { he: 'he' } }] as any;
 
       // Act
@@ -130,6 +131,7 @@ describe('manifest.utils.corruptions.statusCode', () => {
 
     it('should handle invalid format', () => {
       // Arrange
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const statusValue = 'Faulty' as any;
 
       // Act

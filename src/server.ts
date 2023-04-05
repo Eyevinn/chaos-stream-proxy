@@ -1,12 +1,13 @@
 import fastify from 'fastify';
 import { registerRoutes } from './routes';
+import FastifyCors from 'fastify-cors';
 
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 8000;
 const INTERFACE: string = process.env.INTERFACE || '0.0.0.0';
 
 // App
 const app = fastify();
-app.register(require('fastify-cors'), {});
+app.register(FastifyCors, {});
 
 // Routes
 registerRoutes(app);

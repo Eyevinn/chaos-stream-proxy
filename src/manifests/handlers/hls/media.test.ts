@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import hlsMasterHandler from './master';
 import nock from 'nock';
 import { ALBEvent, ALBResult } from 'aws-lambda';
 import { createReadStream, ReadStream } from 'fs';
@@ -11,12 +10,12 @@ import hlsMediaHandler from './media';
 describe('manifests.handlers.hls.media.ts', () => {
   describe('hlsMediaHandler', () => {
     let mockBaseURL: string;
-    let mockMasterURL: string;
+    //let mockMasterURL: string;
     let mockMediaURL: string;
 
     beforeEach(() => {
       mockBaseURL = 'https://mock.mock.com/stream/hls';
-      mockMasterURL = 'https://mock.mock.com/stream/hls/manifest.m3u8';
+      //mockMasterURL = 'https://mock.mock.com/stream/hls/manifest.m3u8';
       mockMediaURL = 'https://mock.mock.com/stream/hls/manifest_1.m3u8';
     });
 
@@ -27,7 +26,7 @@ describe('manifests.handlers.hls.media.ts', () => {
     it('should return proxy media manifest with queryParams with corruption info on targeted Segment URLs', async () => {
       // Arrange
       const getMedia = () => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           const readStream: ReadStream = createReadStream(
             path.join(
               __dirname,
@@ -246,6 +245,6 @@ https://mock.mock.com/stream/hls/manifest_1_00001.ts
       expect(response.body).toEqual(expected.body);
     });
 
-    it('should return code 500 on Other Errors, eg M3U8 parser error', async () => {});
+    //it('should return code 500 on Other Errors, eg M3U8 parser error', async () => {});
   });
 });

@@ -106,7 +106,7 @@ export const handler: ALBHandler = async (
       }
     } else if (event.httpMethod === 'OPTIONS') {
       logger.info('Request for OPTIONS...');
-      response = await handleOptionsRequest(event);
+      response = await handleOptionsRequest();
     } else {
       logger.info('Request for missing resource...');
       response = await generateErrorResponse({

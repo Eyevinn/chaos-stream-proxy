@@ -11,7 +11,7 @@ describe('dashManifestTools', () => {
       // Arrange
       const mockManifestPath =
         '../../testvectors/dash/dash1_multitrack/manifest.xml';
-      let mockDashManifest = fs.readFileSync(
+      const mockDashManifest = fs.readFileSync(
         path.join(__dirname, mockManifestPath),
         'utf8'
       );
