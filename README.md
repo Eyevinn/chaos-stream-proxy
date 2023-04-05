@@ -1,4 +1,24 @@
-# Chaos Stream Proxy (V1)
+<h1 align="center">
+  Chaos Stream Proxy
+</h1>
+
+<div align="center">
+  Chaos Stream Proxy - Introduce predictable and reproducable errors in a stream 
+  <br />
+  <br />
+</div>
+
+<div align="center">
+<br />
+
+[![github release](https://img.shields.io/github/v/release/Eyevinn/chaos-stream-proxy?style=flat-square)](https://github.com/Eyevinn/chaos-stream-proxy/releases)
+[![license](https://img.shields.io/github/license/eyevinn/chaos-stream-proxy.svg?style=flat-square)](LICENSE)
+
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg?style=flat-square)](https://github.com/eyevinn/chaos-stream-proxy/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+[![made with hearth by Eyevinn](https://img.shields.io/badge/made%20with%20%E2%99%A5%20by-Eyevinn-59cbe8.svg?style=flat-square)](https://github.com/eyevinn)
+[![Slack](http://slack.streamingtech.se/badge.svg)](http://slack.streamingtech.se)
+
+</div>
 
 A server that acts as middle hand for manifest and segment requests, with the ability of adding corruptions to the manifest file, or messing with segment requests.
 
@@ -175,8 +195,11 @@ To deploy and update production environment publish a release on GitHub. This wi
 
 [NodeJS](https://nodejs.org/en/) and [Fastify](https://www.fastify.io/).
 
-## GIT Ways of Working
+## Contributing
 
+See [CONTRIBUTING](CONTRIBUTING.md) if you want to contribute to this project.
+
+### Git way-of-working
 In the interest of keeping a clean and easy to debug git history, use the following guidelines:
 
 - Read [How to Write a Commit Message](https://chris.beams.io/posts/git-commit/).
