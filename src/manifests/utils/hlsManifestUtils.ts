@@ -1,23 +1,40 @@
-import { M3U, Manifest, ServiceError, TargetIndex } from "../../shared/types";
-import { proxyPathBuilder, segmentUrlParamString } from "../../shared/utils";
-import { CorruptorConfig, CorruptorConfigMap, IndexedCorruptorConfigMap } from "./configs";
-import clone from "clone";
+import { M3U, Manifest, ServiceError, TargetIndex } from '../../shared/types';
+import { proxyPathBuilder, segmentUrlParamString } from '../../shared/utils';
+import {
+  CorruptorConfig,
+  CorruptorConfigMap,
+  IndexedCorruptorConfigMap
+} from './configs';
+import clone from 'clone';
 
 interface HLSManifestUtils {
-  mergeMap: (segmentListSize: number, configsMap: IndexedCorruptorConfigMap) => CorruptorConfigMap[];
+  mergeMap: (
+    segmentListSize: number,
+    configsMap: IndexedCorruptorConfigMap
+  ) => CorruptorConfigMap[];
 }
 
 export interface HLSManifestTools {
-  createProxyMediaManifest: (originalM3U: M3U, sourceBaseURL: string, mutations: any) => Manifest; // look def again
-  createProxyMasterManifest: (originalM3U: M3U, originalUrlQuery: URLSearchParams) => Manifest;
+  createProxyMediaManifest: (
+    originalM3U: M3U,
+    sourceBaseURL: string,
+    mutations: any
+  ) => Manifest; // look def again
+  createProxyMasterManifest: (
+    originalM3U: M3U,
+    originalUrlQuery: URLSearchParams
+  ) => Manifest;
   utils: HLSManifestUtils;
 }
 
 export default function (): HLSManifestTools {
   const utils = Object.assign({
-    mergeMap(segmentListSize: number, configsMap: IndexedCorruptorConfigMap): CorruptorConfigMap[] {
+    mergeMap(
+      segmentListSize: number,
+      configsMap: IndexedCorruptorConfigMap
+    ): CorruptorConfigMap[] {
       const corruptions = [...new Array(segmentListSize)].map((_, i) => {
-        const d = configsMap.get("*");
+        const d = configsMap.get('*');
         if (!d) {
           return null;
         }
@@ -58,31 +75,40 @@ export default function (): HLSManifestTools {
       }
 
       return corruptions;
-    },
+    }
   });
 
   return Object.assign({
     utils,
-    createProxyMasterManifest(originalM3U: M3U, originalUrlQuery: URLSearchParams) {
+    createProxyMasterManifest(
+      originalM3U: M3U,
+      originalUrlQuery: URLSearchParams
+    ) {
       const m3u: M3U = clone(originalM3U);
 
       // [Video]
       m3u.items.StreamItem = m3u.items.StreamItem.map((streamItem) => {
         const bitRate = (streamItem as any)?.attributes?.attributes?.bandwidth;
-        const currentUri = streamItem.get("uri");
+        const currentUri = streamItem.get('uri');
         // Clone params to avoid mutating input argument
         const urlQuery = new URLSearchParams(originalUrlQuery);
         if (bitRate) {
-          urlQuery.set("bitrate", bitRate);
+          urlQuery.set('bitrate', bitRate);
         }
-        streamItem.set("uri", proxyPathBuilder(currentUri, urlQuery, "proxy-media.m3u8"));
+        streamItem.set(
+          'uri',
+          proxyPathBuilder(currentUri, urlQuery, 'proxy-media.m3u8')
+        );
         return streamItem;
       });
 
       // [Audio/Subtitles/IFrame]
       m3u.items.MediaItem = m3u.items.MediaItem.map((mediaItem) => {
-        const currentUri = mediaItem.get("uri");
-        mediaItem.set("uri", proxyPathBuilder(currentUri, originalUrlQuery, "proxy-media.m3u8"));
+        const currentUri = mediaItem.get('uri');
+        mediaItem.set(
+          'uri',
+          proxyPathBuilder(currentUri, originalUrlQuery, 'proxy-media.m3u8')
+        );
         return mediaItem;
       });
 
@@ -93,32 +119,46 @@ export default function (): HLSManifestTools {
       // är ett http://.... url, och inte en relativ
       //---------------------------------------------------------------
     },
-    createProxyMediaManifest(originalM3U: M3U, sourceBaseURL: string, configsMap: IndexedCorruptorConfigMap) {
+    createProxyMediaManifest(
+      originalM3U: M3U,
+      sourceBaseURL: string,
+      configsMap: IndexedCorruptorConfigMap
+    ) {
       const that: HLSManifestTools = this;
 
       const m3u: M3U = clone(originalM3U);
 
       // configs for each index
-      const corruptions = that.utils.mergeMap(m3u.items.PlaylistItem.length, configsMap);
+      const corruptions = that.utils.mergeMap(
+        m3u.items.PlaylistItem.length,
+        configsMap
+      );
 
       // Attach corruptions to manifest
       for (let i = 0; i < m3u.items.PlaylistItem.length; i++) {
         const item = m3u.items.PlaylistItem[i];
         const corruption = corruptions[i];
-        let sourceSegURL: string = item.get("uri");
+        let sourceSegURL: string = item.get('uri');
         if (!sourceSegURL.match(/^http/)) {
-          sourceSegURL = `${sourceBaseURL}/${item.get("uri")}`;
+          sourceSegURL = `${sourceBaseURL}/${item.get('uri')}`;
         }
 
         if (!corruption) {
-          item.set("uri", sourceSegURL);
+          item.set('uri', sourceSegURL);
           continue;
         }
 
         const params = segmentUrlParamString(sourceSegURL, corruption);
-        item.set("uri", proxyPathBuilder(item.get("uri"), new URLSearchParams(params), "../../segments/proxy-segment"));
+        item.set(
+          'uri',
+          proxyPathBuilder(
+            item.get('uri'),
+            new URLSearchParams(params),
+            '../../segments/proxy-segment'
+          )
+        );
       }
       return m3u.toString();
-    },
+    }
   });
 }

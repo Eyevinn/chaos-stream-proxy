@@ -1,10 +1,11 @@
 /* eslint-disable */
-import { unparsableError } from "../../../shared/utils";
-import { ServiceError, TargetIndex } from "../../../shared/types";
-import { CorruptorConfig, SegmentCorruptorQueryConfig } from "../configs";
+import { unparsableError } from '../../../shared/utils';
+import { ServiceError, TargetIndex } from '../../../shared/types';
+import { CorruptorConfig, SegmentCorruptorQueryConfig } from '../configs';
 
 // TODO:Flytta till en i en constants fil, och gruppera med and
-const statusCodeExpectedQueryFormatMsg = "Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, br?:number, code:number}, ...n] where i and sq are mutually exclusive.";
+const statusCodeExpectedQueryFormatMsg =
+  'Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, br?:number, code:number}, ...n] where i and sq are mutually exclusive.';
 
 interface StatusCodeConfig {
   i?: TargetIndex;
@@ -15,7 +16,7 @@ interface StatusCodeConfig {
 
 function getManifestConfigError(value: { [key: string]: any }): string {
   const o = value as StatusCodeConfig;
-  if (o.code && typeof o.code !== "number") {
+  if (o.code && typeof o.code !== 'number') {
     return statusCodeExpectedQueryFormatMsg;
   }
 
@@ -23,7 +24,10 @@ function getManifestConfigError(value: { [key: string]: any }): string {
     return "Incorrect statusCode query format. Either 'i' or 'sq' is required in a single query object.";
   }
 
-  if (!(o.i === "*" || typeof o.i === "number") && !(o.sq === "*" || typeof o.sq === "number")) {
+  if (
+    !(o.i === '*' || typeof o.i === 'number') &&
+    !(o.sq === '*' || typeof o.sq === 'number')
+  ) {
     return statusCodeExpectedQueryFormatMsg;
   }
 
@@ -32,29 +36,31 @@ function getManifestConfigError(value: { [key: string]: any }): string {
   }
 
   if (o.sq < 0) {
-    return "Incorrect statusCode query format. Field sq must be 0 or positive.";
+    return 'Incorrect statusCode query format. Field sq must be 0 or positive.';
   }
 
   if (o.i < 0) {
-    return "Incorrect statusCode query format. Field i must be 0 or positive.";
+    return 'Incorrect statusCode query format. Field i must be 0 or positive.';
   }
 
-  return "";
+  return '';
 }
 function isValidSegmentConfig(value: object): boolean {
-  return typeof (value as StatusCodeConfig)?.code === "number";
+  return typeof (value as StatusCodeConfig)?.code === 'number';
 }
 
 const statusCodeConfig: SegmentCorruptorQueryConfig = {
-  getManifestConfigs(configs: Record<string, TargetIndex>[]): [ServiceError | null, CorruptorConfig[] | null] {
+  getManifestConfigs(
+    configs: Record<string, TargetIndex>[]
+  ): [ServiceError | null, CorruptorConfig[] | null] {
     // Verify it's at least an array
     if (!Array.isArray(configs)) {
       return [
         {
           message: statusCodeExpectedQueryFormatMsg,
-          status: 400,
+          status: 400
         },
-        null,
+        null
       ];
     }
 
@@ -72,44 +78,46 @@ const statusCodeConfig: SegmentCorruptorQueryConfig = {
       const fields = code ? { code } : null;
 
       // If * is already set, we skip
-      if (!configIndexMap.has("*") && !configSqMap.has("*")) {
+      if (!configIndexMap.has('*') && !configSqMap.has('*')) {
         // Index
-        if (i === "*") {
-          configIndexMap.set("*", { fields, i });
+        if (i === '*') {
+          configIndexMap.set('*', { fields, i });
         }
         // Sequence
-        else if (sq === "*") {
-          configSqMap.set("*", { fields, sq });
+        else if (sq === '*') {
+          configSqMap.set('*', { fields, sq });
         }
       }
 
       // Index numeric
-      if (typeof i === "number" && !configIndexMap.has(i)) {
+      if (typeof i === 'number' && !configIndexMap.has(i)) {
         configIndexMap.set(i, { fields, i });
       }
 
       // Sequence numeric
-      if (typeof sq === "number" && !configSqMap.has(sq)) {
+      if (typeof sq === 'number' && !configSqMap.has(sq)) {
         configSqMap.set(sq, { fields, sq });
       }
     }
 
     const corruptorConfigs = [
       ...configIndexMap.values(),
-      ...configSqMap.values(),
+      ...configSqMap.values()
     ];
 
     return [null, corruptorConfigs];
   },
-  getSegmentConfigs(statusCodeConfigString: string): [ServiceError | null, CorruptorConfig | null] {
+  getSegmentConfigs(
+    statusCodeConfigString: string
+  ): [ServiceError | null, CorruptorConfig | null] {
     const config = JSON.parse(statusCodeConfigString);
 
     if (!isValidSegmentConfig(config)) {
       return [
         unparsableError(
-          "statusCode",
+          'statusCode',
           statusCodeConfigString,
-          "{i?:number, sq?:number, br?:string, code:number}"
+          '{i?:number, sq?:number, br?:string, code:number}'
         ),
         null
       ];
@@ -120,12 +128,12 @@ const statusCodeConfig: SegmentCorruptorQueryConfig = {
         i: config.i,
         sq: config.sq,
         fields: {
-          code: config.code,
-        },
-      },
+          code: config.code
+        }
+      }
     ];
   },
-  name: "statusCode",
+  name: 'statusCode'
 };
 
 export default statusCodeConfig;
