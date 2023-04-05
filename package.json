@@ -11,6 +11,7 @@
     "test:watch": "jest --watch",
     "test": "jest",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "pretty": "prettier --check --ignore-unknown .",
     "deploy:dev": "git tag $(git rev-parse --short HEAD)-dev && git push --tags",
     "postversion": "git push && git push --tags"
