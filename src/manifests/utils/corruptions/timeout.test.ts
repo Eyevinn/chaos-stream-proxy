@@ -1,13 +1,13 @@
-import timeoutConfig from "./timeout";
+import timeoutConfig from './timeout';
 
-describe("manifest.utils.corruptions.timeout", () => {
-  describe("getManifestConfigs", () => {
+describe('manifest.utils.corruptions.timeout', () => {
+  describe('getManifestConfigs', () => {
     const { getManifestConfigs, getSegmentConfigs, name } = timeoutConfig;
-    it("should have correct name", () => {
+    it('should have correct name', () => {
       // Assert
-      expect(name).toEqual("timeout");
+      expect(name).toEqual('timeout');
     });
-    it("should handle valid input", () => {
+    it('should handle valid input', () => {
       // Arrange
       const timeoutValue = [{ i: 0 }, { sq: 0 }];
 
@@ -17,17 +17,20 @@ describe("manifest.utils.corruptions.timeout", () => {
         null,
         [
           { i: 0, fields: {} },
-          { sq: 0, fields: {} },
-        ],
+          { sq: 0, fields: {} }
+        ]
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle all * indexes", () => {
+    it('should handle all * indexes', () => {
       // Arrange
-      const timeoutValue: Record<string, number | "*">[] = [{ i: 0 }, { i: "*" }];
+      const timeoutValue: Record<string, number | '*'>[] = [
+        { i: 0 },
+        { i: '*' }
+      ];
 
       // Act
       const actual = getManifestConfigs(timeoutValue);
@@ -35,17 +38,20 @@ describe("manifest.utils.corruptions.timeout", () => {
         null,
         [
           { i: 0, fields: null },
-          { i: "*", fields: {} },
-        ],
+          { i: '*', fields: {} }
+        ]
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle all * sequences", () => {
+    it('should handle all * sequences', () => {
       // Arrange
-      const timeoutValue: Record<string, number | "*">[] = [{ sq: 0 }, { sq: "*" }];
+      const timeoutValue: Record<string, number | '*'>[] = [
+        { sq: 0 },
+        { sq: '*' }
+      ];
 
       // Act
       const actual = getManifestConfigs(timeoutValue);
@@ -53,80 +59,86 @@ describe("manifest.utils.corruptions.timeout", () => {
         null,
         [
           { sq: 0, fields: null },
-          { sq: "*", fields: {} },
-        ],
+          { sq: '*', fields: {} }
+        ]
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle no index and no sequence correct", () => {
+    it('should handle no index and no sequence correct', () => {
       // Arrange
-      const timeoutValue: Record<string, number | "*">[] = [{ irrelevant: 123 }];
+      const timeoutValue: Record<string, number | '*'>[] = [
+        { irrelevant: 123 }
+      ];
 
       // Act
       const actual = getManifestConfigs(timeoutValue);
       const expected = [
         {
-          message: "Incorrect timeout query format. Either 'i' or 'sq' is required in a single query object.",
-          status: 400,
+          message:
+            "Incorrect timeout query format. Either 'i' or 'sq' is required in a single query object.",
+          status: 400
         },
-        null,
+        null
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle both index and sequence in the query object", () => {
+    it('should handle both index and sequence in the query object', () => {
       // Arrange
-      const timeoutValue: Record<string, number | "*">[] = [{ i: 0, sq: 2 }];
+      const timeoutValue: Record<string, number | '*'>[] = [{ i: 0, sq: 2 }];
 
       // Act
       const actual = getManifestConfigs(timeoutValue);
       const expected = [
         {
-          message: "Incorrect timeout query format. 'i' and 'sq' are mutually exclusive in a single query object.",
-          status: 400,
+          message:
+            "Incorrect timeout query format. 'i' and 'sq' are mutually exclusive in a single query object.",
+          status: 400
         },
-        null,
+        null
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle illegal characters in query object", () => {
+    it('should handle illegal characters in query object', () => {
       // Arrange
-      const timeoutValue = [{ ms: "hehe", i: false, sq: { he: "he" } }] as any;
+      const timeoutValue = [{ ms: 'hehe', i: false, sq: { he: 'he' } }] as any;
 
       // Act
       const actual = getManifestConfigs(timeoutValue);
       const expected = [
         {
-          message: "Incorrect timeout query format. Expected format: [{i?:number, sq?:number, br?:number}, ...n] where i and sq are mutually exclusive.",
-          status: 400,
+          message:
+            'Incorrect timeout query format. Expected format: [{i?:number, sq?:number, br?:number}, ...n] where i and sq are mutually exclusive.',
+          status: 400
         },
-        null,
+        null
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle invalid format", () => {
+    it('should handle invalid format', () => {
       // Arrange
-      const timeoutValue = "Fel" as any;
+      const timeoutValue = 'Fel' as any;
 
       // Act
       const actual = getManifestConfigs(timeoutValue);
       const expected = [
         {
-          message: "Incorrect timeout query format. Expected format: [{i?:number, sq?:number, br?:number}, ...n] where i and sq are mutually exclusive.",
-          status: 400,
+          message:
+            'Incorrect timeout query format. Expected format: [{i?:number, sq?:number, br?:number}, ...n] where i and sq are mutually exclusive.',
+          status: 400
         },
-        null,
+        null
       ];
 
       // Assert

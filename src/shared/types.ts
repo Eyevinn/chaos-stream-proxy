@@ -1,11 +1,11 @@
-export type CorruptionIndex = number | "*";
+export type CorruptionIndex = number | '*';
 
 export type ServiceError = {
   status: number;
   message: string;
 };
 
-export type TargetIndex = number | "*";
+export type TargetIndex = number | '*';
 
 /**
  * Cherrypicking explicitly what we need to type from
@@ -13,8 +13,8 @@ export type TargetIndex = number | "*";
  * This obviously needs to be addressed
  */
 export type M3UItem = {
-  get: (key: "uri") => string | any;
-  set: (key: "uri", value: string) => void;
+  get: (key: 'uri') => string | any;
+  set: (key: 'uri', value: string) => void;
 };
 
 export type M3U = {

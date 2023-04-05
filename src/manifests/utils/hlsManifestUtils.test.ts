@@ -1,23 +1,37 @@
-import { TargetIndex } from "../../shared/types";
-import { parseM3U8Stream, segmentUrlParamString } from "../../shared/utils";
-import { CorruptorConfig, CorruptorConfigMap, corruptorConfigUtils, SegmentCorruptorQueryConfig } from "./configs";
-import hlsManifestTools from "./hlsManifestUtils";
-import { createReadStream } from "fs";
-import path from "path";
-import hlsManifestUtils from "./hlsManifestUtils";
+import { TargetIndex } from '../../shared/types';
+import { parseM3U8Stream, segmentUrlParamString } from '../../shared/utils';
+import {
+  CorruptorConfig,
+  CorruptorConfigMap,
+  corruptorConfigUtils,
+  SegmentCorruptorQueryConfig
+} from './configs';
+import hlsManifestTools from './hlsManifestUtils';
+import { createReadStream } from 'fs';
+import path from 'path';
+import hlsManifestUtils from './hlsManifestUtils';
 
-describe("hlsManifestTools", () => {
-  describe("createProxyMasterManifest", () => {
+describe('hlsManifestTools', () => {
+  describe('createProxyMasterManifest', () => {
     it("should replace variant urls in Master manifest, with querystring and swap 'url' value with source media url", async () => {
       // Arrange
-      const readStream = createReadStream(path.join(__dirname, "../../testvectors/hls/hls1_multitrack/manifest.m3u8"));
+      const readStream = createReadStream(
+        path.join(
+          __dirname,
+          '../../testvectors/hls/hls1_multitrack/manifest.m3u8'
+        )
+      );
       const masterM3U = await parseM3U8Stream(readStream);
-      const queryString = "url=https://mock.mock.com/stream/hls/manifest.m3u8&statusCode=[{i:0,code:404},{i:2,code:401}]&timeout=[{i:3}]&delay=[{i:2,ms:2000}]";
+      const queryString =
+        'url=https://mock.mock.com/stream/hls/manifest.m3u8&statusCode=[{i:0,code:404},{i:2,code:401}]&timeout=[{i:3}]&delay=[{i:2,ms:2000}]';
       const urlSearchParams = new URLSearchParams(queryString);
 
       // Act
       const manifestUtils = hlsManifestUtils();
-      const proxyManifest: string = manifestUtils.createProxyMasterManifest(masterM3U, urlSearchParams);
+      const proxyManifest: string = manifestUtils.createProxyMasterManifest(
+        masterM3U,
+        urlSearchParams
+      );
 
       // Assert
       const expected: string = `#EXTM3U
@@ -39,13 +53,18 @@ proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_3.m3u
     });
   });
 
-  describe("createProxyMediaManifest", () => {
+  describe('createProxyMediaManifest', () => {
     it("should replace segment urls in Media manifest, with querystring and swap 'url' value with source segment url", async () => {
       // Arrange
-      const mockCorruptionName = "_test_";
-      const readStream = createReadStream(path.join(__dirname, "../../testvectors/hls/hls1_multitrack/manifest_1.m3u8"));
+      const mockCorruptionName = '_test_';
+      const readStream = createReadStream(
+        path.join(
+          __dirname,
+          '../../testvectors/hls/hls1_multitrack/manifest_1.m3u8'
+        )
+      );
       const mediaM3U = await parseM3U8Stream(readStream);
-      const mockBaseUrl = "https://mock.mock.com/stream/hls";
+      const mockBaseUrl = 'https://mock.mock.com/stream/hls';
       const queryString = `url=${mockBaseUrl}/manifest_1.m3u8&${mockCorruptionName}=[{i:0,key:404},{i:2,key:401}]`;
       const urlSearchParams = new URLSearchParams(queryString);
 
@@ -56,16 +75,22 @@ proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_3.m3u
           null,
           [
             { i: 0, fields: { key: 404 } },
-            { i: 2, fields: { key: 401 } },
-          ],
+            { i: 2, fields: { key: 401 } }
+          ]
         ],
-        getSegmentConfigs: () => [null, { fields: null }],
+        getSegmentConfigs: () => [null, { fields: null }]
       };
       configs.register(config);
-      const [error, allMutations] = configs.getAllManifestConfigs(mediaM3U.get("mediaSequence"));
+      const [error, allMutations] = configs.getAllManifestConfigs(
+        mediaM3U.get('mediaSequence')
+      );
       // Act
       const manifestUtils = hlsManifestUtils();
-      const proxyManifest: string = manifestUtils.createProxyMediaManifest(mediaM3U, mockBaseUrl, allMutations);
+      const proxyManifest: string = manifestUtils.createProxyMediaManifest(
+        mediaM3U,
+        mockBaseUrl,
+        allMutations
+      );
       // Assert
       const expected: string = `#EXTM3U
 #EXT-X-VERSION:3
@@ -85,10 +110,15 @@ https://mock.mock.com/stream/hls/manifest_1_00002.ts
 
     it("should replace segment urls in Media manifest, with querystring and swap 'url' value with source segment url, except for targeted noop indexes", async () => {
       // Arrange
-      const mockCorruptionName = "_test_";
-      const readStream = createReadStream(path.join(__dirname, "../../testvectors/hls/hls1_multitrack/manifest_1.m3u8"));
+      const mockCorruptionName = '_test_';
+      const readStream = createReadStream(
+        path.join(
+          __dirname,
+          '../../testvectors/hls/hls1_multitrack/manifest_1.m3u8'
+        )
+      );
       const mediaM3U = await parseM3U8Stream(readStream);
-      const mockBaseUrl = "https://mock.mock.com/stream/hls";
+      const mockBaseUrl = 'https://mock.mock.com/stream/hls';
       const queryString = `url=${mockBaseUrl}/manifest_1.m3u8&${mockCorruptionName}=[{i:"*",key:404},{i:2}]`;
       const urlSearchParams = new URLSearchParams(queryString);
 
@@ -98,17 +128,23 @@ https://mock.mock.com/stream/hls/manifest_1_00002.ts
         getManifestConfigs: () => [
           null,
           [
-            { i: "*", fields: { key: 404 } },
-            { i: 2, fields: null },
-          ],
+            { i: '*', fields: { key: 404 } },
+            { i: 2, fields: null }
+          ]
         ],
-        getSegmentConfigs: () => [null, { fields: null }],
+        getSegmentConfigs: () => [null, { fields: null }]
       };
       configs.register(config);
-      const [error, allMutations] = configs.getAllManifestConfigs(mediaM3U.get("mediaSequence"));
+      const [error, allMutations] = configs.getAllManifestConfigs(
+        mediaM3U.get('mediaSequence')
+      );
       // Act
       const manifestUtils = hlsManifestUtils();
-      const proxyManifest: string = manifestUtils.createProxyMediaManifest(mediaM3U, mockBaseUrl, allMutations);
+      const proxyManifest: string = manifestUtils.createProxyMediaManifest(
+        mediaM3U,
+        mockBaseUrl,
+        allMutations
+      );
       // Assert
       const expected: string = `#EXTM3U
 #EXT-X-VERSION:3
@@ -127,96 +163,132 @@ https://mock.mock.com/stream/hls/manifest_1_00003.ts
     });
   });
 
-  describe("utils.segmentUrlParamString", () => {
-    it("should handle fields object", () => {
+  describe('utils.segmentUrlParamString', () => {
+    it('should handle fields object', () => {
       const someMap = new Map<string, CorruptorConfig>();
-      someMap.set("test", { fields: { n: 150, s: "hej" }, i: 1, sq: 2 });
-      const query = segmentUrlParamString("hello", someMap);
-      expect(query).toEqual("url=hello&test={n:150,s:hej}");
+      someMap.set('test', { fields: { n: 150, s: 'hej' }, i: 1, sq: 2 });
+      const query = segmentUrlParamString('hello', someMap);
+      expect(query).toEqual('url=hello&test={n:150,s:hej}');
     });
 
-    it("should handle key with empty fields object", () => {
+    it('should handle key with empty fields object', () => {
       const someMap = new Map<string, CorruptorConfig>();
-      someMap.set("timeout", { i: 1, sq: 2, fields: {} });
-      const query = segmentUrlParamString("hello", someMap);
-      expect(query).toEqual("url=hello&timeout=");
+      someMap.set('timeout', { i: 1, sq: 2, fields: {} });
+      const query = segmentUrlParamString('hello', someMap);
+      expect(query).toEqual('url=hello&timeout=');
     });
   });
 
-  describe("utils.mergeMap", () => {
-    it("should handle priority without default corrtupions", () => {
+  describe('utils.mergeMap', () => {
+    it('should handle priority without default corrtupions', () => {
       // Assign
       const someValues = new Map<TargetIndex, CorruptorConfigMap>();
-      someValues.set(0, new Map<string, CorruptorConfig>().set("a", { fields: { ms: 100 } }).set("b", { fields: { code: 300 } }));
-      const size = 3;
-
-      // Act
-      const actual = hlsManifestTools().utils.mergeMap(size, someValues);
-      const expected = [new Map<string, CorruptorConfig>().set("a", { fields: { ms: 100 } }).set("b", { fields: { code: 300 } }), null, null];
-
-      // Assert
-      expect(actual).toEqual(expected);
-    });
-
-    it("should handle priority with default corrtupions", () => {
-      // Assign
-      const someValues = new Map<TargetIndex, CorruptorConfigMap>();
-      someValues
-        .set(0, new Map<string, CorruptorConfig>().set("a", { fields: { ms: 100 } }).set("b", { fields: { code: 300 } }))
-        .set(
-          2,
-          new Map<string, CorruptorConfig>().set("a", {
-            fields: null,
-          })
-        )
-        .set("*", new Map<string, CorruptorConfig>().set("a", { fields: { ms: 50 } }));
+      someValues.set(
+        0,
+        new Map<string, CorruptorConfig>()
+          .set('a', { fields: { ms: 100 } })
+          .set('b', { fields: { code: 300 } })
+      );
       const size = 3;
 
       // Act
       const actual = hlsManifestTools().utils.mergeMap(size, someValues);
       const expected = [
-        new Map<string, CorruptorConfig>().set("a", { fields: { ms: 100 } }).set("b", { fields: { code: 300 } }),
-        new Map<string, CorruptorConfig>().set("a", { fields: { ms: 50 } }),
+        new Map<string, CorruptorConfig>()
+          .set('a', { fields: { ms: 100 } })
+          .set('b', { fields: { code: 300 } }),
         null,
+        null
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle multiple defaults with one noop", () => {
-      // Arrange
+    it('should handle priority with default corrtupions', () => {
+      // Assign
       const someValues = new Map<TargetIndex, CorruptorConfigMap>();
       someValues
         .set(
+          0,
+          new Map<string, CorruptorConfig>()
+            .set('a', { fields: { ms: 100 } })
+            .set('b', { fields: { code: 300 } })
+        )
+        .set(
           2,
-          new Map<string, CorruptorConfig>().set("a", {
-            fields: null,
+          new Map<string, CorruptorConfig>().set('a', {
+            fields: null
           })
         )
-        .set("*", new Map<string, CorruptorConfig>().set("a", { fields: { ms: 50 } }).set("b", { fields: { code: 500 } }));
+        .set(
+          '*',
+          new Map<string, CorruptorConfig>().set('a', { fields: { ms: 50 } })
+        );
       const size = 3;
 
       // Act
       const actual = hlsManifestTools().utils.mergeMap(size, someValues);
       const expected = [
-        new Map<string, CorruptorConfig>().set("a", { fields: { ms: 50 } }).set("b", { fields: { code: 500 } }),
-        new Map<string, CorruptorConfig>().set("a", { fields: { ms: 50 } }).set("b", { fields: { code: 500 } }),
-        new Map<string, CorruptorConfig>().set("b", { fields: { code: 500 } }),
+        new Map<string, CorruptorConfig>()
+          .set('a', { fields: { ms: 100 } })
+          .set('b', { fields: { code: 300 } }),
+        new Map<string, CorruptorConfig>().set('a', { fields: { ms: 50 } }),
+        null
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle empty fields prop correct", () => {
+    it('should handle multiple defaults with one noop', () => {
       // Arrange
-      const someValues = new Map<TargetIndex, CorruptorConfigMap>().set(0, new Map<string, CorruptorConfig>().set("a", { fields: {} }));
+      const someValues = new Map<TargetIndex, CorruptorConfigMap>();
+      someValues
+        .set(
+          2,
+          new Map<string, CorruptorConfig>().set('a', {
+            fields: null
+          })
+        )
+        .set(
+          '*',
+          new Map<string, CorruptorConfig>()
+            .set('a', { fields: { ms: 50 } })
+            .set('b', { fields: { code: 500 } })
+        );
+      const size = 3;
+
+      // Act
+      const actual = hlsManifestTools().utils.mergeMap(size, someValues);
+      const expected = [
+        new Map<string, CorruptorConfig>()
+          .set('a', { fields: { ms: 50 } })
+          .set('b', { fields: { code: 500 } }),
+        new Map<string, CorruptorConfig>()
+          .set('a', { fields: { ms: 50 } })
+          .set('b', { fields: { code: 500 } }),
+        new Map<string, CorruptorConfig>().set('b', { fields: { code: 500 } })
+      ];
+
+      // Assert
+      expect(actual).toEqual(expected);
+    });
+
+    it('should handle empty fields prop correct', () => {
+      // Arrange
+      const someValues = new Map<TargetIndex, CorruptorConfigMap>().set(
+        0,
+        new Map<string, CorruptorConfig>().set('a', { fields: {} })
+      );
       const size = 2;
 
       // Act
       const actual = hlsManifestTools().utils.mergeMap(size, someValues);
-      const expected = [new Map<string, CorruptorConfig>().set("a", { fields: {} }), null];
+      const expected = [
+        new Map<string, CorruptorConfig>().set('a', { fields: {} }),
+        null
+      ];
 
       // Assert
       expect(actual).toEqual(expected);

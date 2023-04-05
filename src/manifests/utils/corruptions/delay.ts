@@ -1,18 +1,19 @@
 /* eslint-disable */
-import { unparsableError } from "../../../shared/utils";
-import { ServiceError, TargetIndex } from "../../../shared/types";
-import { CorruptorConfig, SegmentCorruptorQueryConfig } from "../configs";
+import { unparsableError } from '../../../shared/utils';
+import { ServiceError, TargetIndex } from '../../../shared/types';
+import { CorruptorConfig, SegmentCorruptorQueryConfig } from '../configs';
 
 interface DelayConfig extends CorruptorConfig {
   ms: number;
 }
 
 // TODO:Flytta till en i en constants fil, och gruppera med and
-const delayExpectedQueryFormatMsg = "Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.";
+const delayExpectedQueryFormatMsg =
+  'Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.';
 
 function getManifestConfigError(value: { [key: string]: any }): string {
   const o = value as DelayConfig;
-  if (o.ms && typeof o.ms !== "number") {
+  if (o.ms && typeof o.ms !== 'number') {
     return delayExpectedQueryFormatMsg;
   }
 
@@ -20,7 +21,10 @@ function getManifestConfigError(value: { [key: string]: any }): string {
     return "Incorrect delay query format. Either 'i' or 'sq' is required in a single query object.";
   }
 
-  if (!(o.i === "*" || typeof o.i === "number") && !(o.sq === "*" || typeof o.sq === "number")) {
+  if (
+    !(o.i === '*' || typeof o.i === 'number') &&
+    !(o.sq === '*' || typeof o.sq === 'number')
+  ) {
     return delayExpectedQueryFormatMsg;
   }
 
@@ -29,33 +33,35 @@ function getManifestConfigError(value: { [key: string]: any }): string {
   }
 
   if (o.sq < 0) {
-    return "Incorrect delay query format. Field sq must be 0 or positive.";
+    return 'Incorrect delay query format. Field sq must be 0 or positive.';
   }
 
   if (o.i < 0) {
-    return "Incorrect delay query format. Field i must be 0 or positive.";
+    return 'Incorrect delay query format. Field i must be 0 or positive.';
   }
 
-  return "";
+  return '';
 }
 function isValidSegmentConfig(value: { [key: string]: any }): boolean {
   const o = value as DelayConfig;
-  if (o.ms && typeof o.ms !== "number") {
+  if (o.ms && typeof o.ms !== 'number') {
     return false;
   }
   return true;
 }
 
 const delayConfig: SegmentCorruptorQueryConfig = {
-  getManifestConfigs(configs: Record<string, TargetIndex>[]): [ServiceError | null, CorruptorConfig[] | null] {
+  getManifestConfigs(
+    configs: Record<string, TargetIndex>[]
+  ): [ServiceError | null, CorruptorConfig[] | null] {
     // Verify it's at least an array
     if (!Array.isArray(configs)) {
       return [
         {
           message: delayExpectedQueryFormatMsg,
-          status: 400,
+          status: 400
         },
-        null,
+        null
       ];
     }
 
@@ -73,17 +79,17 @@ const delayConfig: SegmentCorruptorQueryConfig = {
     for (let i = 0; i < configs.length; i++) {
       const config = configs[i];
       const corruptorConfig: CorruptorConfig = {
-        fields: null,
+        fields: null
       };
 
       if (config.ms) {
         corruptorConfig.fields = {
-          ms: config.ms,
+          ms: config.ms
         };
       }
 
       // Index default
-      if (config.i === "*") {
+      if (config.i === '*') {
         // If default is already set, we skip
         if (!configIndexMap.has(config.i) && !configSqMap.has(config.i)) {
           corruptorConfig.i = config.i;
@@ -92,13 +98,13 @@ const delayConfig: SegmentCorruptorQueryConfig = {
       }
 
       // Index numeric
-      if (typeof config.i === "number" && !configIndexMap.has(config.i)) {
+      if (typeof config.i === 'number' && !configIndexMap.has(config.i)) {
         corruptorConfig.i = config.i;
         configIndexMap.set(config.i, corruptorConfig);
       }
 
       // Sequence default
-      if (config.sq === "*") {
+      if (config.sq === '*') {
         // If default is already set, we skip
         if (!configIndexMap.has(config.sq) && !configSqMap.has(config.sq)) {
           corruptorConfig.sq = config.sq;
@@ -107,7 +113,7 @@ const delayConfig: SegmentCorruptorQueryConfig = {
       }
 
       // Sequence numeric
-      if (typeof config.sq === "number" && !configSqMap.has(config.sq)) {
+      if (typeof config.sq === 'number' && !configSqMap.has(config.sq)) {
         corruptorConfig.sq = config.sq;
         configSqMap.set(config.sq, corruptorConfig);
       }
@@ -124,10 +130,19 @@ const delayConfig: SegmentCorruptorQueryConfig = {
     }
     return [null, corruptorConfigs];
   },
-  getSegmentConfigs(delayConfigString: string): [ServiceError | null, CorruptorConfig | null] {
+  getSegmentConfigs(
+    delayConfigString: string
+  ): [ServiceError | null, CorruptorConfig | null] {
     const config: any = JSON.parse(delayConfigString);
     if (!isValidSegmentConfig(config)) {
-      return [unparsableError("delay", delayConfigString, "{i?:number, sq?:number, ms:number}"), null];
+      return [
+        unparsableError(
+          'delay',
+          delayConfigString,
+          '{i?:number, sq?:number, ms:number}'
+        ),
+        null
+      ];
     }
 
     return [
@@ -136,12 +151,12 @@ const delayConfig: SegmentCorruptorQueryConfig = {
         i: config.i,
         sq: config.sq,
         fields: {
-          ms: config.ms,
-        },
-      },
+          ms: config.ms
+        }
+      }
     ];
   },
-  name: "delay",
+  name: 'delay'
 };
 
 export default delayConfig;

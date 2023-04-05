@@ -1,4 +1,4 @@
-import { ServiceError, TargetIndex } from "../../shared/types";
+import { ServiceError, TargetIndex } from '../../shared/types';
 
 // export type SegmentCorruptorConfigItem = {
 //   index: TargetIndex;
@@ -8,8 +8,12 @@ import { ServiceError, TargetIndex } from "../../shared/types";
 // };
 
 export interface SegmentCorruptorQueryConfig {
-  getManifestConfigs: (config: Record<string, number|"*">[]) => [ServiceError | null, CorruptorConfig[] | null];
-  getSegmentConfigs(delayConfigString: string): [ServiceError | null, CorruptorConfig | null];
+  getManifestConfigs: (
+    config: Record<string, number | '*'>[]
+  ) => [ServiceError | null, CorruptorConfig[] | null];
+  getSegmentConfigs(
+    delayConfigString: string
+  ): [ServiceError | null, CorruptorConfig | null];
   name: string;
 }
 
@@ -43,7 +47,10 @@ export interface CorruptorConfigUtils {
    *
    * Value for each key is a map of all corruptions for selected index (eg key: "delay", value: {ms:150})
    */
-  getAllManifestConfigs: (mseq?: number, isDash?: boolean) => [ServiceError | null, IndexedCorruptorConfigMap | null];
+  getAllManifestConfigs: (
+    mseq?: number,
+    isDash?: boolean
+  ) => [ServiceError | null, IndexedCorruptorConfigMap | null];
 
   getAllSegmentConfigs: () => [ServiceError | null, CorruptorConfigMap | null];
 
@@ -58,7 +65,12 @@ export interface CorruptorConfigUtils {
 }
 
 export class CorruptorIndexMap extends Map<TargetIndex, CorruptorConfigMap> {
-  deepSet(index: TargetIndex, configName: string, value: CorruptorConfig, overwrite = true) {
+  deepSet(
+    index: TargetIndex,
+    configName: string,
+    value: CorruptorConfig,
+    overwrite = true
+  ) {
     if (!this.has(index)) {
       this.set(index, new Map());
     }
@@ -69,15 +81,20 @@ export class CorruptorIndexMap extends Map<TargetIndex, CorruptorConfigMap> {
   }
 }
 
-export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams): CorruptorConfigUtils {
+export const corruptorConfigUtils = function (
+  urlSearchParams: URLSearchParams
+): CorruptorConfigUtils {
   return Object.assign({
     utils: {
       getJSONParsableString(value: string): string {
         return decodeURIComponent(value)
-          .replace(/\s/g, "")
-          .replace(/({|,)(?:\s*)(?:')?([A-Za-z_$\.][A-Za-z0-9_ \-\.$]*)(?:')?(?:\s*):/g, '$1"$2":')
+          .replace(/\s/g, '')
+          .replace(
+            /({|,)(?:\s*)(?:')?([A-Za-z_$\.][A-Za-z0-9_ \-\.$]*)(?:')?(?:\s*):/g,
+            '$1"$2":'
+          )
           .replace(/:\*/g, ':"*"');
-      },
+      }
     },
     register(config: SegmentCorruptorQueryConfig) {
       if (!this.registered) {
@@ -91,18 +108,24 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
     getAllManifestConfigs(mseq = 0, isDash = false) {
       const that: CorruptorConfigUtils = this;
       const outputMap = new CorruptorIndexMap();
-      const configs = ((this.registered || []) as SegmentCorruptorQueryConfig[])
-        .filter(({ name }) => urlSearchParams.get(name));
-      const segmentBitrate = Number(urlSearchParams.get("bitrate"));
+      const configs = (
+        (this.registered || []) as SegmentCorruptorQueryConfig[]
+      ).filter(({ name }) => urlSearchParams.get(name));
+      const segmentBitrate = Number(urlSearchParams.get('bitrate'));
 
       for (const config of configs) {
         // JSONify and remove whitespace
-        const parsableSearchParam = that.utils.getJSONParsableString(urlSearchParams.get(config.name));
+        const parsableSearchParam = that.utils.getJSONParsableString(
+          urlSearchParams.get(config.name)
+        );
         let params = JSON.parse(parsableSearchParam);
 
         // If bitrate is set, filter out segments that doesn't match
         if (Array.isArray(params)) {
-          params = params.filter((config) => !config?.br || config?.br === "*" || config?.br === segmentBitrate);
+          params = params.filter(
+            (config) =>
+              !config?.br || config?.br === '*' || config?.br === segmentBitrate
+          );
         }
 
         const [error, configList] = config.getManifestConfigs(params);
@@ -113,7 +136,7 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
           if (item.i != undefined) {
             outputMap.deepSet(item.i, config.name, item, false);
           } else if (item.sq != undefined) {
-            if (item.sq === "*" || (isDash && item.sq === mseq)) {
+            if (item.sq === '*' || (isDash && item.sq === mseq)) {
               outputMap.deepSet(item.sq, config.name, item, false);
             } else {
               outputMap.deepSet(item.sq - mseq, config.name, item, false);
@@ -130,9 +153,12 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
         const that: CorruptorConfigUtils = this;
         if (urlSearchParams.get(SCC.name) !== null) {
           // To make all object key names double quoted and remove whitespace
-          const parsedSearchParam = that.utils.getJSONParsableString(urlSearchParams.get(SCC.name));
+          const parsedSearchParam = that.utils.getJSONParsableString(
+            urlSearchParams.get(SCC.name)
+          );
 
-          const [error, configResult] = SCC.getSegmentConfigs(parsedSearchParam); // should only contain 1 item this time
+          const [error, configResult] =
+            SCC.getSegmentConfigs(parsedSearchParam); // should only contain 1 item this time
           if (error) {
             return [error, null];
           }
@@ -140,6 +166,6 @@ export const corruptorConfigUtils = function (urlSearchParams: URLSearchParams):
         }
       }
       return [null, outputMap];
-    },
+    }
   }) as CorruptorConfigUtils;
 };
