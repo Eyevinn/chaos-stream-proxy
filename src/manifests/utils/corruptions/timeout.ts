@@ -12,6 +12,7 @@ interface TimeoutConfig {
   ch?: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getManifestConfigError(value: { [key: string]: any }): string {
   const o = value as TimeoutConfig;
 
@@ -132,7 +133,7 @@ const timeoutConfig: SegmentCorruptorQueryConfig = {
 
     const corruptorConfigs: CorruptorConfig[] = [];
 
-    for (var value of configIndexMap.values()) {
+    for (const value of configIndexMap.values()) {
       corruptorConfigs.push(value);
     }
 
@@ -142,9 +143,10 @@ const timeoutConfig: SegmentCorruptorQueryConfig = {
     return [null, corruptorConfigs];
   },
 
-  getSegmentConfigs(
-    timeoutConfigString: string
-  ): [ServiceError | null, CorruptorConfig | null] {
+  getSegmentConfigs(/* timeoutConfigString: string */): [
+    ServiceError | null,
+    CorruptorConfig | null
+  ] {
     return [null, { fields: {} }];
   },
   name: 'timeout'

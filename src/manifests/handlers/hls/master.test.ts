@@ -22,7 +22,7 @@ describe('manifests.handlers.hls.master.ts', () => {
 
     it('should return proxy master manifest with queryParams on Media Playlist URLs', async () => {
       const getBody = () => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           const readStream: ReadStream = createReadStream(
             path.join(
               __dirname,
@@ -87,7 +87,7 @@ describe('manifests.handlers.hls.master.ts', () => {
 
     it("should return code 400 when 'url' query parameter is missing in request", async () => {
       const getBody = () => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           const readStream = createReadStream(
             path.join(
               __dirname,
@@ -152,7 +152,7 @@ describe('manifests.handlers.hls.master.ts', () => {
 
     it("should return code 400 when 'url' query parameter is not a Valid URL", async () => {
       const getBody = () => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           const readStream = createReadStream(
             path.join(
               __dirname,
@@ -273,7 +273,7 @@ describe('manifests.handlers.hls.master.ts', () => {
 
     it('should return code 400 if source URL is a Media Playlist manifest', async () => {
       const getBody = () => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           const readStream = createReadStream(
             path.join(
               __dirname,

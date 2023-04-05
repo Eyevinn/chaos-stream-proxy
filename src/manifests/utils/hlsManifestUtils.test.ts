@@ -34,7 +34,7 @@ describe('hlsManifestTools', () => {
       );
 
       // Assert
-      const expected: string = `#EXTM3U
+      const expected = `#EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-INDEPENDENT-SEGMENTS
 #EXT-X-STREAM-INF:BANDWIDTH=4255267,AVERAGE-BANDWIDTH=4255267,CODECS="avc1.4d4032,mp4a.40.2",RESOLUTION=2560x1440,FRAME-RATE=25,AUDIO="audio",SUBTITLES="subs"
@@ -81,7 +81,7 @@ proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_3.m3u
         getSegmentConfigs: () => [null, { fields: null }]
       };
       configs.register(config);
-      const [error, allMutations] = configs.getAllManifestConfigs(
+      const [, allMutations] = configs.getAllManifestConfigs(
         mediaM3U.get('mediaSequence')
       );
       // Act
@@ -92,7 +92,7 @@ proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_3.m3u
         allMutations
       );
       // Assert
-      const expected: string = `#EXTM3U
+      const expected = `#EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-TARGETDURATION:10
 #EXT-X-MEDIA-SEQUENCE:1
@@ -135,7 +135,7 @@ https://mock.mock.com/stream/hls/manifest_1_00002.ts
         getSegmentConfigs: () => [null, { fields: null }]
       };
       configs.register(config);
-      const [error, allMutations] = configs.getAllManifestConfigs(
+      const [, allMutations] = configs.getAllManifestConfigs(
         mediaM3U.get('mediaSequence')
       );
       // Act
@@ -146,7 +146,7 @@ https://mock.mock.com/stream/hls/manifest_1_00002.ts
         allMutations
       );
       // Assert
-      const expected: string = `#EXTM3U
+      const expected = `#EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-TARGETDURATION:10
 #EXT-X-MEDIA-SEQUENCE:1

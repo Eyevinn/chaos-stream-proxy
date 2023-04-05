@@ -2,7 +2,7 @@ import delayConfig from './delay';
 
 describe('manifest.utils.corruptions.delay', () => {
   describe('getManifestConfigs', () => {
-    const { getManifestConfigs, getSegmentConfigs, name } = delayConfig;
+    const { getManifestConfigs, name } = delayConfig;
     it('should have correct name', () => {
       // Assert
       expect(name).toEqual('delay');
@@ -123,6 +123,7 @@ describe('manifest.utils.corruptions.delay', () => {
     });
     it('should handle illegal characters in query object', () => {
       // Arrange
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const delayValue = [{ ms: 'hehe', i: false, sq: { he: 'he' } }] as any;
 
       // Act
@@ -142,6 +143,7 @@ describe('manifest.utils.corruptions.delay', () => {
 
     it('should handle invalid format', () => {
       // Arrange
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const delayValue = "*{ssd''#Fel" as any;
 
       // Act

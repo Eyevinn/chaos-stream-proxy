@@ -12,6 +12,8 @@ export type TargetIndex = number | '*';
  * https://github.com/Eyevinn/node-m3u8/blob/master/m3u/Item.js
  * This obviously needs to be addressed
  */
+
+/* eslint-disable */
 export type M3UItem = {
   get: (key: 'uri') => string | any;
   set: (key: 'uri', value: string) => void;
@@ -31,5 +33,6 @@ export type M3U = {
   serialize(): any;
   unserialize(): any;
 };
+/* eslint-enable */
 
 export type Manifest = string;

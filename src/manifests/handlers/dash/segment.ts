@@ -52,7 +52,10 @@ export default async function dashSegmentHandler(
       return generateErrorResponse(error);
     }
     const dashUtils = dashManifestUtils();
-    let mergedMaps = dashUtils.utils.mergeMap(reqSegmentIndexInt, allMutations);
+    const mergedMaps = dashUtils.utils.mergeMap(
+      reqSegmentIndexInt,
+      allMutations
+    );
     const segUrl = new URL(segmentUrl);
     const cleanSegUrl = segUrl.origin + segUrl.pathname;
     let eventParamsString: string;

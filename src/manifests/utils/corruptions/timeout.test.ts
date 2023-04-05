@@ -2,7 +2,7 @@ import timeoutConfig from './timeout';
 
 describe('manifest.utils.corruptions.timeout', () => {
   describe('getManifestConfigs', () => {
-    const { getManifestConfigs, getSegmentConfigs, name } = timeoutConfig;
+    const { getManifestConfigs, name } = timeoutConfig;
     it('should have correct name', () => {
       // Assert
       expect(name).toEqual('timeout');
@@ -109,6 +109,7 @@ describe('manifest.utils.corruptions.timeout', () => {
 
     it('should handle illegal characters in query object', () => {
       // Arrange
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const timeoutValue = [{ ms: 'hehe', i: false, sq: { he: 'he' } }] as any;
 
       // Act
@@ -128,6 +129,7 @@ describe('manifest.utils.corruptions.timeout', () => {
 
     it('should handle invalid format', () => {
       // Arrange
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const timeoutValue = 'Fel' as any;
 
       // Act

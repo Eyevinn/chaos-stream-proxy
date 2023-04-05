@@ -21,8 +21,7 @@ export default async function segmentRoutes(fastify: FastifyInstance) {
     res.code(response.statusCode).headers(response.headers).send(response.body);
   });
   fastify.options('/*', async (req, res) => {
-    const event = composeALBEvent(req.method, req.url, req.headers);
-    const response = await handleOptionsRequest(event);
+    const response = await handleOptionsRequest();
     res.code(response.statusCode).headers(response.headers);
   });
 }

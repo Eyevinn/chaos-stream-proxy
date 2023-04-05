@@ -24,10 +24,10 @@ export default function (): DASHManifestTools {
       targetSegmentIndex: number,
       configsMap: IndexedCorruptorConfigMap
     ): CorruptorConfigMap {
-      let outputMap = new Map();
+      const outputMap = new Map();
       const d = configsMap.get('*');
       if (d) {
-        for (let name of d.keys()) {
+        for (const name of d.keys()) {
           const { fields } = d.get(name);
           outputMap.set(name, { fields: { ...fields } });
         }
@@ -36,7 +36,7 @@ export default function (): DASHManifestTools {
       const configCorruptions = configsMap.get(targetSegmentIndex);
       if (configCorruptions) {
         // Map values always take precedence
-        for (let name of configCorruptions.keys()) {
+        for (const name of configCorruptions.keys()) {
           // If fields isn't set, it means it's a skip if *, otherwise no-op
           if (!configCorruptions.get(name).fields) {
             outputMap.delete(name);
@@ -51,10 +51,9 @@ export default function (): DASHManifestTools {
   return {
     utils,
     createProxyDASHManifest(
-      dashManifestText: String,
+      dashManifestText: string,
       originalUrlQuery: URLSearchParams
     ): string {
-      let manifest: string;
       const parser = new xml2js.Parser();
       const builder = new xml2js.Builder();
 
@@ -98,7 +97,7 @@ export default function (): DASHManifestTools {
         });
       });
 
-      manifest = builder.buildObject(DASH_JSON);
+      const manifest = builder.buildObject(DASH_JSON);
 
       return manifest;
     }

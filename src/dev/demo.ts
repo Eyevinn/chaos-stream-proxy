@@ -1,4 +1,7 @@
-const { LambdaELB } = require('@eyevinn/dev-lambda');
+import { LambdaELB } from '@eyevinn/dev-lambda';
 import { handler } from '../lambda';
+import { ALBResult, ALBEvent } from 'aws-lambda';
 
-new LambdaELB({ handler }).run();
+new LambdaELB({
+  handler: <(event: ALBEvent) => Promise<ALBResult>>handler
+}).run();
