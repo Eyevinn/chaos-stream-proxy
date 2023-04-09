@@ -7,6 +7,12 @@ import { ReadStream } from 'fs';
 import { IncomingHttpHeaders } from 'http';
 import path from 'path';
 import { CorruptorConfigMap } from '../manifests/utils/configs';
+import {
+  FastifyReply,
+  FastifyRequest,
+  RequestPayload,
+  FastifyInstance
+} from 'fastify';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require('../../package.json');
@@ -239,3 +245,31 @@ export function segmentUrlParamString(
 
 export const SERVICE_ORIGIN =
   process.env.SERVICE_ORIGIN || 'http://localhost:8000';
+
+export function joinNotNull(strings: (string | null)[], delimiter: string) {
+  return strings.filter((s) => s != null).join(delimiter);
+}
+
+export function addCustomVersionHeader(app: FastifyInstance): void {
+  app.addHook(
+    'onSend',
+    async (
+      request: FastifyRequest,
+      reply: FastifyReply,
+      payload: RequestPayload
+    ): Promise<RequestPayload> => {
+      reply.headers({
+        'Access-Control-Allow-Headers': joinNotNull(
+          [reply.getHeader('Access-Control-Allow-Headers'), 'X-Version'],
+          ', '
+        ),
+        'Access-Control-Expose-Headers': joinNotNull(
+          [reply.getHeader('Access-Control-Expose-Headers'), 'X-Version'],
+          ', '
+        ),
+        'X-Version': process.env.npm_package_version
+      });
+      return payload;
+    }
+  );
+}
