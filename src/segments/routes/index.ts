@@ -5,7 +5,7 @@ import { SEGMENTS_PROXY_SEGMENT } from "../constants";
 
 export default async function segmentRoutes(fastify: FastifyInstance) {
   fastify.get(SEGMENTS_PROXY_SEGMENT, async (req, res) => {
-    const event = composeALBEvent(req.method, req.url, req.headers);
+    const event = await composeALBEvent(req.method, req.url, req.headers);
     const response = await segmentHandler(event);
     // If response is undefined it means the request was intentionally timed out and we must not respond
     if (!response) {
@@ -21,7 +21,7 @@ export default async function segmentRoutes(fastify: FastifyInstance) {
     res.code(response.statusCode).headers(response.headers).send(response.body);
   });
   fastify.options("/*", async (req, res) => {
-    const event = composeALBEvent(req.method, req.url, req.headers);
+    const event = await composeALBEvent(req.method, req.url, req.headers);
     const response = await handleOptionsRequest(event);
     res.code(response.statusCode).headers(response.headers);
   });

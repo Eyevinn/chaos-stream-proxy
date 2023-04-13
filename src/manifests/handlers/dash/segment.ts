@@ -52,11 +52,12 @@ export default async function dashSegmentHandler(event: ALBEvent): Promise<ALBRe
         } else {
             eventParamsString = segmentUrlParamString(cleanSegUrl, mergedMaps);
         }
-        return await segmentHandler(composeALBEvent(
+        const albEvent = await composeALBEvent(
             event.httpMethod,
             `${event.path}?${eventParamsString}`,
             event.headers,
-        ));
+        )
+        return await segmentHandler(albEvent);
 
     } catch (err) {
         const errorRes: ServiceError = {

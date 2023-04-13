@@ -196,6 +196,16 @@ Commit messages are automatically linted via [husky](https://github.com/typicode
 
 Check `package.json` for available scripts.
 
+## Optionnal Features
+### Load Manifest url params from aws ssm parameter store instead
+- Create a .env file at the root the of project
+- fill it like this : 
+```
+AWS_REGION="eu-central-1"
+AWS_SSM_PARAM_KEY="/ChaosStreamProxy/Development/UrlParams"
+LOAD_PARAMS_FROM_AWS_SSM=true
+```
+
 ## Commercial Options
 
 The Chaos Stream Proxy is released as open source but we do offer some commercial options in relation to it. Contact sales@eyevinn.se if you are interested for pricing and more information.

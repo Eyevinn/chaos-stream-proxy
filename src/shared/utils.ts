@@ -7,6 +7,9 @@ import { ReadStream } from "fs";
 import { IncomingHttpHeaders } from "http";
 import path from "path";
 import { CorruptorConfigMap } from "../manifests/utils/configs";
+import { addSSMUrlParametersToUrl } from './aws.utils';
+require('dotenv').config();
+
 
 const { version } = require("../../package.json");
 
@@ -62,11 +65,16 @@ export const isValidUrl = (string) => {
   }
 };
 
-export function composeALBEvent(httpMethod: string, url: string, incomingHeaders: IncomingHttpHeaders): ALBEvent {
-  // Create ALBEvent from Fastify Request...
+export async function composeALBEvent(httpMethod: string, url: string, incomingHeaders: IncomingHttpHeaders, loadAWSParams: Boolean = false): Promise<ALBEvent> {
+  // Create ALBEvent from Fastify Request..
+  if ((AppSettings.loadUrlParametersFromAwsSSM)) {
+    url = await addSSMUrlParametersToUrl(url);
+  }
+
+
   const [path, queryString] = url.split("?");
   const queryStringParameters = Object.fromEntries(new URLSearchParams(queryString));
-  const requestContext = { elb: { targetGroupArn: "" }};
+  const requestContext = { elb: { targetGroupArn: "" } };
   const headers: Record<string, string> = {};
   // IncomingHttpHeaders type is Record<string, string|string[]> because set-cookie is an array
   for (let [name, value] of Object.entries(incomingHeaders)) {
@@ -134,7 +142,7 @@ export function parseM3U8Stream(stream: ReadStream): Promise<M3U> {
 
 // @todo: Clarify what this function actually does
 // Older comment: "This is needed because the internet is a bit broken..."
-export function refineALBEventQuery(originalQuery: ALBEventQueryStringParameters) {
+export function refineALBEventQuery(originalQuery: ALBEventQueryStringParameters = {}) {
   const queryStringParameters = clone(originalQuery);
   const searchParams = new URLSearchParams(
     Object.keys(queryStringParameters)
@@ -208,6 +216,11 @@ export function segmentUrlParamString(sourceSegURL: string, configMap: Corruptor
     query += `&${name}=${values}`;
   }
   return query;
+}
+
+
+export class AppSettings  {
+  static loadUrlParametersFromAwsSSM: Boolean = process.env.LOAD_PARAMS_FROM_AWS_SSM === 'true';
 }
 
 export const SERVICE_ORIGIN = process.env.SERVICE_ORIGIN || "http://localhost:8000";
