@@ -1,19 +1,19 @@
-import delayConfig from "./delay";
+import delayConfig from './delay';
 
-describe("manifest.utils.corruptions.delay", () => {
-  describe("getManifestConfigs", () => {
-    const { getManifestConfigs, getSegmentConfigs, name } = delayConfig;
-    it("should have correct name", () => {
+describe('manifest.utils.corruptions.delay', () => {
+  describe('getManifestConfigs', () => {
+    const { getManifestConfigs, name } = delayConfig;
+    it('should have correct name', () => {
       // Assert
-      expect(name).toEqual("delay");
+      expect(name).toEqual('delay');
     });
-    it("should handle valid input", () => {
+    it('should handle valid input', () => {
       // Arrange
       const delayValue = [
         { i: 0, ms: 150 },
         { i: 0, ms: 500 },
         { sq: 0, ms: 1500 },
-        { sq: 0, ms: 2500 },
+        { sq: 0, ms: 2500 }
       ];
 
       // Act
@@ -22,17 +22,24 @@ describe("manifest.utils.corruptions.delay", () => {
         null,
         [
           { i: 0, fields: { ms: 150 } },
-          { sq: 0, fields: { ms: 1500 } },
-        ],
+          { sq: 0, fields: { ms: 1500 } }
+        ]
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle all * indexes", () => {
+    it('should handle all * indexes', () => {
       // Arrange
-      const delayValue: Record<string, number | "*">[] = [{ sq: 5, ms: 50 }, { i: 0 }, { i: 1, ms: 10 }, { i: "*", ms: 150 }, { i: 2 }, { i: 3, ms: 20 }];
+      const delayValue: Record<string, number | '*'>[] = [
+        { sq: 5, ms: 50 },
+        { i: 0 },
+        { i: 1, ms: 10 },
+        { i: '*', ms: 150 },
+        { i: 2 },
+        { i: 3, ms: 20 }
+      ];
 
       // Act
       const actual = getManifestConfigs(delayValue);
@@ -41,20 +48,25 @@ describe("manifest.utils.corruptions.delay", () => {
         [
           { i: 0, fields: null },
           { i: 1, fields: { ms: 10 } },
-          { i: "*", fields: { ms: 150 } },
+          { i: '*', fields: { ms: 150 } },
           { i: 2, fields: null },
           { i: 3, fields: { ms: 20 } },
-          { sq: 5, fields: { ms: 50 } },
-        ],
+          { sq: 5, fields: { ms: 50 } }
+        ]
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle all * sequences", () => {
+    it('should handle all * sequences', () => {
       // Arrange
-      const delayValue: Record<string, number | "*">[] = [{ sq: 0 }, { sq: 5, ms: 50 }, { sq: "*", ms: 150 }, { sq: 1 }];
+      const delayValue: Record<string, number | '*'>[] = [
+        { sq: 0 },
+        { sq: 5, ms: 50 },
+        { sq: '*', ms: 150 },
+        { sq: 1 }
+      ];
 
       // Act
       const actual = getManifestConfigs(delayValue);
@@ -63,16 +75,16 @@ describe("manifest.utils.corruptions.delay", () => {
         [
           { sq: 0, fields: null },
           { sq: 5, fields: { ms: 50 } },
-          { sq: "*", fields: { ms: 150 } },
-          { sq: 1, fields: null },
-        ],
+          { sq: '*', fields: { ms: 150 } },
+          { sq: 1, fields: null }
+        ]
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle no index and no sequence correct", () => {
+    it('should handle no index and no sequence correct', () => {
       // Arrange
       const delayValue = [{ ms: 150 }];
 
@@ -80,17 +92,18 @@ describe("manifest.utils.corruptions.delay", () => {
       const actual = getManifestConfigs(delayValue);
       const expected = [
         {
-          message: "Incorrect delay query format. Either 'i' or 'sq' is required in a single query object.",
-          status: 400,
+          message:
+            "Incorrect delay query format. Either 'i' or 'sq' is required in a single query object.",
+          status: 400
         },
-        null,
+        null
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle both index and sequence in the query object", () => {
+    it('should handle both index and sequence in the query object', () => {
       // Arrange
       const delayValue = [{ ms: 150, i: 0, sq: 2 }];
 
@@ -98,61 +111,66 @@ describe("manifest.utils.corruptions.delay", () => {
       const actual = getManifestConfigs(delayValue);
       const expected = [
         {
-          message: "Incorrect delay query format. 'i' and 'sq' are mutually exclusive in a single query object.",
-          status: 400,
+          message:
+            "Incorrect delay query format. 'i' and 'sq' are mutually exclusive in a single query object.",
+          status: 400
         },
-        null,
+        null
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
-    it("should handle illegal characters in query object", () => {
+    it('should handle illegal characters in query object', () => {
       // Arrange
-      const delayValue = [{ ms: "hehe", i: false, sq: { he: "he" } }] as any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const delayValue = [{ ms: 'hehe', i: false, sq: { he: 'he' } }] as any;
 
       // Act
       const actual = getManifestConfigs(delayValue);
       const expected = [
         {
-          message: "Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.",
-          status: 400,
+          message:
+            'Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.',
+          status: 400
         },
-        null,
+        null
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle invalid format", () => {
+    it('should handle invalid format', () => {
       // Arrange
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const delayValue = "*{ssd''#Fel" as any;
 
       // Act
       const actual = getManifestConfigs(delayValue);
       const expected = [
         {
-          message: "Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.",
-          status: 400,
+          message:
+            'Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.',
+          status: 400
         },
-        null,
+        null
       ];
 
       // Assert
       expect(actual).toEqual(expected);
     });
 
-    it("should handle multiple defaults *", () => {
+    it('should handle multiple defaults *', () => {
       // Arrange
-      const delayValue: Record<string, number | "*">[] = [
-        { i: "*", ms: 10 },
-        { sq: "*", ms: 100 },
+      const delayValue: Record<string, number | '*'>[] = [
+        { i: '*', ms: 10 },
+        { sq: '*', ms: 100 }
       ];
 
       // Act
       const actual = getManifestConfigs(delayValue);
-      const expected = [null, [{ i: "*", fields: { ms: 10 } }]];
+      const expected = [null, [{ i: '*', fields: { ms: 10 } }]];
 
       // Assert
       expect(actual).toEqual(expected);

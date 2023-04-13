@@ -1,8 +1,9 @@
-import { ServiceError, TargetIndex } from "../../../shared/types";
-import { CorruptorConfig, SegmentCorruptorQueryConfig } from "../configs";
+import { ServiceError, TargetIndex } from '../../../shared/types';
+import { CorruptorConfig, SegmentCorruptorQueryConfig } from '../configs';
 
 // TODO:Flytta till en i en constants fil, och gruppera med and
-const timeoutExpectedQueryFormatMsg = "Incorrect timeout query format. Expected format: [{i?:number, sq?:number, br?:number}, ...n] where i and sq are mutually exclusive.";
+const timeoutExpectedQueryFormatMsg =
+  'Incorrect timeout query format. Expected format: [{i?:number, sq?:number, br?:number}, ...n] where i and sq are mutually exclusive.';
 
 interface TimeoutConfig {
   i?: TargetIndex;
@@ -11,6 +12,7 @@ interface TimeoutConfig {
   ch?: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getManifestConfigError(value: { [key: string]: any }): string {
   const o = value as TimeoutConfig;
 
@@ -18,7 +20,10 @@ function getManifestConfigError(value: { [key: string]: any }): string {
     return "Incorrect timeout query format. Either 'i' or 'sq' is required in a single query object.";
   }
 
-  if (!(o.i === "*" || typeof o.i === "number") && !(o.sq === "*" || typeof o.sq === "number")) {
+  if (
+    !(o.i === '*' || typeof o.i === 'number') &&
+    !(o.sq === '*' || typeof o.sq === 'number')
+  ) {
     return timeoutExpectedQueryFormatMsg;
   }
 
@@ -27,26 +32,28 @@ function getManifestConfigError(value: { [key: string]: any }): string {
   }
 
   if (o.sq < 0) {
-    return "Incorrect timeout query format. Field sq must be 0 or positive.";
+    return 'Incorrect timeout query format. Field sq must be 0 or positive.';
   }
 
   if (o.i < 0) {
-    return "Incorrect timeout query format. Field i must be 0 or positive.";
+    return 'Incorrect timeout query format. Field i must be 0 or positive.';
   }
 
-  return "";
+  return '';
 }
 
 const timeoutConfig: SegmentCorruptorQueryConfig = {
-  getManifestConfigs(configs: Record<string, TargetIndex>[]): [ServiceError | null, CorruptorConfig[] | null] {
+  getManifestConfigs(
+    configs: Record<string, TargetIndex>[]
+  ): [ServiceError | null, CorruptorConfig[] | null] {
     // Verify it's at least an array
     if (!Array.isArray(configs)) {
       return [
         {
           message: timeoutExpectedQueryFormatMsg,
-          status: 400,
+          status: 400
         },
-        null,
+        null
       ];
     }
 
@@ -63,14 +70,14 @@ const timeoutConfig: SegmentCorruptorQueryConfig = {
 
     const noopNumericConfigs = function () {
       configIndexMap.forEach((val, key) => {
-        if (typeof key === "number") {
+        if (typeof key === 'number') {
           val.fields = null;
           configIndexMap.set(key, val);
         }
       });
 
       configSqMap.forEach((val, key) => {
-        if (typeof key === "number") {
+        if (typeof key === 'number') {
           val.fields = null;
           configSqMap.set(key, val);
         }
@@ -80,10 +87,10 @@ const timeoutConfig: SegmentCorruptorQueryConfig = {
     for (let i = 0; i < configs.length; i++) {
       const config = configs[i];
       const corruptorConfig: CorruptorConfig = {
-        fields: {},
+        fields: {}
       };
 
-      if (config.i === "*") {
+      if (config.i === '*') {
         // If default is already set, we skip
         if (!configIndexMap.has(config.i) && !configSqMap.has(config.i)) {
           corruptorConfig.i = config.i;
@@ -94,16 +101,16 @@ const timeoutConfig: SegmentCorruptorQueryConfig = {
         }
       }
 
-      if (typeof config.i === "number") {
+      if (typeof config.i === 'number') {
         // If there's any default, make it noop
-        if (configIndexMap.has("*") || configSqMap.has("*")) {
+        if (configIndexMap.has('*') || configSqMap.has('*')) {
           corruptorConfig.fields = null;
         }
         corruptorConfig.i = config.i;
         configIndexMap.set(config.i, corruptorConfig);
       }
 
-      if (config.sq === "*") {
+      if (config.sq === '*') {
         // If default is already set, we skip
         if (!configIndexMap.has(config.sq) && !configSqMap.has(config.sq)) {
           corruptorConfig.sq = config.sq;
@@ -114,7 +121,7 @@ const timeoutConfig: SegmentCorruptorQueryConfig = {
         noopNumericConfigs();
       }
 
-      if (typeof config.sq === "number") {
+      if (typeof config.sq === 'number') {
         // If there's any default, make it noop
         if (configIndexMap.has(config.i) || configSqMap.has(config.i)) {
           corruptorConfig.fields = null;
@@ -126,7 +133,7 @@ const timeoutConfig: SegmentCorruptorQueryConfig = {
 
     const corruptorConfigs: CorruptorConfig[] = [];
 
-    for (var value of configIndexMap.values()) {
+    for (const value of configIndexMap.values()) {
       corruptorConfigs.push(value);
     }
 
@@ -136,10 +143,13 @@ const timeoutConfig: SegmentCorruptorQueryConfig = {
     return [null, corruptorConfigs];
   },
 
-  getSegmentConfigs(timeoutConfigString: string): [ServiceError | null, CorruptorConfig | null] {
+  getSegmentConfigs(/* timeoutConfigString: string */): [
+    ServiceError | null,
+    CorruptorConfig | null
+  ] {
     return [null, { fields: {} }];
   },
-  name: "timeout",
+  name: 'timeout'
 };
 
 export default timeoutConfig;

@@ -1,4 +1,24 @@
-# Chaos Stream Proxy (V1)
+<h1 align="center">
+  Chaos Stream Proxy
+</h1>
+
+<div align="center">
+  Chaos Stream Proxy - Introduce predictable and reproducable errors in a stream 
+  <br />
+  <br />
+</div>
+
+<div align="center">
+<br />
+
+[![github release](https://img.shields.io/github/v/release/Eyevinn/chaos-stream-proxy?style=flat-square)](https://github.com/Eyevinn/chaos-stream-proxy/releases)
+[![license](https://img.shields.io/github/license/eyevinn/chaos-stream-proxy.svg?style=flat-square)](LICENSE)
+
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg?style=flat-square)](https://github.com/eyevinn/chaos-stream-proxy/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+[![made with hearth by Eyevinn](https://img.shields.io/badge/made%20with%20%E2%99%A5%20by-Eyevinn-59cbe8.svg?style=flat-square)](https://github.com/eyevinn)
+[![Slack](http://slack.streamingtech.se/badge.svg)](http://slack.streamingtech.se)
+
+</div>
 
 A server that acts as middle hand for manifest and segment requests, with the ability of adding corruptions to the manifest file, or messing with segment requests.
 
@@ -27,14 +47,14 @@ To try it out, go to your favourite HLS/MPEG-DASH video player such as `https://
 
 ## API
 
-| ENDPOINT                              | METHOD | DESCRIPTION                                                                                              |
-| ------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------- |
-| `/api/v2/manifests/hls/proxy-master.m3u8`  | GET    | Returns a proxy Multivariant M3U8 file, based on query parameters                                        |
-| `/api/v2/manifests/hls/proxy-media.m3u8`   | GET    | Returns a proxy Media M3U8 file, based on query parameters                                              |
-| `/api/v2/manifests/dash/proxy-master.mpd`      | GET    | Returns a proxy MPD file, based on query parameters                                             |
-| `/api/v2/manifests/dash/proxy-segment`      | GET    | Applies corruption present in query parameter and may return a 302 redirect to the original segment file |
-| `/api/v2/segments/proxy-segment`           | GET    | Applies corruption present in query parameter and may return a 302 redirect to the original segment file |
-| `/`                                        | GET    | Server health check                                                                                      |
+| ENDPOINT                                  | METHOD | DESCRIPTION                                                                                              |
+| ----------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------- |
+| `/api/v2/manifests/hls/proxy-master.m3u8` | GET    | Returns a proxy Multivariant M3U8 file, based on query parameters                                        |
+| `/api/v2/manifests/hls/proxy-media.m3u8`  | GET    | Returns a proxy Media M3U8 file, based on query parameters                                               |
+| `/api/v2/manifests/dash/proxy-master.mpd` | GET    | Returns a proxy MPD file, based on query parameters                                                      |
+| `/api/v2/manifests/dash/proxy-segment`    | GET    | Applies corruption present in query parameter and may return a 302 redirect to the original segment file |
+| `/api/v2/segments/proxy-segment`          | GET    | Applies corruption present in query parameter and may return a 302 redirect to the original segment file |
+| `/`                                       | GET    | Server health check                                                                                      |
 
 ### Query Parameters
 
@@ -144,17 +164,21 @@ https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3
 ```
 
 ### Example corruptions on MPEG-DASH Streams
+
 1. VOD: Example of MPEG-DASH with delay of 1500ms and response code 418 on second segment:
+
 ```
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:2,ms:1500}]&statusCode=[{i:2,code:418}]
 ```
 
 2. VOD: Example of MPEG-DASH with response code 404 on third segment:
+
 ```
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&statusCode=[{i:3,code:404}]
 ```
 
 3. VOD: Example of MPEG-DASH with segment delay of 1500ms on all segments (except for first and second segment):
+
 ```
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:*,ms:1500},{i:1},{i:2}]
 ```
@@ -171,8 +195,11 @@ To deploy and update production environment publish a release on GitHub. This wi
 
 [NodeJS](https://nodejs.org/en/) and [Fastify](https://www.fastify.io/).
 
-## GIT Ways of Working
+## Contributing
 
+See [CONTRIBUTING](CONTRIBUTING.md) if you want to contribute to this project.
+
+### Git way-of-working
 In the interest of keeping a clean and easy to debug git history, use the following guidelines:
 
 - Read [How to Write a Commit Message](https://chris.beams.io/posts/git-commit/).
@@ -196,7 +223,7 @@ Commit messages are automatically linted via [husky](https://github.com/typicode
 
 Check `package.json` for available scripts.
 
-## Optionnal Features
+## Optional Features
 ### Load Manifest url params from aws ssm parameter store instead
 - Create a .env file at the root the of project
 - fill it like this : 
@@ -216,16 +243,15 @@ We host the service in our environment for a monthly recurring fee. Included is 
 
 ### Deployment
 
-We help you deploy and integrate the service in your environment on a time-of-material basis. 
+We help you deploy and integrate the service in your environment on a time-of-material basis.
 
 ### Feature Development
 
-When you need a new feature developed and does not have the capacity or competence of your own to do it, we can on a time-of-material introduce this feature in the current code base and under the current open source license. 
+When you need a new feature developed and does not have the capacity or competence of your own to do it, we can on a time-of-material introduce this feature in the current code base and under the current open source license.
 
 ### Professional Services and Development
 
-When you need help with building for example integration adaptors or other development in your code base related to this open source project we can offer a development team from us to help out on a time-of-material basis. 
-
+When you need help with building for example integration adaptors or other development in your code base related to this open source project we can offer a development team from us to help out on a time-of-material basis.
 
 ## License (Apache-2.0)
 

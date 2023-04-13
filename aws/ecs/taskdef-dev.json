@@ -24,9 +24,7 @@
   ],
   "memory": "512",
   "family": "chaos-stream-proxy",
-  "requiresCompatibilities": [
-    "FARGATE"
-  ],
+  "requiresCompatibilities": ["FARGATE"],
   "networkMode": "awsvpc",
   "runtimePlatform": {
     "operatingSystemFamily": "LINUX",
