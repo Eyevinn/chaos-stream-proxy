@@ -8,6 +8,9 @@ import { IncomingHttpHeaders } from 'http';
 import path from 'path';
 import { CorruptorConfigMap } from '../manifests/utils/configs';
 
+import { addSSMUrlParametersToUrl } from './aws.utils';
+require('dotenv').config();
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require('../../package.json');
 
@@ -65,27 +68,20 @@ export const isValidUrl = (string) => {
   }
 };
 
-export function composeALBEvent(
+export async function composeALBEvent(
   httpMethod: string,
   url: string,
   incomingHeaders: IncomingHttpHeaders
-): ALBEvent {
+): Promise<ALBEvent> {
   // Create ALBEvent from Fastify Request...
-<<<<<<< HEAD
-  const [path, queryString] = url.split('?');
-  const queryStringParameters = Object.fromEntries(
-    new URLSearchParams(queryString)
-  );
-=======
-  const [path, ...queryString] = url.split("?");
+
+  if ((AppSettings.loadUrlParametersFromAwsSSM)) {
+    url = await addSSMUrlParametersToUrl(url);
+  }
+
+  const [path, ...queryString] = url.split('?');
   const queryStringParameters = Object.fromEntries(new URLSearchParams(decodeURI(queryString.join('?').replace(/amp;/g, ''))));
 
-  /*const [path, queryString] = url.split('?');
-  const queryStringParameters = Object.fromEntries(
-    new URLSearchParams(queryString)
-  );*/
-
->>>>>>> 59fd230 (parse mpd)
   const requestContext = { elb: { targetGroupArn: '' } };
   const headers: Record<string, string> = {};
   // IncomingHttpHeaders type is Record<string, string|string[]> because set-cookie is an array
@@ -254,3 +250,7 @@ export function segmentUrlParamString(
 
 export const SERVICE_ORIGIN =
   process.env.SERVICE_ORIGIN || 'http://localhost:8000';
+
+export class AppSettings  {
+  static loadUrlParametersFromAwsSSM: Boolean = process.env.LOAD_PARAMS_FROM_AWS_SSM === 'true';
+}

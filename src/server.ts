@@ -12,8 +12,14 @@ app.register(FastifyCors, {});
 // Routes
 registerRoutes(app);
 
-// Start
-app.listen(PORT, INTERFACE, (err, address) => {
-  if (err) throw err;
-  console.log('\nChaos Stream Proxy listening on:', address, '\n');
-});
+if (require.main === module) {
+  // called directly i.e. "node app"
+  app.listen(PORT, INTERFACE, (err, address) => {
+    if (err) console.error(err)
+    console.log('\nChaos Stream Proxy listening on:', address, '\n');
+
+  })
+} else {
+  // required as a module => executed on aws lambda
+  module.exports = app
+}

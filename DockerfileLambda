@@ -1,0 +1,13 @@
+FROM public.ecr.aws/lambda/nodejs:16 as builder
+EXPOSE 80 443 8000
+LABEL maintainer="Eyevinn Technology <info@eyevinn.se>"
+
+WORKDIR ${LAMBDA_TASK_ROOT}
+COPY . ${LAMBDA_TASK_ROOT}
+RUN npm install 
+RUN npm run build
+
+
+WORKDIR ${LAMBDA_TASK_ROOT}/dist
+CMD ["dist/lambdav2.handler"]
+

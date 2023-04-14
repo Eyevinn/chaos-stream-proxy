@@ -64,12 +64,12 @@ export default async function dashSegmentHandler(
     } else {
       eventParamsString = segmentUrlParamString(cleanSegUrl, mergedMaps);
     }
-    const value = composeALBEvent(
-      event.httpMethod,
-      `${event.path}?${eventParamsString}`,
-      event.headers
-    )
-    return await segmentHandler(value);
+      const albEvent = await composeALBEvent(
+          event.httpMethod,
+          `${event.path}?${eventParamsString}`,
+          event.headers,
+      )
+      return await segmentHandler(albEvent);
   } catch (err) {
     const errorRes: ServiceError = {
       status: 500,
