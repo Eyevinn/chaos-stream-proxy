@@ -57,20 +57,19 @@ export default async function dashSegmentHandler(
       allMutations
     );
     const segUrl = new URL(segmentUrl);
-    const cleanSegUrl = segUrl.origin + segUrl.pathname;
+    const cleanSegUrl = segUrl.origin + segUrl.pathname + segUrl.search;
     let eventParamsString: string;
     if (mergedMaps.size < 1) {
       eventParamsString = `url=${cleanSegUrl}`;
     } else {
       eventParamsString = segmentUrlParamString(cleanSegUrl, mergedMaps);
     }
-    return await segmentHandler(
-      composeALBEvent(
-        event.httpMethod,
-        `${event.path}?${eventParamsString}`,
-        event.headers
-      )
-    );
+    const value = composeALBEvent(
+      event.httpMethod,
+      `${event.path}?${eventParamsString}`,
+      event.headers
+    )
+    return await segmentHandler(value);
   } catch (err) {
     const errorRes: ServiceError = {
       status: 500,

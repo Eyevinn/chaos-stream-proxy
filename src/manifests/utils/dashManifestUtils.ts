@@ -57,42 +57,21 @@ export default function (): DASHManifestTools {
       const parser = new xml2js.Parser();
       const builder = new xml2js.Builder();
 
+      
       let DASH_JSON;
       parser.parseString(dashManifestText, function (err, result) {
         DASH_JSON = result;
       });
-      DASH_JSON.MPD.Period.map((period) => {
-        period.AdaptationSet.map((adaptationSet) => {
-          adaptationSet.Representation.map((representation) => {
-            if (representation.SegmentTemplate) {
-              representation.SegmentTemplate.map((segmentTemplate) => {
-                // Media attr.
-                const mediaUrl = segmentTemplate.$.media;
-                // Clone params to avoid mutating input argument
-                const urlQuery = new URLSearchParams(originalUrlQuery);
-                if (representation.$.bandwidth) {
-                  urlQuery.set('bitrate', representation.$.bandwidth);
-                }
 
-                segmentTemplate.$.media = proxyPathBuilder(
-                  mediaUrl,
-                  urlQuery,
-                  'proxy-segment/segment_$Number$.mp4'
-                );
-                // Initialization attr.
-                const masterDashUrl = originalUrlQuery.get('url');
-                const initUrl = segmentTemplate.$.initialization;
-                if (!initUrl.match(/^http/)) {
-                  try {
-                    const absoluteInitUrl = new URL(initUrl, masterDashUrl)
-                      .href;
-                    segmentTemplate.$.initialization = absoluteInitUrl;
-                  } catch (e) {
-                    throw new Error(e);
-                  }
-                }
-              });
-            }
+      //console.log(JSON.stringify(DASH_JSON));
+      
+      DASH_JSON.MPD.Period.map((period, index1) => {
+        period.AdaptationSet.map((adaptationSet, index2) => {
+          if (adaptationSet.SegmentTemplate)
+            forgeSegment(adaptationSet.SegmentTemplate, originalUrlQuery)
+          adaptationSet.Representation.map((representation, index3) => {
+            if (representation.SegmentTemplate)
+              forgeSegment(representation.SegmentTemplate, originalUrlQuery, representation)
           });
         });
       });
@@ -102,4 +81,44 @@ export default function (): DASHManifestTools {
       return manifest;
     }
   };
+}
+
+
+function forgeSegment(segment, originalUrlQuery, representation?) {
+  if (segment) {
+    segment.map((segmentTemplate, index4) => {
+    // Media attr.
+    const mediaUrl = segmentTemplate.$.media;
+    //console.log("media URL : ", mediaUrl);
+    // Clone params to avoid mutating input argument
+    const urlQuery = new URLSearchParams(originalUrlQuery);
+    if (representation?.$?.bandwidth) {
+      urlQuery.set('bitrate', representation.$.bandwidth);
+    }
+
+    //console.log("URL query : ", urlQuery);
+
+    segmentTemplate.$.media = decodeURIComponent(proxyPathBuilder(
+      mediaUrl,
+      urlQuery,
+      'proxy-segment/segment_$Number$.mp4'
+    ));
+
+    //segmentTemplate.$.media = decodeURIComponent(segmentTemplate.$.media);
+
+    // Initialization attr.
+    const masterDashUrl = originalUrlQuery.get('url');
+    const initUrl = segmentTemplate.$.initialization; 
+    if (!initUrl?.match(/^http/)) {
+      try {
+        const absoluteInitUrl = new URL(initUrl, masterDashUrl)
+          .href;
+
+        segmentTemplate.$.initialization = absoluteInitUrl;
+      } catch (e) {
+        throw new Error(e);
+      }
+    }
+  });
+}
 }
