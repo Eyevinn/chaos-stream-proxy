@@ -80,11 +80,11 @@ export async function composeALBEvent(
   }
 
   const [path, ...queryString] = url.split('?');
-  const queryStringParameters = Object.fromEntries(new URLSearchParams(decodeURI(queryString.join('?').replace(/amp;/g, ''))));
+  const queryStringParameters = Object.fromEntries(new URLSearchParams(decodeURIComponent(queryString.join('?'))));
 
   const requestContext = { elb: { targetGroupArn: '' } };
   const headers: Record<string, string> = {};
-  
+
   // IncomingHttpHeaders type is Record<string, string|string[]> because set-cookie is an array
   for (const [name, value] of Object.entries(incomingHeaders)) {
     if (typeof value === 'string') {
