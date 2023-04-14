@@ -63,8 +63,6 @@ export default function (): DASHManifestTools {
         DASH_JSON = result;
       });
 
-      //console.log(JSON.stringify(DASH_JSON));
-      
       DASH_JSON.MPD.Period.map((period, index1) => {
         period.AdaptationSet.map((adaptationSet, index2) => {
           if (adaptationSet.SegmentTemplate)
@@ -89,22 +87,18 @@ function forgeSegment(segment, originalUrlQuery, representation?) {
     segment.map((segmentTemplate, index4) => {
     // Media attr.
     const mediaUrl = segmentTemplate.$.media;
-    //console.log("media URL : ", mediaUrl);
+
     // Clone params to avoid mutating input argument
     const urlQuery = new URLSearchParams(originalUrlQuery);
     if (representation?.$?.bandwidth) {
       urlQuery.set('bitrate', representation.$.bandwidth);
     }
 
-    //console.log("URL query : ", urlQuery);
-
     segmentTemplate.$.media = decodeURIComponent(proxyPathBuilder(
       mediaUrl,
       urlQuery,
       'proxy-segment/segment_$Number$.mp4'
     ));
-
-    //segmentTemplate.$.media = decodeURIComponent(segmentTemplate.$.media);
 
     // Initialization attr.
     const masterDashUrl = originalUrlQuery.get('url');

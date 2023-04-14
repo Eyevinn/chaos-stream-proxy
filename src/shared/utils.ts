@@ -84,6 +84,7 @@ export async function composeALBEvent(
 
   const requestContext = { elb: { targetGroupArn: '' } };
   const headers: Record<string, string> = {};
+  
   // IncomingHttpHeaders type is Record<string, string|string[]> because set-cookie is an array
   for (const [name, value] of Object.entries(incomingHeaders)) {
     if (typeof value === 'string') {
