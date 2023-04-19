@@ -61,39 +61,81 @@ export default function (): DASHManifestTools {
       parser.parseString(dashManifestText, function (err, result) {
         DASH_JSON = result;
       });
+
+      let baseUrl;
+      if (DASH_JSON.MPD.BaseURL) {
+        // There should only ever be one baseurl according to schema
+        baseUrl = DASH_JSON.MPD.BaseURL[0];
+        // Remove base url from manifest since we are using relative paths for proxy
+        DASH_JSON.MPD.BaseURL = [];
+      }
+
       DASH_JSON.MPD.Period.map((period) => {
         period.AdaptationSet.map((adaptationSet) => {
-          adaptationSet.Representation.map((representation) => {
-            if (representation.SegmentTemplate) {
-              representation.SegmentTemplate.map((segmentTemplate) => {
-                // Media attr.
-                const mediaUrl = segmentTemplate.$.media;
-                // Clone params to avoid mutating input argument
-                const urlQuery = new URLSearchParams(originalUrlQuery);
-                if (representation.$.bandwidth) {
-                  urlQuery.set('bitrate', representation.$.bandwidth);
-                }
+          if (adaptationSet.SegmentTemplate) {
+            // There should only be one segment template with this format
+            const segmentTemplate = adaptationSet.SegmentTemplate[0];
 
-                segmentTemplate.$.media = proxyPathBuilder(
-                  mediaUrl,
-                  urlQuery,
-                  'proxy-segment/segment_$Number$.mp4'
-                );
-                // Initialization attr.
-                const masterDashUrl = originalUrlQuery.get('url');
-                const initUrl = segmentTemplate.$.initialization;
-                if (!initUrl.match(/^http/)) {
-                  try {
-                    const absoluteInitUrl = new URL(initUrl, masterDashUrl)
-                      .href;
-                    segmentTemplate.$.initialization = absoluteInitUrl;
-                  } catch (e) {
-                    throw new Error(e);
-                  }
+            // Media attr
+            const mediaUrl = segmentTemplate.$.media;
+            // Clone params to avoid mutating input argument
+            const urlQuery = new URLSearchParams(originalUrlQuery);
+
+            segmentTemplate.$.media = proxyPathBuilder(
+              mediaUrl.match(/^http/) ? mediaUrl : baseUrl + mediaUrl,
+              urlQuery,
+              'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$'
+            );
+            // Initialization attr.
+            const initUrl = segmentTemplate.$.initialization;
+            if (!initUrl.match(/^http/)) {
+              try {
+                // Use original query url if baseUrl is undefined, combine if relative, or use just baseUrl if its absolute
+                if (!baseUrl) {
+                  baseUrl = originalUrlQuery.get('url');
+                } else if (!baseUrl.match(/^http/)) {
+                  baseUrl = new URL(baseUrl, originalUrlQuery.get('url')).href;
                 }
-              });
+                const absoluteInitUrl = new URL(initUrl, baseUrl).href;
+                segmentTemplate.$.initialization = absoluteInitUrl;
+              } catch (e) {
+                throw new Error(e);
+              }
             }
-          });
+          } else {
+            // Uses segment ids
+            adaptationSet.Representation.map((representation) => {
+              if (representation.SegmentTemplate) {
+                representation.SegmentTemplate.map((segmentTemplate) => {
+                  // Media attr.
+                  const mediaUrl = segmentTemplate.$.media;
+                  // Clone params to avoid mutating input argument
+                  const urlQuery = new URLSearchParams(originalUrlQuery);
+                  if (representation.$.bandwidth) {
+                    urlQuery.set('bitrate', representation.$.bandwidth);
+                  }
+
+                  segmentTemplate.$.media = proxyPathBuilder(
+                    mediaUrl,
+                    urlQuery,
+                    'proxy-segment/segment_$Number$.mp4'
+                  );
+                  // Initialization attr.
+                  const masterDashUrl = originalUrlQuery.get('url');
+                  const initUrl = segmentTemplate.$.initialization;
+                  if (!initUrl.match(/^http/)) {
+                    try {
+                      const absoluteInitUrl = new URL(initUrl, masterDashUrl)
+                        .href;
+                      segmentTemplate.$.initialization = absoluteInitUrl;
+                    } catch (e) {
+                      throw new Error(e);
+                    }
+                  }
+                });
+              }
+            });
+          }
         });
       });
 
