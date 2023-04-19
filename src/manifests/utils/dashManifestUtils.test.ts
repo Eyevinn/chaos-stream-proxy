@@ -40,6 +40,40 @@ describe('dashManifestTools', () => {
       const expected: string = builder.buildObject(DASH_JSON);
       expect(proxyManifest).toEqual(expected);
     });
+
+    it('should replace initialization urls & media urls in compressed dash manifest with base urls, with absolute source url & proxy url with query parameters respectively', async () => {
+      // Arrange
+      const mockManifestPath =
+        '../../testvectors/dash/dash1_compressed/manifest.xml';
+      const mockDashManifest = fs.readFileSync(
+        path.join(__dirname, mockManifestPath),
+        'utf8'
+      );
+      const queryString =
+        'url=https://mock.mock.com/stream/manifest.mpd&statusCode=[{i:0,code:404},{i:2,code:401}]&timeout=[{i:3}]&delay=[{i:2,ms:2000}]';
+      const urlSearchParams = new URLSearchParams(queryString);
+      // Act
+      const manifestUtils = dashManifestUtils();
+      const proxyManifest: string = manifestUtils.createProxyDASHManifest(
+        mockDashManifest,
+        urlSearchParams
+      );
+      // Assert
+      const parser = new xml2js.Parser();
+      const builder = new xml2js.Builder();
+      const proxyManifestPath =
+        '../../testvectors/dash/dash1_compressed/proxy-manifest.xml';
+      const dashFile: string = fs.readFileSync(
+        path.join(__dirname, proxyManifestPath),
+        'utf8'
+      );
+      let DASH_JSON;
+      parser.parseString(dashFile, function (err, result) {
+        DASH_JSON = result;
+      });
+      const expected: string = builder.buildObject(DASH_JSON);
+      expect(proxyManifest).toEqual(expected);
+    });
   });
 });
 
