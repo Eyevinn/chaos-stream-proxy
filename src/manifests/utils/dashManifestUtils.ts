@@ -77,16 +77,16 @@ export default function (): DASHManifestTools {
 
             // Media attr
             const mediaUrl = segmentTemplate.$.media;
+            const absoluteMediaUrl = new URL(mediaUrl, oldBaseUrl).href;
             // Clone params to avoid mutating input argument
             const urlQuery = new URLSearchParams(originalUrlQuery);
 
             segmentTemplate.$.media = proxyPathBuilder(
-              mediaUrl,
+              absoluteMediaUrl,
               urlQuery,
-              'proxy-segment/segment_$RepresentationID$-$Time$.m4s'
+              'proxy-segment/segment_$RepresentationID$-$Number$.m4s'
             );
             // Initialization attr.
-            const masterDashUrl = originalUrlQuery.get('url');
             const initUrl = segmentTemplate.$.initialization;
             if (!initUrl.match(/^http/)) {
               try {
@@ -97,9 +97,6 @@ export default function (): DASHManifestTools {
                 throw new Error(e);
               }
             }
-
-            console.log(segmentTemplate.$.media);
-
           } else {
             // Uses segment ids
             adaptationSet.Representation.map((representation) => {

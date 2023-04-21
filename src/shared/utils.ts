@@ -172,7 +172,7 @@ type ProxyBasenames =
   | 'proxy-media.m3u8'
   | '../../segments/proxy-segment'
   | 'proxy-segment/segment_$Number$.mp4'
-  | 'proxy-segment/segment_$RepresentationID$-$Time$.m4s';
+  | 'proxy-segment/segment_$RepresentationID$-$Number$.m4s';
 
 /**
  * Adjust paths based on directory navigation

@@ -34,11 +34,28 @@ export default async function dashSegmentHandler(
 
   try {
     const urlSearchParams = new URLSearchParams(event.queryStringParameters);
-    const pathStem = path.basename(event.path).replace('.mp4', '');
+    const pathStem = path.basename(event.path).replace('.m4s', '');
     // Get the number part after "segment_"
     const [, reqSegmentIndexStr] = pathStem.split('_');
+    // Also get the representation part that comes before the number, if it contains a representationID
+    let reqRepresentationStr;
+    let reqNumberStr;
+    let segmentUrl;
+    // We check if the pathStem split contains more than just the number part
+    if (reqSegmentIndexStr.includes('-')) {
+      [reqRepresentationStr, reqNumberStr] = reqSegmentIndexStr.split('-');
+      // Build correct Source Segment url
+      segmentUrl = url.replace('$Number$', reqNumberStr);
+      // We also replace representationID
+      segmentUrl = segmentUrl.replace(
+        '$RepresentationID$',
+        reqRepresentationStr
+      );
+    }
     // Build correct Source Segment url
-    const segmentUrl = url.replace('$Number$', reqSegmentIndexStr);
+    else {
+      segmentUrl = url.replace('$Number$', reqSegmentIndexStr);
+    }
     const reqSegmentIndexInt = parseInt(reqSegmentIndexStr);
     // Break down Corruption Objects
     // Send source URL with a corruption json (if it is appropriate) to segmentHandler...
