@@ -183,6 +183,18 @@ https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.m
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:*,ms:1500},{i:1},{i:2}]
 ```
 
+4. LIVE: Example of uncompressed MPEG-DASH live stream with response of status code 404 on segment with sequence number 3447425:
+
+```
+https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://d2fz24s2fts31b.cloudfront.net/out/v1/3b6879c0836346c2a44c9b4b33520f4e/manifest.mpd&statusCode=[{sq:3447425, code:404}]
+```
+
+5. LIVE: Example of compressed MPEG-DASH live stream with response of status code 404 on segment with time sequence number 841164350:
+
+```
+https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd&statusCode=[{sq:841164350, code:404}]
+```
+
 ## Development Environment
 
 To deploy and update development environment create and push a tag with the suffix `-dev`, for example `my-feat-test-dev`. If you run `npm run deploy:dev` it will automatically create a tag based on git revision with the `-dev` suffix and push it.
