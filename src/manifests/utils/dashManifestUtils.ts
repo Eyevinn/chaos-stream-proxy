@@ -2,6 +2,7 @@ import { Manifest } from '../../shared/types';
 import * as xml2js from 'xml2js';
 import { IndexedCorruptorConfigMap, CorruptorConfigMap } from './configs';
 import { proxyPathBuilder } from '../../shared/utils';
+import { URLSearchParams } from 'url';
 
 interface DASHManifestUtils {
   mergeMap: (
@@ -67,8 +68,10 @@ export default function (): DASHManifestTools {
         // There should only ever be one baseurl according to schema
         baseUrl = DASH_JSON.MPD.BaseURL[0];
         // Remove base url from manifest since we are using relative paths for proxy
-        DASH_JSON.MPD.BaseURL = [];
       }
+      delete DASH_JSON.MPD.BaseURL;
+
+      let staticQueryUrl: URLSearchParams;
 
       DASH_JSON.MPD.Period.map((period) => {
         period.AdaptationSet.map((adaptationSet) => {
@@ -78,8 +81,17 @@ export default function (): DASHManifestTools {
 
             // Media attr
             const mediaUrl = segmentTemplate.$.media;
-            // Clone params to avoid mutating input argument
-            const urlQuery = new URLSearchParams(originalUrlQuery);
+
+            // Convert relative segment offsets to absolute ones
+            // Also clones params to avoid mutating input argument
+            const [urlQuery, changed] = convertRelativeToAbsoluteSegmentOffsets(
+              DASH_JSON.MPD,
+              segmentTemplate,
+              originalUrlQuery,
+              false
+            );
+
+            if (changed) staticQueryUrl = new URLSearchParams(urlQuery);
 
             segmentTemplate.$.media = proxyPathBuilder(
               mediaUrl.match(/^http/) ? mediaUrl : baseUrl + mediaUrl,
@@ -109,8 +121,19 @@ export default function (): DASHManifestTools {
                 representation.SegmentTemplate.map((segmentTemplate) => {
                   // Media attr.
                   const mediaUrl = segmentTemplate.$.media;
-                  // Clone params to avoid mutating input argument
-                  const urlQuery = new URLSearchParams(originalUrlQuery);
+
+                  // Convert relative segment offsets to absolute ones
+                  // Also clones params to avoid mutating input argument
+                  const [urlQuery, changed] =
+                    convertRelativeToAbsoluteSegmentOffsets(
+                      DASH_JSON.MPD,
+                      segmentTemplate,
+                      originalUrlQuery,
+                      true
+                    );
+
+                  if (changed) staticQueryUrl = new URLSearchParams(urlQuery);
+
                   if (representation.$.bandwidth) {
                     urlQuery.set('bitrate', representation.$.bandwidth);
                   }
@@ -139,9 +162,87 @@ export default function (): DASHManifestTools {
         });
       });
 
+      if (staticQueryUrl)
+        DASH_JSON.MPD.Location = 'proxy-master.mpd?' + staticQueryUrl;
+
       const manifest = builder.buildObject(DASH_JSON);
 
       return manifest;
     }
   };
+}
+
+function convertRelativeToAbsoluteSegmentOffsets(
+  mpd: any,
+  segmentTemplate: any,
+  originalUrlQuery: URLSearchParams,
+  segmentTemplateTimelineFormat: boolean
+): [URLSearchParams, boolean] {
+  let firstSegment: number;
+
+  if (segmentTemplateTimelineFormat) {
+    firstSegment = Number(segmentTemplate.$.startNumber);
+  } else {
+    // Calculate first segment number
+    const walltime = new Date().getTime();
+    const availabilityStartTime = new Date(
+      mpd.$.availabilityStartTime
+    ).getTime();
+
+    let duration: number;
+    if (segmentTemplate.$.duration) {
+      duration = Number(segmentTemplate.$.duration);
+    } else {
+      duration = Number(segmentTemplate.SegmentTimeline[0].S[0].$.d);
+    }
+
+    const timescale = Number(
+      segmentTemplate.$.timescale ? segmentTemplate.$.timescale : '1'
+    );
+    const startNumber = Number(segmentTemplate.$.startNumber);
+
+    firstSegment = Math.round(
+      (walltime - availabilityStartTime) / 1000 / (duration / timescale) +
+        startNumber
+    );
+  }
+
+  const urlQuery = new URLSearchParams(originalUrlQuery);
+
+  const corruptions = ['statusCode', 'delay', 'timeout'];
+
+  let changed = false;
+
+  for (const corruption of corruptions) {
+    const fieldsJson = urlQuery.get(corruption);
+
+    if (fieldsJson) {
+      const fields = JSON.parse(getJSONParsableString(fieldsJson));
+
+      fields.map((field) => {
+        const relativeOffset = field.rsq;
+
+        if (relativeOffset) {
+          changed = true;
+          delete field.rsq;
+          field.sq = firstSegment + relativeOffset;
+        }
+      });
+
+      const fieldsSerialized = JSON.stringify(fields).replace(/"/g, '');
+      urlQuery.set(corruption, fieldsSerialized);
+    }
+  }
+
+  return [urlQuery, changed];
+}
+
+export function getJSONParsableString(value: string): string {
+  return decodeURIComponent(value)
+    .replace(/\s/g, '')
+    .replace(
+      /({|,)(?:\s*)(?:')?([A-Za-z_$.][A-Za-z0-9_ \-.$]*)(?:')?(?:\s*):/g,
+      '$1"$2":'
+    )
+    .replace(/:\*/g, ':"*"');
 }

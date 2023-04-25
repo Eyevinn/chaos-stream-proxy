@@ -74,6 +74,40 @@ describe('dashManifestTools', () => {
       const expected: string = builder.buildObject(DASH_JSON);
       expect(proxyManifest).toEqual(expected);
     });
+
+    it('should replace relative sequence numbers in corruptions with absolute ones', async () => {
+      // Arrange
+      const mockManifestPath =
+        '../../testvectors/dash/dash1_relative_sequence/manifest.xml';
+      const mockDashManifest = fs.readFileSync(
+        path.join(__dirname, mockManifestPath),
+        'utf8'
+      );
+      const queryString =
+        'url=https://mock.mock.com/stream/dash/asset44/manifest.mpd&statusCode=[{rsq:10,code:404},{rsq:20,code:401}]&timeout=[{rsq:30}]&delay=[{rsq:40,ms:2000}]';
+      const urlSearchParams = new URLSearchParams(queryString);
+      // Act
+      const manifestUtils = dashManifestUtils();
+      const proxyManifest: string = manifestUtils.createProxyDASHManifest(
+        mockDashManifest,
+        urlSearchParams
+      );
+      // Assert
+      const parser = new xml2js.Parser();
+      const builder = new xml2js.Builder();
+      const proxyManifestPath =
+        '../../testvectors/dash/dash1_relative_sequence/proxy-manifest.xml';
+      const dashFile: string = fs.readFileSync(
+        path.join(__dirname, proxyManifestPath),
+        'utf8'
+      );
+      let DASH_JSON;
+      parser.parseString(dashFile, function (err, result) {
+        DASH_JSON = result;
+      });
+      const expected: string = builder.buildObject(DASH_JSON);
+      expect(proxyManifest).toEqual(expected);
+    });
   });
 });
 
