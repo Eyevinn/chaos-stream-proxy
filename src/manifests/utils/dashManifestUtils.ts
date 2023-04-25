@@ -81,6 +81,30 @@ export default function (): DASHManifestTools {
             // Clone params to avoid mutating input argument
             const urlQuery = new URLSearchParams(originalUrlQuery);
 
+            // Convert relative segment offsets
+            const duration = segmentTemplate.$.duration;
+            const seconds_since_epoch = Math.round(new Date().getTime() / 1000);
+            const start_segment_num = Math.round(
+              seconds_since_epoch / Number(duration)
+            );
+
+            const status_code_obj = originalUrlQuery.get('statusCode');
+            if (status_code_obj) {
+              const status_code_conf = JSON.parse(
+                getJSONParsableString(status_code_obj)
+              );
+
+              for (const scc of status_code_conf) {
+                const sq_offset = scc['rsq'];
+                if (sq_offset) {
+                  delete scc['rsq'];
+                  scc['sq'] = start_segment_num + sq_offset;
+                }
+              }
+              const val = JSON.stringify(status_code_conf).replace(/"/g, '');
+              urlQuery.set('statusCode', val);
+            }
+
             segmentTemplate.$.media = proxyPathBuilder(
               mediaUrl.match(/^http/) ? mediaUrl : baseUrl + mediaUrl,
               urlQuery,
@@ -144,4 +168,14 @@ export default function (): DASHManifestTools {
       return manifest;
     }
   };
+}
+
+export function getJSONParsableString(value: string): string {
+  return decodeURIComponent(value)
+    .replace(/\s/g, '')
+    .replace(
+      /({|,)(?:\s*)(?:')?([A-Za-z_$.][A-Za-z0-9_ \-.$]*)(?:')?(?:\s*):/g,
+      '$1"$2":'
+    )
+    .replace(/:\*/g, ':"*"');
 }
