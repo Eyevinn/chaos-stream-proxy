@@ -86,10 +86,11 @@ To specify the configurations for a particular corruption, you will need to add 
 Each corruption has a unique configuration JSON object template. Each object can be used to target one specific segment for corruption.
 e.i. `https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=<some_url>?some_corruption=[{i:0},{i:1},{i:2}, ... ,{i:N}]`
 
-Across all coruptions, there are 2 ways to target a segment in a playlist for corruption.
+Across all coruptions, there are 3 ways to target a segment in a playlist for corruption.
 
 1. `i`: The segment's list index in any Media Playlist, with HLS segments starting at 0 and MPEG-DASH segments starting at 1. For a Media Playlist with 12 segments, `i`=11, would target the last segment for HLS and `i`=12, would target the last segment for MPEG-DASH.
 2. `sq`: The segment's Media Sequence Number (**HLS only**). For a Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=111 would target the last segment. When corrupting a live HLS stream it is recommended to target with `sq`.
+3. `rsq`: A relative sequence number, counted from where the live stream is currently at when requesting manifest. (**MPEG-DASH Live only**)
 
 Below are configuration JSON object templates for the currently supported corruptions. A query should have its value be an array consisting of any one of these 3 types of items:
 
@@ -99,6 +100,7 @@ Delay Corruption:
 {
     i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
     sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
+    rsq?: number, // relative sequence number from where a livestream is currently at
     ms?: number,       // time to delay in milliseconds
     br?: number | "*", // apply only to specific bitrate
 }
@@ -110,6 +112,7 @@ Status Code Corruption:
 {
     i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
     sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
+    rsq?: number, // relative sequence number from where a livestream is currently at
     code?: number,     // code to return in http response status header instead of media file
     br?: number | "*", // apply only to specific bitrate
 }
@@ -121,11 +124,14 @@ Timeout Corruption:
 {
     i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
     sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
+    rsq?: number, // relative sequence number from where a livestream is currently at
     br?: number | "*", // apply only to specific bitrate
 }
 ```
 
-One can either target a segment through the index parameter, `i`, or the sequence number parameter, `sq`. In the case where one has entered both, the **index parameter** will take precedence.
+One can either target a segment through the index parameter, `i`, or the sequence number parameter, `sq`, relative sequence numbers, `rsq`, are translated to sequence numbers, . In the case where one has entered both, the **index parameter** will take precedence.
+
+Relative sequence numbers, `rsq`, are translated to sequence numbers, `sq`, and will thus override any provided `sq`.
 
 When targeting all segments through the input value of `"*"`, it is possible to **untarget** a specific segment by including a JSON item with only either `i` or `sq` in the corruption array, see example corruption #4.
 
