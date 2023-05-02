@@ -1,7 +1,7 @@
 import { LambdaELB } from '@eyevinn/dev-lambda';
-import { handler } from '../lambda';
+import { proxy } from '../lambda';
 import { ALBResult, ALBEvent } from 'aws-lambda';
 
 new LambdaELB({
-  handler: <(event: ALBEvent) => Promise<ALBResult>>handler
+  handler: <(event: ALBEvent) => Promise<ALBResult>>proxy
 }).run();
