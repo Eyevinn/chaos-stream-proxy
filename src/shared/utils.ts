@@ -13,6 +13,10 @@ import {
   RequestPayload,
   FastifyInstance
 } from 'fastify';
+import { addSSMUrlParametersToUrl } from './aws.utils';
+
+import dotenv from 'dotenv';
+dotenv.config();
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require('../../package.json');
@@ -71,11 +75,16 @@ export const isValidUrl = (string) => {
   }
 };
 
-export function composeALBEvent(
+export async function composeALBEvent(
   httpMethod: string,
   url: string,
   incomingHeaders: IncomingHttpHeaders
-): ALBEvent {
+): Promise<ALBEvent> {
+  // Get Chaos Parameters from AWS SSM
+  if (AppSettings.loadUrlParametersFromAwsSSM) {
+    url = await addSSMUrlParametersToUrl(url);
+  }
+
   // Create ALBEvent from Fastify Request...
   const [path, queryString] = url.split('?');
   const queryStringParameters = Object.fromEntries(
@@ -154,7 +163,7 @@ export function parseM3U8Stream(stream: ReadStream): Promise<M3U> {
 // @todo: Clarify what this function actually does
 // Older comment: "This is needed because the internet is a bit broken..."
 export function refineALBEventQuery(
-  originalQuery: ALBEventQueryStringParameters
+  originalQuery: ALBEventQueryStringParameters = {}
 ) {
   const queryStringParameters = clone(originalQuery);
   const searchParams = new URLSearchParams(
@@ -273,4 +282,9 @@ export function addCustomVersionHeader(app: FastifyInstance): void {
       return payload;
     }
   );
+}
+
+export class AppSettings {
+  static loadUrlParametersFromAwsSSM: boolean =
+    process.env.LOAD_PARAMS_FROM_AWS_SSM === 'true';
 }
