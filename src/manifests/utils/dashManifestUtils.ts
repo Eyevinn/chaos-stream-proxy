@@ -2,6 +2,7 @@ import { Manifest } from '../../shared/types';
 import * as xml2js from 'xml2js';
 import { IndexedCorruptorConfigMap, CorruptorConfigMap } from './configs';
 import { proxyPathBuilder } from '../../shared/utils';
+import { URLSearchParams } from 'url';
 
 interface DASHManifestUtils {
   mergeMap: (
@@ -69,8 +70,8 @@ export default function (): DASHManifestTools {
         // Remove base url from manifest since we are using relative paths for proxy
       }
       delete DASH_JSON.MPD.BaseURL;
-      console.log(originalUrlQuery);
-      DASH_JSON.MPD.Location = '' + originalUrlQuery + '&started=true';
+
+      let staticQueryUrl: URLSearchParams;
 
       DASH_JSON.MPD.Period.map((period) => {
         period.AdaptationSet.map((adaptationSet) => {
@@ -89,6 +90,8 @@ export default function (): DASHManifestTools {
               originalUrlQuery,
               false
             );
+
+            staticQueryUrl = new URLSearchParams(urlQuery);
 
             segmentTemplate.$.media = proxyPathBuilder(
               mediaUrl.match(/^http/) ? mediaUrl : baseUrl + mediaUrl,
@@ -128,6 +131,8 @@ export default function (): DASHManifestTools {
                     true
                   );
 
+                  staticQueryUrl = new URLSearchParams(urlQuery);
+
                   if (representation.$.bandwidth) {
                     urlQuery.set('bitrate', representation.$.bandwidth);
                   }
@@ -155,6 +160,8 @@ export default function (): DASHManifestTools {
           }
         });
       });
+
+      DASH_JSON.MPD.Location = 'proxy-master.mpd?' + staticQueryUrl;
 
       const manifest = builder.buildObject(DASH_JSON);
 
@@ -197,8 +204,6 @@ function convertRelativeToAbsoluteSegmentOffsets(
         startNumber
     );
   }
-
-  console.log(firstSegment);
 
   const urlQuery = new URLSearchParams(originalUrlQuery);
 
