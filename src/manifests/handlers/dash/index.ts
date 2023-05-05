@@ -20,7 +20,6 @@ export default async function dashHandler(event: ALBEvent): Promise<ALBResult> {
 
   try {
     const originalDashManifestResponse = await fetch(url);
-    const responseCopy = originalDashManifestResponse.clone();
     if (!originalDashManifestResponse.ok) {
       return generateErrorResponse({
         status: originalDashManifestResponse.status,
@@ -28,7 +27,7 @@ export default async function dashHandler(event: ALBEvent): Promise<ALBResult> {
       });
     }
     const reqQueryParams = new URLSearchParams(event.queryStringParameters);
-    const text = await responseCopy.text();
+    const text = await originalDashManifestResponse.text();
     const dashUtils = dashManifestUtils();
     const proxyManifest = dashUtils.createProxyDASHManifest(
       text,
