@@ -212,7 +212,7 @@ export function proxyPathBuilder(
   const allQueries = new URLSearchParams(urlSearchParams);
   let sourceItemURL = '';
   // Do not build an absolute source url If ItemUri is already an absolut url.
-  if (itemUri.match(/^http/)) {
+  if (itemUri?.match(/^http/)) {
     sourceItemURL = itemUri;
   } else {
     const sourceURL = allQueries.get('url');
