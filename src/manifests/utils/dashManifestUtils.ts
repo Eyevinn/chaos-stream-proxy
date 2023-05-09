@@ -112,7 +112,7 @@ function forgeSegment(baseUrl, segment, originalUrlQuery, representation?) {
 
       segmentTemplate.$.media = decodeURIComponent(
         proxyPathBuilder(
-          mediaUrl.match(/^http/) ? mediaUrl : new URL(mediaUrl, baseUrl).href,
+          mediaUrl?.match(/^http/) ? mediaUrl : new URL(mediaUrl, baseUrl).href,
           urlQuery,
           representation
             ? 'proxy-segment/segment_$Number$.mp4'

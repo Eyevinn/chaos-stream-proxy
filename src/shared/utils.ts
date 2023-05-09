@@ -181,7 +181,7 @@ type ProxyBasenames =
  * @returns ex. [ "http://abc.origin.com/streams/vod1", "subfolder3/media/segment.ts" ]
  */
 const cleanUpPathAndURI = (originPath: string, uri: string): string[] => {
-  const matchList: string[] | null = uri.match(/\.\.\//g);
+  const matchList: string[] | null = uri?.match(/\.\.\//g);
   if (matchList) {
     const jumpsToParentDir = matchList.length;
     if (jumpsToParentDir > 0) {
