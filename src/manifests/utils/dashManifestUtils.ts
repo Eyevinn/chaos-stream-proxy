@@ -65,7 +65,7 @@ export default function (): DASHManifestTools {
       let baseUrl;
       if (DASH_JSON.MPD.BaseURL) {
         // There should only ever be one baseurl according to schema
-        baseUrl = DASH_JSON.MPD.BaseURL[0].match(/^http/)
+        baseUrl = DASH_JSON.MPD.BaseURL[0]?.match(/^http/)
           ? DASH_JSON.MPD.BaseURL[0]
           : new URL(DASH_JSON.MPD.BaseURL[0], originalUrlQuery.get('url')).href;
         // Remove base url from manifest since we are using relative paths for proxy
