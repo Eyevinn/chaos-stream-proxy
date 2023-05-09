@@ -137,8 +137,8 @@ export default function (): HLSManifestTools {
       for (let i = 0; i < m3u.items.PlaylistItem.length; i++) {
         const item = m3u.items.PlaylistItem[i];
         const corruption = corruptions[i];
-        let sourceSegURL: string = item.get('uri');
-        if (!sourceSegURL?.match(/^http/)) {
+        let sourceSegURL: string | null = item.get('uri');
+        if (sourceSegURL && !sourceSegURL?.match(/^http/)) {
           sourceSegURL = `${sourceBaseURL}/${item.get('uri')}`;
         }
 
