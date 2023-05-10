@@ -93,20 +93,22 @@ export default function (): HLSManifestTools {
         if (bitRate) {
           urlQuery.set('bitrate', bitRate);
         }
-        streamItem.set(
-          'uri',
-          proxyPathBuilder(currentUri, urlQuery, 'proxy-media.m3u8')
-        );
+        if (currentUri)
+          streamItem.set(
+            'uri',
+            proxyPathBuilder(currentUri, urlQuery, 'proxy-media.m3u8')
+          );
         return streamItem;
       });
 
       // [Audio/Subtitles/IFrame]
       m3u.items.MediaItem = m3u.items.MediaItem.map((mediaItem) => {
         const currentUri = mediaItem.get('uri');
-        mediaItem.set(
-          'uri',
-          proxyPathBuilder(currentUri, originalUrlQuery, 'proxy-media.m3u8')
-        );
+        if (currentUri)
+          mediaItem.set(
+            'uri',
+            proxyPathBuilder(currentUri, originalUrlQuery, 'proxy-media.m3u8')
+          );
         return mediaItem;
       });
 
@@ -137,8 +139,8 @@ export default function (): HLSManifestTools {
       for (let i = 0; i < m3u.items.PlaylistItem.length; i++) {
         const item = m3u.items.PlaylistItem[i];
         const corruption = corruptions[i];
-        let sourceSegURL: string = item.get('uri');
-        if (!sourceSegURL.match(/^http/)) {
+        let sourceSegURL: string | null = item.get('uri');
+        if (sourceSegURL && !sourceSegURL?.match(/^http/)) {
           sourceSegURL = `${sourceBaseURL}/${item.get('uri')}`;
         }
 

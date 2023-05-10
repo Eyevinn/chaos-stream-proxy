@@ -65,77 +65,30 @@ export default function (): DASHManifestTools {
       let baseUrl;
       if (DASH_JSON.MPD.BaseURL) {
         // There should only ever be one baseurl according to schema
-        baseUrl = DASH_JSON.MPD.BaseURL[0];
+        baseUrl = DASH_JSON.MPD.BaseURL[0]?.match(/^http/)
+          ? DASH_JSON.MPD.BaseURL[0]
+          : new URL(DASH_JSON.MPD.BaseURL[0], originalUrlQuery.get('url')).href;
         // Remove base url from manifest since we are using relative paths for proxy
         DASH_JSON.MPD.BaseURL = [];
-      }
+      } else baseUrl = originalUrlQuery.get('url');
 
       DASH_JSON.MPD.Period.map((period) => {
         period.AdaptationSet.map((adaptationSet) => {
-          if (adaptationSet.SegmentTemplate) {
-            // There should only be one segment template with this format
-            const segmentTemplate = adaptationSet.SegmentTemplate[0];
-
-            // Media attr
-            const mediaUrl = segmentTemplate.$.media;
-            // Clone params to avoid mutating input argument
-            const urlQuery = new URLSearchParams(originalUrlQuery);
-
-            segmentTemplate.$.media = proxyPathBuilder(
-              mediaUrl.match(/^http/) ? mediaUrl : baseUrl + mediaUrl,
-              urlQuery,
-              'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$'
+          if (adaptationSet.SegmentTemplate)
+            forgeSegment(
+              baseUrl,
+              adaptationSet.SegmentTemplate,
+              originalUrlQuery
             );
-            // Initialization attr.
-            const initUrl = segmentTemplate.$.initialization;
-            if (!initUrl.match(/^http/)) {
-              try {
-                // Use original query url if baseUrl is undefined, combine if relative, or use just baseUrl if its absolute
-                if (!baseUrl) {
-                  baseUrl = originalUrlQuery.get('url');
-                } else if (!baseUrl.match(/^http/)) {
-                  baseUrl = new URL(baseUrl, originalUrlQuery.get('url')).href;
-                }
-                const absoluteInitUrl = new URL(initUrl, baseUrl).href;
-                segmentTemplate.$.initialization = absoluteInitUrl;
-              } catch (e) {
-                throw new Error(e);
-              }
-            }
-          } else {
-            // Uses segment ids
-            adaptationSet.Representation.map((representation) => {
-              if (representation.SegmentTemplate) {
-                representation.SegmentTemplate.map((segmentTemplate) => {
-                  // Media attr.
-                  const mediaUrl = segmentTemplate.$.media;
-                  // Clone params to avoid mutating input argument
-                  const urlQuery = new URLSearchParams(originalUrlQuery);
-                  if (representation.$.bandwidth) {
-                    urlQuery.set('bitrate', representation.$.bandwidth);
-                  }
-
-                  segmentTemplate.$.media = proxyPathBuilder(
-                    mediaUrl,
-                    urlQuery,
-                    'proxy-segment/segment_$Number$.mp4'
-                  );
-                  // Initialization attr.
-                  const masterDashUrl = originalUrlQuery.get('url');
-                  const initUrl = segmentTemplate.$.initialization;
-                  if (!initUrl.match(/^http/)) {
-                    try {
-                      const absoluteInitUrl = new URL(initUrl, masterDashUrl)
-                        .href;
-                      segmentTemplate.$.initialization = absoluteInitUrl;
-                    } catch (e) {
-                      throw new Error(e);
-                    }
-                  }
-                });
-              }
-            });
-          }
+          adaptationSet.Representation.map((representation) => {
+            if (representation.SegmentTemplate)
+              forgeSegment(
+                baseUrl,
+                representation.SegmentTemplate,
+                originalUrlQuery,
+                representation
+              );
+          });
         });
       });
 
@@ -144,4 +97,35 @@ export default function (): DASHManifestTools {
       return manifest;
     }
   };
+}
+
+function forgeSegment(baseUrl, segment, originalUrlQuery, representation?) {
+  if (segment) {
+    segment.map((segmentTemplate) => {
+      // Media attr.
+      const mediaUrl = segmentTemplate.$.media;
+
+      // Clone params to avoid mutating input argument
+      const urlQuery = new URLSearchParams(originalUrlQuery);
+      if (representation?.$?.bandwidth)
+        urlQuery.set('bitrate', representation.$.bandwidth);
+
+      segmentTemplate.$.media = decodeURIComponent(
+        proxyPathBuilder(
+          mediaUrl?.match(/^http/) ? mediaUrl : new URL(mediaUrl, baseUrl).href,
+          urlQuery,
+          representation
+            ? 'proxy-segment/segment_$Number$.mp4'
+            : 'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$'
+        )
+      );
+
+      // Initialization attr.
+      const initUrl = segmentTemplate.$.initialization;
+      if (!initUrl?.match(/^http/)) {
+        const absoluteInitUrl = new URL(initUrl, baseUrl).href;
+        segmentTemplate.$.initialization = absoluteInitUrl;
+      }
+    });
+  }
 }

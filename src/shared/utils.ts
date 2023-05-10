@@ -86,9 +86,9 @@ export async function composeALBEvent(
   }
 
   // Create ALBEvent from Fastify Request...
-  const [path, queryString] = url.split('?');
+  const [path, ...queryString] = url.split('?');
   const queryStringParameters = Object.fromEntries(
-    new URLSearchParams(queryString)
+    new URLSearchParams(decodeURI(queryString.join('?').replace(/amp;/g, '')))
   );
   const requestContext = { elb: { targetGroupArn: '' } };
   const headers: Record<string, string> = {};
@@ -126,19 +126,10 @@ export async function parseM3U8Text(res: Response): Promise<M3U> {
    We set PLAYLIST-TYPE here if that is the case to ensure,
    that 'm3u.toString()' will later return a m3u8 string with the endlist tag.
   */
-  let setPlaylistTypeToVod = false;
   const parser = m3u8.createStream();
-  const responseCopy = res.clone();
-  const m3u8String = await responseCopy.text();
-  if (m3u8String.indexOf('#EXT-X-ENDLIST') !== -1) {
-    setPlaylistTypeToVod = true;
-  }
   res.body.pipe(parser);
   return new Promise((resolve, reject) => {
     parser.on('m3u', (m3u: M3U) => {
-      if (setPlaylistTypeToVod && m3u.get('playlistType') !== 'VOD') {
-        m3u.set('playlistType', 'VOD');
-      }
       resolve(m3u);
     });
     parser.on('error', (err) => {
@@ -190,7 +181,7 @@ type ProxyBasenames =
  * @returns ex. [ "http://abc.origin.com/streams/vod1", "subfolder3/media/segment.ts" ]
  */
 const cleanUpPathAndURI = (originPath: string, uri: string): string[] => {
-  const matchList: string[] | null = uri.match(/\.\.\//g);
+  const matchList: string[] | null = uri?.match(/\.\.\//g);
   if (matchList) {
     const jumpsToParentDir = matchList.length;
     if (jumpsToParentDir > 0) {
@@ -217,21 +208,24 @@ export function proxyPathBuilder(
   if (!urlSearchParams) {
     return '';
   }
+
   const allQueries = new URLSearchParams(urlSearchParams);
   let sourceItemURL = '';
   // Do not build an absolute source url If ItemUri is already an absolut url.
-  if (itemUri.match(/^http/)) {
+  if (itemUri?.match(/^http/)) {
     sourceItemURL = itemUri;
   } else {
     const sourceURL = allQueries.get('url');
     const baseURL: string = path.dirname(sourceURL);
     const [_baseURL, _itemUri] = cleanUpPathAndURI(baseURL, itemUri);
+
     sourceItemURL = `${_baseURL}/${_itemUri}`;
   }
   if (sourceItemURL) {
     allQueries.set('url', sourceItemURL);
   }
   const allQueriesString = allQueries.toString();
+
   return `${proxy}${allQueriesString ? `?${allQueriesString}` : ''}`;
 }
 
