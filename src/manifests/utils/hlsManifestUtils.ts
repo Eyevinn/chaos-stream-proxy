@@ -14,8 +14,7 @@ export interface HLSManifestTools {
   createProxyMediaManifest: (
     originalM3U: M3U,
     sourceBaseURL: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    mutations: any
+    mutations: IndexedCorruptorConfigMap
   ) => Manifest; // look def again
   createProxyMasterManifest: (
     originalM3U: M3U,
@@ -122,13 +121,10 @@ export default function (): HLSManifestTools {
       sourceBaseURL: string,
       configsMap: IndexedCorruptorConfigMap
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
-      const that: HLSManifestTools = this;
-
       const m3u: M3U = clone(originalM3U);
 
       // configs for each index
-      const corruptions = that.utils.mergeMap(
+      const corruptions = this.utils.mergeMap(
         m3u.items.PlaylistItem.length,
         configsMap
       );

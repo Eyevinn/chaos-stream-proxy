@@ -12,8 +12,7 @@ interface TimeoutConfig {
   ch?: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getManifestConfigError(value: { [key: string]: any }): string {
+function getManifestConfigError(value: { [key: string]: unknown }): string {
   const o = value as TimeoutConfig;
 
   if (o.i === undefined && o.sq === undefined) {
@@ -31,11 +30,11 @@ function getManifestConfigError(value: { [key: string]: any }): string {
     return "Incorrect timeout query format. 'i' and 'sq' are mutually exclusive in a single query object.";
   }
 
-  if (o.sq < 0) {
+  if (Number(o.sq) < 0) {
     return 'Incorrect timeout query format. Field sq must be 0 or positive.';
   }
 
-  if (o.i < 0) {
+  if (Number(o.i) < 0) {
     return 'Incorrect timeout query format. Field i must be 0 or positive.';
   }
 

@@ -18,8 +18,7 @@ import { addSSMUrlParametersToUrl } from './aws.utils';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { version } = require('../../package.json');
+const version = process.env.npm_package_version;
 
 export const handleOptionsRequest = async (): Promise<ALBResult> => {
   return {

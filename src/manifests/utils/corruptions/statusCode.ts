@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { unparsableError } from '../../../shared/utils';
 import { ServiceError, TargetIndex } from '../../../shared/types';
 import { CorruptorConfig, SegmentCorruptorQueryConfig } from '../configs';
@@ -35,11 +34,11 @@ function getManifestConfigError(value: { [key: string]: any }): string {
     return "Incorrect statusCode query format. 'i' and 'sq' are mutually exclusive in a single query object.";
   }
 
-  if (o.sq < 0) {
+  if (Number(o.sq) < 0) {
     return 'Incorrect statusCode query format. Field sq must be 0 or positive.';
   }
 
-  if (o.i < 0) {
+  if (Number(o.i) < 0) {
     return 'Incorrect statusCode query format. Field i must be 0 or positive.';
   }
 
