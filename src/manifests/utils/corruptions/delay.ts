@@ -1,18 +1,18 @@
-/* eslint-disable */
 import { unparsableError } from '../../../shared/utils';
 import { ServiceError, TargetIndex } from '../../../shared/types';
 import { CorruptorConfig, SegmentCorruptorQueryConfig } from '../configs';
 
 interface DelayConfig extends CorruptorConfig {
-  ms: number;
+  ms?: number;
 }
 
 // TODO:Flytta till en i en constants fil, och gruppera med and
 const delayExpectedQueryFormatMsg =
   'Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.';
 
-function getManifestConfigError(value: { [key: string]: any }): string {
+function getManifestConfigError(value: { [key: string]: unknown }): string {
   const o = value as DelayConfig;
+
   if (o.ms && typeof o.ms !== 'number') {
     return delayExpectedQueryFormatMsg;
   }
@@ -32,19 +32,18 @@ function getManifestConfigError(value: { [key: string]: any }): string {
     return "Incorrect delay query format. 'i' and 'sq' are mutually exclusive in a single query object.";
   }
 
-  if (o.sq < 0) {
+  if (Number(o.sq) < 0) {
     return 'Incorrect delay query format. Field sq must be 0 or positive.';
   }
 
-  if (o.i < 0) {
+  if (Number(o.i) < 0) {
     return 'Incorrect delay query format. Field i must be 0 or positive.';
   }
 
   return '';
 }
-function isValidSegmentConfig(value: { [key: string]: any }): boolean {
-  const o = value as DelayConfig;
-  if (o.ms && typeof o.ms !== 'number') {
+function isValidSegmentConfig(value: { [key: string]: unknown }): boolean {
+  if (value.ms && typeof value.ms !== 'number') {
     return false;
   }
   return true;
@@ -121,7 +120,7 @@ const delayConfig: SegmentCorruptorQueryConfig = {
 
     const corruptorConfigs: CorruptorConfig[] = [];
 
-    for (var value of configIndexMap.values()) {
+    for (const value of configIndexMap.values()) {
       corruptorConfigs.push(value);
     }
 
@@ -133,7 +132,7 @@ const delayConfig: SegmentCorruptorQueryConfig = {
   getSegmentConfigs(
     delayConfigString: string
   ): [ServiceError | null, CorruptorConfig | null] {
-    const config: any = JSON.parse(delayConfigString);
+    const config = JSON.parse(delayConfigString);
     if (!isValidSegmentConfig(config)) {
       return [
         unparsableError(
