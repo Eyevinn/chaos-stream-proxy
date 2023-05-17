@@ -159,7 +159,16 @@ export default function (): HLSManifestTools {
           )
         );
       }
-      return m3u.toString();
+
+      // FIX EXT-X-MAP:URI not catching by @eyevinn/m3u8 to add baseUrl to the URI for (ZATOO manifest)
+      let data = m3u.toString();
+      if (/#EXT-X-MAP:URI="(?!http).*"/.test(data)) {
+        data = data.replace(
+          /#EXT-X-MAP:URI="([^"]*)"/g,
+          `#EXT-X-MAP:URI="${sourceBaseURL}/$1"`
+        );
+      }
+      return data;
     }
   });
 }
