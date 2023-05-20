@@ -20,7 +20,7 @@ export default async function dashSegmentHandler(
   /**
    * #1 - const originalUrl = req.body.query("url");
    * #2 - const originalManifest = await fetch(originalUrl);
-   * #3 - bygg proxy versionen och bygg responsen med rätt header
+   * #3 - build proxy version and response with the correct header
    */
   const { url } = event.queryStringParameters;
 
@@ -86,7 +86,7 @@ export default async function dashSegmentHandler(
       status: 500,
       message: err.message ? err.message : err
     };
-    //för oväntade fel
+    //for unexpected errors
     return generateErrorResponse(errorRes);
   }
 }

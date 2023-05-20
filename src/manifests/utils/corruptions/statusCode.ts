@@ -2,7 +2,7 @@ import { unparsableError } from '../../../shared/utils';
 import { ServiceError, TargetIndex } from '../../../shared/types';
 import { CorruptorConfig, SegmentCorruptorQueryConfig } from '../configs';
 
-// TODO:Flytta till en i en constants fil, och gruppera med and
+// TODO: Move to a constants file and group with and
 const statusCodeExpectedQueryFormatMsg =
   'Incorrect statusCode query format. Expected format: [{i?:number, sq?:number, br?:number, code:number}, ...n] where i and sq are mutually exclusive.';
 

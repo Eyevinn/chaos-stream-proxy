@@ -112,8 +112,8 @@ export default function (): HLSManifestTools {
       return m3u.toString();
 
       //---------------------------------------------------------------
-      // TODO: *Specialfall*, cover fall där StreamItem.get('uri')
-      // är ett http://.... url, och inte en relativ
+      // TODO: *Edge case*, cover case where StreamItem.get('uri')
+      // is a http://.... url, and not a relative
       //---------------------------------------------------------------
     },
     createProxyMediaManifest(
