@@ -6,7 +6,7 @@ interface DelayConfig extends CorruptorConfig {
   ms?: number;
 }
 
-// TODO:Flytta till en i en constants fil, och gruppera med and
+// TODO: Move to a constants file and group with and
 const delayExpectedQueryFormatMsg =
   'Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.';
 

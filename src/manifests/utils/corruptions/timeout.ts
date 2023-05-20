@@ -1,7 +1,7 @@
 import { ServiceError, TargetIndex } from '../../../shared/types';
 import { CorruptorConfig, SegmentCorruptorQueryConfig } from '../configs';
 
-// TODO:Flytta till en i en constants fil, och gruppera med and
+// TODO: Move to a constants file and group with and
 const timeoutExpectedQueryFormatMsg =
   'Incorrect timeout query format. Expected format: [{i?:number, sq?:number, br?:number}, ...n] where i and sq are mutually exclusive.';
 
