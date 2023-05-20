@@ -266,7 +266,7 @@ We help you deploy and integrate the service in your environment on a time-of-ma
 
 ### Feature Development
 
-When you need a new feature developed and does not have the capacity or competence of your own to do it, we can on a time-of-material introduce this feature in the current code base and under the current open source license.
+When you need a new feature developed and do not have the capacity or competence of your own to do it, we can on a time-of-material introduce this feature in the current code base and under the current open source license.
 
 ### Professional Services and Development
 
