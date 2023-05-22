@@ -203,7 +203,8 @@ const cleanUpPathAndURI = (originPath: string, uri: string): string[] => {
 export function proxyPathBuilder(
   itemUri: string,
   urlSearchParams: URLSearchParams,
-  proxy: ProxyBasenames
+  proxy: ProxyBasenames,
+  encoded = true
 ): string {
   if (!urlSearchParams) {
     return '';
@@ -221,12 +222,23 @@ export function proxyPathBuilder(
 
     sourceItemURL = `${_baseURL}/${_itemUri}`;
   }
-  if (sourceItemURL) {
+  if (encoded) {
     allQueries.set('url', sourceItemURL);
+    const allQueriesString = allQueries.toString();
+    return `${proxy}${allQueriesString ? `?${allQueriesString}` : ''}`;
   }
+  allQueries.delete('url');
   const allQueriesString = allQueries.toString();
-
-  return `${proxy}${allQueriesString ? `?${allQueriesString}` : ''}`;
+  const [url, ...params] = sourceItemURL.split('?');
+  const nestedParams = params.join('?');
+  console.log(
+    `${proxy}?url=${url}${
+      nestedParams ? encodeURIComponent(`?${nestedParams}`) : ''
+    }${allQueriesString ? `&${allQueriesString}` : ''}`
+  );
+  return `${proxy}?url=${url}${
+    nestedParams ? encodeURIComponent(`?${nestedParams}`) : ''
+  }${allQueriesString ? `&${allQueriesString}` : ''}`;
 }
 
 export function segmentUrlParamString(

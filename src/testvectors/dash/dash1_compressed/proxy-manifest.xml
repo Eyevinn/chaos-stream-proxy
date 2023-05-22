@@ -34,7 +34,7 @@
       <SegmentTemplate
         timescale="48000"
         initialization="https://mock.mock.com/stream/relative_base/audiotrack/init/$RepresentationID$.m4s"
-        media="proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Frelative_base%2Faudiotrack%2F%24RepresentationID%24%2F%24Time%24.m4s&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D">
+        media="proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$?url=https://mock.mock.com/stream/relative_base/audiotrack/$RepresentationID$/$Time$.m4s&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D">
         <SegmentTimeline>
           <S t="80746389121167" d="184320" r="78" />
         </SegmentTimeline>
@@ -62,7 +62,7 @@
       <SegmentTemplate
         timescale="600"
         initialization="https://mock.mock.com/stream/relative_base/videotrack/init/$RepresentationID$.m4s"
-        media="proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Frelative_base%2Fvideotrack%2F%24RepresentationID%24%2F%24Time%24.m4s&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D">
+        media="proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$?url=https://mock.mock.com/stream/relative_base/videotrack/$RepresentationID$/$Time$.m4s&amp;statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&amp;timeout=%5B%7Bi%3A3%7D%5D&amp;delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D">
         <SegmentTimeline>
           <S t="1009329864060" d="2304" r="78" />
         </SegmentTimeline>

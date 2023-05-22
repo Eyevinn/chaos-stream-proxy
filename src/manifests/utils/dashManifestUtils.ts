@@ -110,14 +110,13 @@ function forgeSegment(baseUrl, segment, originalUrlQuery, representation?) {
       if (representation?.$?.bandwidth)
         urlQuery.set('bitrate', representation.$.bandwidth);
 
-      segmentTemplate.$.media = decodeURIComponent(
-        proxyPathBuilder(
-          mediaUrl?.match(/^http/) ? mediaUrl : new URL(mediaUrl, baseUrl).href,
-          urlQuery,
-          representation
-            ? 'proxy-segment/segment_$Number$.mp4'
-            : 'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$'
-        )
+      segmentTemplate.$.media = proxyPathBuilder(
+        mediaUrl?.match(/^http/) ? mediaUrl : new URL(mediaUrl, baseUrl).href,
+        urlQuery,
+        representation
+          ? 'proxy-segment/segment_$Number$.mp4'
+          : 'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$',
+        false
       );
 
       // Initialization attr.
