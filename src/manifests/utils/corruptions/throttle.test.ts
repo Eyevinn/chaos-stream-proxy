@@ -1,4 +1,3 @@
-import statusCodeConfig from './statusCode';
 import throttleConfig from './throttle';
 
 describe('manifest.utils.corruptions.throttle', () => {
@@ -113,7 +112,9 @@ describe('manifest.utils.corruptions.throttle', () => {
     it('should handle illegal characters in query object', () => {
       // Arrange
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const throttleValue = [{ rate: 'hehe', i: false, sq: { he: 'he' } }] as any;
+      const throttleValue = [
+        { rate: 'hehe', i: false, sq: { he: 'he' } }
+      ] as any;
 
       // Act
       const actual = getManifestConfigs(throttleValue);
