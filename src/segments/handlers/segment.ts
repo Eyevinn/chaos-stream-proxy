@@ -3,12 +3,14 @@ import { ServiceError } from '../../shared/types';
 import delaySCC from '../../manifests/utils/corruptions/delay';
 import statusCodeSCC from '../../manifests/utils/corruptions/statusCode';
 import timeoutSCC from '../../manifests/utils/corruptions/timeout';
+import throttleSCC from '../../manifests/utils/corruptions/throttle';
 import { corruptorConfigUtils } from '../../manifests/utils/configs';
 import {
   generateErrorResponse,
   isValidUrl,
   refineALBEventQuery
 } from '../../shared/utils';
+import { THROTTLING_PROXY } from '../constants';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -27,7 +29,11 @@ export default async function segmentHandler(
   }
   try {
     const configUtils = corruptorConfigUtils(new URLSearchParams(query));
-    configUtils.register(delaySCC).register(statusCodeSCC).register(timeoutSCC);
+    configUtils
+      .register(delaySCC)
+      .register(statusCodeSCC)
+      .register(timeoutSCC)
+      .register(throttleSCC);
 
     const [error, allSegmentCorr] = configUtils.getAllSegmentConfigs();
     if (error) {
@@ -61,6 +67,23 @@ export default async function segmentHandler(
         body: JSON.stringify({
           message: '[Stream Corruptor]: Applied Status Code Corruption'
         })
+      };
+    }
+    // apply Throttle
+    if (
+      allSegmentCorr.get('throttle') &&
+      allSegmentCorr.get('throttle').fields.rate !== 'undefined'
+    ) {
+      const rate = Number(allSegmentCorr.get('throttle').fields.rate);
+      return {
+        statusCode: 302,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type, Origin',
+          Location:
+            '/api/v2' + THROTTLING_PROXY + '?url=' + query.url + '&rate=' + rate
+        },
+        body: 'stream corruptor throttling redirect'
       };
     }
     // Redirect to Source File

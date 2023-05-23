@@ -54,6 +54,7 @@ To try it out, go to your favourite HLS/MPEG-DASH video player such as `https://
 | `/api/v2/manifests/dash/proxy-master.mpd` | GET    | Returns a proxy MPD file, based on query parameters                                                      |
 | `/api/v2/manifests/dash/proxy-segment`    | GET    | Applies corruption present in query parameter and may return a 302 redirect to the original segment file |
 | `/api/v2/segments/proxy-segment`          | GET    | Applies corruption present in query parameter and may return a 302 redirect to the original segment file |
+| `/api/v2/throttle`                        | GET    | Proxies a http request, throttling the response to a specified byte rate                                 |
 | `/`                                       | GET    | Server health check                                                                                      |
 
 ### Query Parameters
@@ -64,6 +65,7 @@ To try it out, go to your favourite HLS/MPEG-DASH video player such as `https://
 | `delay`      | Delay the response, in milliseconds, for a specific segment request                       |
 | `statusCode` | Replace the response for a specific segment request with a specified status code response |
 | `timeout`    | Force a timeout for the response of a specific segment request                            |
+| `throttle`   | Send back the segment at a specified speed of bytes per second                            |
 
 ### Load Manifest url params from AWS SSM parameter store instead
 - Create a .env file at the root the of project
@@ -78,7 +80,7 @@ LOAD_PARAMS_FROM_AWS_SSM=true
 
 ## Corruptions
 
-Currently, the Chaos Stream Proxy supports 3 types of corruptions for HLS and MPEG-DASH streams. These corruptions may be used in combination with one another.
+Currently, the Chaos Stream Proxy supports 4 types of corruptions for HLS and MPEG-DASH streams. These corruptions may be used in combination with one another.
 
 ### Specifying Corruption Configurations
 
@@ -100,7 +102,7 @@ Delay Corruption:
 {
     i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
     sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
-    rsq?: number, // relative sequence number from where a livestream is currently at
+    rsq?: number,      // relative sequence number from where a livestream is currently at
     ms?: number,       // time to delay in milliseconds
     br?: number | "*", // apply only to specific bitrate
 }
@@ -112,7 +114,7 @@ Status Code Corruption:
 {
     i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
     sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
-    rsq?: number, // relative sequence number from where a livestream is currently at
+    rsq?: number,      // relative sequence number from where a livestream is currently at
     code?: number,     // code to return in http response status header instead of media file
     br?: number | "*", // apply only to specific bitrate
 }
@@ -124,10 +126,22 @@ Timeout Corruption:
 {
     i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
     sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
-    rsq?: number, // relative sequence number from where a livestream is currently at
+    rsq?: number,      // relative sequence number from where a livestream is currently at
     br?: number | "*", // apply only to specific bitrate
 }
 ```
+
+Throttle Corruption:
+```typescript
+{
+    i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
+    sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
+    rsq?: number,      // relative sequence number from where a livestream is currently at
+    br?: number | "*", // apply only to specific bitrate
+    rate?: number      // rate in bytes per second to limit the segment download speed to
+}
+```
+
 
 One can either target a segment through the index parameter, `i`, or the sequence number parameter, `sq`, relative sequence numbers, `rsq`, are translated to sequence numbers, . In the case where one has entered both, the **index parameter** will take precedence.
 
@@ -210,6 +224,11 @@ https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.m
 
 ```
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd&statusCode=[{sq:841164350, code:404}]
+```
+
+6. LIVE: Example of MPEG-DASH with a segment download speed limited to 10kB/s on all segments
+```
+https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&throttle=[{i:*,rate:10000}]
 ```
 
 ## Development Environment

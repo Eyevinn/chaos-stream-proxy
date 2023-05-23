@@ -40,6 +40,7 @@ export function addSSMUrlParametersToUrl(url: string): Promise<string> {
     !url.includes('delay') &&
     !url.includes('statusCode') &&
     !url.includes('timeout') &&
+    !url.includes('throttle') &&
     url.includes('proxy-master')
   ) {
     const parameterName =

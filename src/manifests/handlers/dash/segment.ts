@@ -9,6 +9,7 @@ import {
 import delaySCC from '../../utils/corruptions/delay';
 import statusCodeSCC from '../../utils/corruptions/statusCode';
 import timeoutSCC from '../../utils/corruptions/timeout';
+import throttleSCC from '../../utils/corruptions/throttle';
 import path from 'path';
 import dashManifestUtils from '../../utils/dashManifestUtils';
 import { corruptorConfigUtils } from '../../utils/configs';
@@ -54,7 +55,11 @@ export default async function dashSegmentHandler(
     // Break down Corruption Objects
     // Send source URL with a corruption json (if it is appropriate) to segmentHandler...
     const configUtils = corruptorConfigUtils(urlSearchParams);
-    configUtils.register(delaySCC).register(statusCodeSCC).register(timeoutSCC);
+    configUtils
+      .register(delaySCC)
+      .register(statusCodeSCC)
+      .register(timeoutSCC)
+      .register(throttleSCC);
     const [error, allMutations] = configUtils.getAllManifestConfigs(
       reqSegmentIndexInt,
       true
