@@ -155,7 +155,8 @@ export default function (): HLSManifestTools {
           proxyPathBuilder(
             item.get('uri'),
             new URLSearchParams(params),
-            '../../segments/proxy-segment'
+            '../../segments/proxy-segment',
+            false
           )
         );
       }
