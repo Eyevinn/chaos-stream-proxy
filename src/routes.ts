@@ -5,6 +5,7 @@ import {
   generateHeartbeatResponse,
   addCustomVersionHeader
 } from './shared/utils';
+import throttlingProxyRoutes from './segments/routes/throttlingProxy';
 
 const apiPrefix = (version: number): string => `api/v${version}`;
 
@@ -20,5 +21,6 @@ export function registerRoutes(app: FastifyInstance) {
   const opts = { prefix: apiPrefix(2) };
   app.register(segmentRoutes, opts);
   app.register(manifestRoutes, opts);
+  app.register(throttlingProxyRoutes, opts);
   addCustomVersionHeader(app);
 }

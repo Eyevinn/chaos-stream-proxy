@@ -209,7 +209,7 @@ function convertRelativeToAbsoluteSegmentOffsets(
 
   const urlQuery = new URLSearchParams(originalUrlQuery);
 
-  const corruptions = ['statusCode', 'delay', 'timeout'];
+  const corruptions = ['statusCode', 'delay', 'timeout', 'throttle'];
 
   let changed = false;
 

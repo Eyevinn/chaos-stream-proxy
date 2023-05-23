@@ -9,6 +9,7 @@ import {
 import delaySCC from '../../utils/corruptions/delay';
 import statusCodeSCC from '../../utils/corruptions/statusCode';
 import timeoutSCC from '../../utils/corruptions/timeout';
+import throttleSCC from '../../utils/corruptions/throttle';
 import path from 'path';
 import hlsManifestUtils from '../../utils/hlsManifestUtils';
 import { corruptorConfigUtils } from '../../utils/configs';
@@ -46,7 +47,11 @@ export default async function hlsMediaHandler(
     const manifestUtils = hlsManifestUtils();
     const configUtils = corruptorConfigUtils(reqQueryParams);
 
-    configUtils.register(delaySCC).register(statusCodeSCC).register(timeoutSCC);
+    configUtils
+      .register(delaySCC)
+      .register(statusCodeSCC)
+      .register(timeoutSCC)
+      .register(throttleSCC);
 
     const [error, allMutations] = configUtils.getAllManifestConfigs(
       mediaM3U.get('mediaSequence')
