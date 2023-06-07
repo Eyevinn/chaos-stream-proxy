@@ -3,7 +3,8 @@ import segmentRoutes from './segments/routes';
 import manifestRoutes from './manifests/routes';
 import {
   generateHeartbeatResponse,
-  addCustomVersionHeader
+  addCustomVersionHeader,
+  authenticateToken
 } from './shared/utils';
 import throttlingProxyRoutes from './segments/routes/throttlingProxy';
 
@@ -23,4 +24,5 @@ export function registerRoutes(app: FastifyInstance) {
   app.register(manifestRoutes, opts);
   app.register(throttlingProxyRoutes, opts);
   addCustomVersionHeader(app);
+  authenticateToken(app);
 }
