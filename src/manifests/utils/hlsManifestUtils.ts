@@ -1,5 +1,9 @@
 import { M3U, Manifest } from '../../shared/types';
-import { proxyPathBuilder, segmentUrlParamString } from '../../shared/utils';
+import {
+  newState,
+  proxyPathBuilder,
+  segmentUrlParamString
+} from '../../shared/utils';
 import { CorruptorConfigMap, IndexedCorruptorConfigMap } from './configs';
 import clone from 'clone';
 
@@ -18,7 +22,8 @@ export interface HLSManifestTools {
   ) => Manifest; // look def again
   createProxyMasterManifest: (
     originalM3U: M3U,
-    originalUrlQuery: URLSearchParams
+    originalUrlQuery: URLSearchParams,
+    stateKey: string | undefined
   ) => Manifest;
   utils: HLSManifestUtils;
 }
@@ -78,7 +83,8 @@ export default function (): HLSManifestTools {
     utils,
     createProxyMasterManifest(
       originalM3U: M3U,
-      originalUrlQuery: URLSearchParams
+      originalUrlQuery: URLSearchParams,
+      stateKey: string | undefined
     ) {
       const m3u: M3U = clone(originalM3U);
 
@@ -95,6 +101,9 @@ export default function (): HLSManifestTools {
           urlQuery.set('level', abrLevel.toString());
           abrLevel++;
         }
+        if (stateKey) {
+          urlQuery.set('state', stateKey);
+        }
         streamItem.set(
           'uri',
           proxyPathBuilder(currentUri, urlQuery, 'proxy-media.m3u8')
@@ -104,12 +113,16 @@ export default function (): HLSManifestTools {
 
       // [Audio/Subtitles/IFrame]
       m3u.items.MediaItem = m3u.items.MediaItem.map((mediaItem) => {
+        const urlQuery = new URLSearchParams(originalUrlQuery);
         const currentUri = mediaItem.get('uri');
         // #EXT-X-MEDIA URI,is only required with type SUBTITLES, optional for AUDIO and VIDEO
         if (mediaItem.get('type') !== 'SUBTITLES' && currentUri == undefined) {
           return mediaItem;
         }
 
+        if (stateKey) {
+          urlQuery.set('state', stateKey);
+        }
         mediaItem.set(
           'uri',
           proxyPathBuilder(currentUri, originalUrlQuery, 'proxy-media.m3u8')

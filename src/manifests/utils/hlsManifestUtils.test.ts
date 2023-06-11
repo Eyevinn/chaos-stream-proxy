@@ -30,7 +30,8 @@ describe('hlsManifestTools', () => {
       const manifestUtils = hlsManifestUtils();
       const proxyManifest: string = manifestUtils.createProxyMasterManifest(
         masterM3U,
-        urlSearchParams
+        urlSearchParams,
+        undefined
       );
 
       // Assert

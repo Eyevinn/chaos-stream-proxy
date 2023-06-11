@@ -67,14 +67,23 @@ To try it out, go to your favourite HLS/MPEG-DASH video player such as `https://
 | `timeout`    | Force a timeout for the response of a specific segment request                            |
 | `throttle`   | Send back the segment at a specified speed of bytes per second                            |
 
+### Stateful Mode
+
+By settings the `STATEFUL` env variable to `true`, stateful mode can be enabled, in this mode certain additional features are enabled at the cost of keeping some state in-memory. The state cache TTL ín seconds can be configured with the `TTL` env variable, default of 300 seconds.
+
+Currently the only feature not available when running in stateless mode is relative sequence numbers on HLS livestreams.
+
 ### Load Manifest url params from AWS SSM parameter store instead
+
 - Create a .env file at the root the of project
-- fill it like this : 
+- fill it like this :
+
 ```
 AWS_REGION="eu-central-1"
 AWS_SSM_PARAM_KEY="/ChaosStreamProxy/Development/UrlParams"
 LOAD_PARAMS_FROM_AWS_SSM=true
 ```
+
 - on AWS SSM, create a parameter with name : <em>/ChaosStreamProxy/Development/UrlParams</em>
 - add a value for corruptions, for example : <em>&statusCode=[{i:3,code:500},{i:4,code:500}]</em>
 
@@ -92,7 +101,7 @@ Across all coruptions, there are 3 ways to target a segment in a playlist for co
 
 1. `i`: The segment's list index in any Media Playlist, with HLS segments starting at 0 and MPEG-DASH segments starting at 1. For a Media Playlist with 12 segments, `i`=11, would target the last segment for HLS and `i`=12, would target the last segment for MPEG-DASH.
 2. `sq`: The segment's Media Sequence Number (**HLS only**). For a Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=111 would target the last segment. When corrupting a live HLS stream it is recommended to target with `sq`.
-3. `rsq`: A relative sequence number, counted from where the live stream is currently at when requesting manifest. (**MPEG-DASH Live only**)
+3. `rsq`: A relative sequence number, counted from where the live stream is currently at when requesting manifest. (**HLS SUPPORTED ONLY IN STATEFUL MODE**)
 
 Below are configuration JSON object templates for the currently supported corruptions. A query should have its value be an array consisting of any one of these 3 types of items:
 
@@ -133,6 +142,7 @@ Timeout Corruption:
 ```
 
 Throttle Corruption:
+
 ```typescript
 {
     i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
@@ -142,7 +152,6 @@ Throttle Corruption:
     rate?: number      // rate in bytes per second to limit the segment download speed to
 }
 ```
-
 
 One can either target a segment through the index parameter, `i`, or the sequence number parameter, `sq`, relative sequence numbers, `rsq`, are translated to sequence numbers, . In the case where one has entered both, the **index parameter** will take precedence.
 
@@ -234,6 +243,7 @@ https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.m
 ```
 
 6. LIVE: Example of MPEG-DASH with a segment download speed limited to 10kB/s on all segments
+
 ```
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&throttle=[{i:*,rate:10000}]
 ```
@@ -255,6 +265,7 @@ To deploy and update production environment publish a release on GitHub. This wi
 See [CONTRIBUTING](CONTRIBUTING.md) if you want to contribute to this project.
 
 ### Git way-of-working
+
 In the interest of keeping a clean and easy to debug git history, use the following guidelines:
 
 - Read [How to Write a Commit Message](https://chris.beams.io/posts/git-commit/).

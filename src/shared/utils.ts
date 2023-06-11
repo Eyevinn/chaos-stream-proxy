@@ -17,6 +17,8 @@ import { addSSMUrlParametersToUrl } from './aws.utils';
 
 import dotenv from 'dotenv';
 import { Readable } from 'stream';
+import NodeCache from 'node-cache';
+import { randomInt } from 'crypto';
 dotenv.config();
 
 const version = process.env.npm_package_version;
@@ -295,4 +297,46 @@ export function fixUrl(url: string) {
 export class AppSettings {
   static loadUrlParametersFromAwsSSM: boolean =
     process.env.LOAD_PARAMS_FROM_AWS_SSM === 'true';
+}
+
+export const STATEFUL: boolean = process.env.STATEFUL
+  ? process.env.STATEFUL == 'true'
+  : false;
+export const TTL: number = process.env.TTL ? parseInt(process.env.TTL) : 300;
+
+const stateCache: NodeCache = STATEFUL
+  ? new NodeCache({ stdTTL: TTL })
+  : undefined;
+
+type RequestState = {
+  initialSequenceNumber?: number;
+};
+
+export function getState(stateKey: string): RequestState | undefined {
+  if (STATEFUL) return stateCache.get(stateKey);
+  else return undefined;
+}
+
+export function putState(
+  key: string,
+  state: RequestState
+): boolean | ServiceError {
+  if (STATEFUL) return stateCache.set(key, state);
+  else return { status: 400, message: 'Stateful feature not enabled' };
+}
+
+const alpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+function randomStateKey(length: number): string {
+  let key = '';
+  for (let i = 0; i < length; i++) {
+    key += alpha.charAt(randomInt(0, alpha.length));
+  }
+  return key;
+}
+
+export function newState(state: RequestState): string {
+  let key = randomStateKey(16);
+  while (stateCache.get(key) != undefined) key = randomStateKey(16);
+  stateCache.set(key, state);
+  return key;
 }

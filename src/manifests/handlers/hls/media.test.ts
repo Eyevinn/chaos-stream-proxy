@@ -245,6 +245,136 @@ https://mock.mock.com/stream/hls/manifest_1_00001.ts
       expect(response.body).toEqual(expected.body);
     });
 
+    it('should return 400 when providing relative offset in stateless mode', async () => {
+      // Arrange
+      const getMedia = () => {
+        return new Promise((resolve) => {
+          const readStream: ReadStream = createReadStream(
+            path.join(
+              __dirname,
+              `../../../testvectors/hls/hls2_multitrack/manifest_1.m3u8`
+            )
+          );
+          resolve(readStream);
+        });
+      };
+      nock(mockBaseURL).persist().get('/manifest_1.m3u8').reply(200, getMedia, {
+        'Content-Type': 'application/vnd.apple.mpegurl;charset=UTF-8',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Origin'
+      });
+
+      const queryParams = {
+        url: mockMediaURL,
+        statusCode: '[{rsq:15,code:400}]'
+      };
+      const event: ALBEvent = {
+        requestContext: {
+          elb: {
+            targetGroupArn: ''
+          }
+        },
+        path: '/stream/hls/manifest.m3u8',
+        httpMethod: 'GET',
+        headers: {
+          accept: 'application/vnd.apple.mpegurl;charset=UTF-8',
+          'accept-language': 'en-US,en;q=0.8',
+          'content-type': 'text/plain',
+          host: 'lambda-846800462-us-east-2.elb.amazonaws.com',
+          'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6)',
+          'x-amzn-trace-id': 'Root=1-5bdb40ca-556d8b0c50dc66f0511bf520',
+          'x-forwarded-for': '72.21.198.xx',
+          'x-forwarded-port': '443',
+          'x-forwarded-proto': 'https'
+        },
+        isBase64Encoded: false,
+        queryStringParameters: queryParams,
+        body: ''
+      };
+
+      // Act
+      const response = await hlsMediaHandler(event);
+
+      // Assert
+      const expected: ALBResult = {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Headers': 'Content-Type, Origin',
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: '{"reason":"Relative sequence numbers on HLS are only supported when proxy is running in stateful mode"}'
+      };
+      expect(response.statusCode).toEqual(expected.statusCode);
+      expect(response.headers).toEqual(expected.headers);
+      expect(response.body).toEqual(expected.body);
+    });
+
+    it('should return 400 when providing relative offset in stateless mode', async () => {
+      // Arrange
+      const getMedia = () => {
+        return new Promise((resolve) => {
+          const readStream: ReadStream = createReadStream(
+            path.join(
+              __dirname,
+              `../../../testvectors/hls/hls2_multitrack/manifest_1.m3u8`
+            )
+          );
+          resolve(readStream);
+        });
+      };
+      nock(mockBaseURL).persist().get('/manifest_1.m3u8').reply(200, getMedia, {
+        'Content-Type': 'application/vnd.apple.mpegurl;charset=UTF-8',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Origin'
+      });
+
+      const queryParams = {
+        url: mockMediaURL,
+        statusCode: '[{rsq:15,code:400}]'
+      };
+      const event: ALBEvent = {
+        requestContext: {
+          elb: {
+            targetGroupArn: ''
+          }
+        },
+        path: '/stream/hls/manifest.m3u8',
+        httpMethod: 'GET',
+        headers: {
+          accept: 'application/vnd.apple.mpegurl;charset=UTF-8',
+          'accept-language': 'en-US,en;q=0.8',
+          'content-type': 'text/plain',
+          host: 'lambda-846800462-us-east-2.elb.amazonaws.com',
+          'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6)',
+          'x-amzn-trace-id': 'Root=1-5bdb40ca-556d8b0c50dc66f0511bf520',
+          'x-forwarded-for': '72.21.198.xx',
+          'x-forwarded-port': '443',
+          'x-forwarded-proto': 'https'
+        },
+        isBase64Encoded: false,
+        queryStringParameters: queryParams,
+        body: ''
+      };
+
+      // Act
+      const response = await hlsMediaHandler(event);
+
+      // Assert
+      const expected: ALBResult = {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Headers': 'Content-Type, Origin',
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: '{"reason":"Relative sequence numbers on HLS are only supported when proxy is running in stateful mode"}'
+      };
+      expect(response.statusCode).toEqual(expected.statusCode);
+      expect(response.headers).toEqual(expected.headers);
+      expect(response.body).toEqual(expected.body);
+    });
+
     //it('should return code 500 on Other Errors, eg M3U8 parser error', async () => {});
   });
 });
