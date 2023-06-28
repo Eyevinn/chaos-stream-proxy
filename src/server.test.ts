@@ -32,17 +32,27 @@ describe('Chaos Stream Proxy server', () => {
     }
   );
 
-  it('requires token when running with env JWT_SECRET set', async () => {
+  it('requires token when running with env JWT_SECRET set, except for heartbeat path', async () => {
+    // Arrange
     process.env.JWT_SECRET = 'somesecret';
     const appInternal = fastify();
     registerRoutes(appInternal);
-    const invalidResponse = await appInternal.inject('/?token=invalid');
-    expect(invalidResponse.statusCode).toEqual(401);
+
+    // Act
+    const invalidResponse = await appInternal.inject(
+      '/api/v2/manifests/dash/proxy-master.mpd?token=invalid'
+    );
 
     const validResponse = await appInternal.inject(
-      '/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55IjoidGVzdGNvbXBhbnkiLCJlbWFpbCI6InRlc3RAZW1haWwuY29tIiwiaWF0IjoxNjg2MTUzMzU5fQ.wHnzxMdoPZlzdU0GDCzEwd5lnEmq-rX2Ew0yODxqlzg'
+      '/api/v2/manifests/dash/proxy-master.mpd?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55IjoidGVzdGNvbXBhbnkiLCJlbWFpbCI6InRlc3RAZW1haWwuY29tIiwiaWF0IjoxNjg2MTUzMzU5fQ.wHnzxMdoPZlzdU0GDCzEwd5lnEmq-rX2Ew0yODxqlzg'
     );
-    expect(validResponse.statusCode).toEqual(200);
+
+    const allowHeartbeatAlways = await appInternal.inject('/');
+
+    // Assert
+    expect(invalidResponse.statusCode).toEqual(401);
+    expect(validResponse.statusCode).toEqual(400);
+    expect(allowHeartbeatAlways.statusCode).toEqual(200);
   });
 
   it('ignores token when running without env JWT_SECRET set', async () => {

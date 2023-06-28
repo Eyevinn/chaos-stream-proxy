@@ -358,21 +358,24 @@ export function authenticateToken(app: FastifyInstance): void {
     app.addHook(
       'onRequest',
       async (request, reply): Promise<RequestPayload> => {
-        const token = request.query['token'];
-        if (token == undefined)
-          return reply.code(401).send({ error: 'No token provided' });
-        try {
-          const censoredUrl = request.url.replace(token, 'TOKEN');
-          const decoded = jwt.verify(token, secret) as JwtToken;
-          awsLogger.info(
-            { path: censoredUrl },
-            request['awsLambda']?.['context'] as Context,
-            decoded
-          );
-        } catch (err) {
-          return reply
-            .code(401)
-            .send({ error: 'Invalid authentication token' });
+        const path = request.raw.url.split('?')[0];
+        if (path != '/') {
+          const token = request.query['token'];
+          if (token == undefined)
+            return reply.code(401).send({ error: 'No token provided' });
+          try {
+            const censoredUrl = request.url.replace(token, 'TOKEN');
+            const decoded = jwt.verify(token, secret) as JwtToken;
+            awsLogger.info(
+              { path: censoredUrl },
+              request['awsLambda']?.['context'] as Context,
+              decoded
+            );
+          } catch (err) {
+            return reply
+              .code(401)
+              .send({ error: 'Invalid authentication token' });
+          }
         }
       }
     );
