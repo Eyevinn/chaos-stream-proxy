@@ -102,6 +102,11 @@ export default function (): HLSManifestTools {
       // [Audio/Subtitles/IFrame]
       m3u.items.MediaItem = m3u.items.MediaItem.map((mediaItem) => {
         const currentUri = mediaItem.get('uri');
+        // #EXT-X-MEDIA URI,is only required with type SUBTITLES, optional for AUDIO and VIDEO
+        if (mediaItem.get('type') !== 'SUBTITLES' && currentUri == undefined) {
+          return mediaItem;
+        }
+
         mediaItem.set(
           'uri',
           proxyPathBuilder(currentUri, originalUrlQuery, 'proxy-media.m3u8')

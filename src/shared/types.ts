@@ -15,7 +15,7 @@ export type TargetIndex = number | '*';
 
 /* eslint-disable */
 export type M3UItem = {
-  get: (key: 'uri') => string | any;
+  get: (key: 'uri' | 'type') => string | any;
   set: (key: 'uri', value: string) => void;
 };
 
