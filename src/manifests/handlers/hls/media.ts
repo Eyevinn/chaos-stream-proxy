@@ -1,6 +1,7 @@
 import fetch, { Response } from 'node-fetch';
 import { ALBEvent, ALBResult } from 'aws-lambda';
 import {
+  fixUrl,
   generateErrorResponse,
   isValidUrl,
   parseM3U8Text,
@@ -29,11 +30,14 @@ export default async function hlsMediaHandler(
   }
 
   try {
-    const originalMediaManifestResponse: Response = await fetch(query.url);
+    const originalMediaManifestResponse: Response = await fetch(
+      fixUrl(query.url)
+    );
     if (!originalMediaManifestResponse.ok) {
+      const data = await originalMediaManifestResponse.json();
       return generateErrorResponse({
         status: originalMediaManifestResponse.status,
-        message: 'Unsuccessful Source Manifest fetch'
+        message: 'Unsuccessful Source Manifest fetch: ' + data.message
       });
     }
 

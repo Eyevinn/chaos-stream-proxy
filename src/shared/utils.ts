@@ -16,6 +16,7 @@ import {
 import { addSSMUrlParametersToUrl } from './aws.utils';
 
 import dotenv from 'dotenv';
+import { Readable } from 'stream';
 dotenv.config();
 
 const version = process.env.npm_package_version;
@@ -127,12 +128,16 @@ export async function parseM3U8Text(res: Response): Promise<M3U> {
   */
   let setPlaylistTypeToVod = false;
   const parser = m3u8.createStream();
-  const responseCopy = res.clone();
-  const m3u8String = await responseCopy.text();
+  const m3u8String = await res.text();
   if (m3u8String.indexOf('#EXT-X-ENDLIST') !== -1) {
     setPlaylistTypeToVod = true;
   }
-  res.body.pipe(parser);
+
+  const stream = new Readable();
+  stream.push(m3u8String);
+  stream.push(null);
+  stream.pipe(parser);
+
   return new Promise((resolve, reject) => {
     parser.on('m3u', (m3u: M3U) => {
       if (setPlaylistTypeToVod && m3u.get('playlistType') !== 'VOD') {
@@ -281,6 +286,10 @@ export function addCustomVersionHeader(app: FastifyInstance): void {
       return payload;
     }
   );
+}
+
+export function fixUrl(url: string) {
+  return url.replace(/;/g, '%3B');
 }
 
 export class AppSettings {
