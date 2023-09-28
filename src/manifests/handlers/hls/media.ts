@@ -15,6 +15,8 @@ import path from 'path';
 import hlsManifestUtils from '../../utils/hlsManifestUtils';
 import { corruptorConfigUtils } from '../../utils/configs';
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export default async function hlsMediaHandler(
   event: ALBEvent
 ): Promise<ALBResult> {
@@ -56,9 +58,8 @@ export default async function hlsMediaHandler(
       .register(timeoutSCC)
       .register(throttleSCC);
 
-    const [error, allMutations] = configUtils.getAllManifestConfigs(
-      mediaM3U.get('mediaSequence')
-    );
+    const [error, allMutations, levelMutations] =
+      configUtils.getAllManifestConfigs(mediaM3U.get('mediaSequence'));
     if (error) {
       return generateErrorResponse(error);
     }
@@ -70,6 +71,17 @@ export default async function hlsMediaHandler(
       allMutations
     );
 
+    if (levelMutations) {
+      // apply media manifest Delay
+      const level = reqQueryParams.get('level')
+        ? Number(reqQueryParams.get('level'))
+        : undefined;
+      if (level && levelMutations.get(level)) {
+        const delay = Number(levelMutations.get(level).get('delay').fields?.ms);
+        console.log(`Applying ${delay}ms delay to ${query.url}`);
+        await sleep(delay);
+      }
+    }
     return {
       statusCode: 200,
       headers: {

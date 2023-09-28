@@ -8,7 +8,7 @@ interface DelayConfig extends CorruptorConfig {
 
 // TODO: Move to a constants file and group with and
 const delayExpectedQueryFormatMsg =
-  'Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.';
+  'Incorrect delay query format. Expected format: [{i?:number, l?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.';
 
 function getManifestConfigError(value: { [key: string]: unknown }): string {
   const o = value as DelayConfig;
@@ -17,13 +17,14 @@ function getManifestConfigError(value: { [key: string]: unknown }): string {
     return delayExpectedQueryFormatMsg;
   }
 
-  if (o.i === undefined && o.sq === undefined) {
-    return "Incorrect delay query format. Either 'i' or 'sq' is required in a single query object.";
+  if (o.i === undefined && o.sq === undefined && o.l === undefined) {
+    return "Incorrect delay query format. Either 'i', 'l' or 'sq' is required in a single query object.";
   }
 
   if (
     !(o.i === '*' || typeof o.i === 'number') &&
-    !(o.sq === '*' || typeof o.sq === 'number')
+    !(o.sq === '*' || typeof o.sq === 'number') &&
+    !(typeof o.l === 'number')
   ) {
     return delayExpectedQueryFormatMsg;
   }
@@ -38,6 +39,10 @@ function getManifestConfigError(value: { [key: string]: unknown }): string {
 
   if (Number(o.i) < 0) {
     return 'Incorrect delay query format. Field i must be 0 or positive.';
+  }
+
+  if (Number(o.l) < 0) {
+    return 'Incorrect delay query format. Field l must be 0 or positive.';
   }
 
   return '';
@@ -74,6 +79,7 @@ const delayConfig: SegmentCorruptorQueryConfig = {
 
     const configIndexMap = new Map();
     const configSqMap = new Map();
+    const configLevelMap = new Map();
 
     for (let i = 0; i < configs.length; i++) {
       const config = configs[i];
@@ -102,6 +108,12 @@ const delayConfig: SegmentCorruptorQueryConfig = {
         configIndexMap.set(config.i, corruptorConfig);
       }
 
+      // Level numeric
+      if (typeof config.l === 'number' && !configLevelMap.has(config.l)) {
+        corruptorConfig.l = config.l;
+        configLevelMap.set(config.l, corruptorConfig);
+      }
+
       // Sequence default
       if (config.sq === '*') {
         // If default is already set, we skip
@@ -117,7 +129,6 @@ const delayConfig: SegmentCorruptorQueryConfig = {
         configSqMap.set(config.sq, corruptorConfig);
       }
     }
-
     const corruptorConfigs: CorruptorConfig[] = [];
 
     for (const value of configIndexMap.values()) {
@@ -125,6 +136,10 @@ const delayConfig: SegmentCorruptorQueryConfig = {
     }
 
     for (const value of configSqMap.values()) {
+      corruptorConfigs.push(value);
+    }
+
+    for (const value of configLevelMap.values()) {
       corruptorConfigs.push(value);
     }
     return [null, corruptorConfigs];
@@ -148,6 +163,7 @@ const delayConfig: SegmentCorruptorQueryConfig = {
       null,
       {
         i: config.i,
+        l: config.l,
         sq: config.sq,
         fields: {
           ms: config.ms

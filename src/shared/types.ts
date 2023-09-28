@@ -7,6 +7,8 @@ export type ServiceError = {
 
 export type TargetIndex = number | '*';
 
+export type TargetLevel = number;
+
 /**
  * Cherrypicking explicitly what we need to type from
  * https://github.com/Eyevinn/node-m3u8/blob/master/m3u/Item.js

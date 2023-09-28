@@ -83,6 +83,7 @@ export default function (): HLSManifestTools {
       const m3u: M3U = clone(originalM3U);
 
       // [Video]
+      let abrLevel = 1;
       m3u.items.StreamItem = m3u.items.StreamItem.map((streamItem) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const bitRate = (streamItem as any)?.attributes?.attributes?.bandwidth;
@@ -91,6 +92,8 @@ export default function (): HLSManifestTools {
         const urlQuery = new URLSearchParams(originalUrlQuery);
         if (bitRate) {
           urlQuery.set('bitrate', bitRate);
+          urlQuery.set('level', abrLevel.toString());
+          abrLevel++;
         }
         streamItem.set(
           'uri',

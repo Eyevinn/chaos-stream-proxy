@@ -38,11 +38,11 @@ describe('hlsManifestTools', () => {
 #EXT-X-VERSION:3
 #EXT-X-INDEPENDENT-SEGMENTS
 #EXT-X-STREAM-INF:BANDWIDTH=4255267,AVERAGE-BANDWIDTH=4255267,CODECS="avc1.4d4032,mp4a.40.2",RESOLUTION=2560x1440,FRAME-RATE=25,AUDIO="audio",SUBTITLES="subs"
-proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_1.m3u8&statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&timeout=%5B%7Bi%3A3%7D%5D&delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&bitrate=4255267
+proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_1.m3u8&statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&timeout=%5B%7Bi%3A3%7D%5D&delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&bitrate=4255267&level=1
 #EXT-X-STREAM-INF:BANDWIDTH=3062896,AVERAGE-BANDWIDTH=3062896,CODECS="avc1.4d4028,mp4a.40.2",RESOLUTION=1920x1080,FRAME-RATE=25,AUDIO="audio",SUBTITLES="subs"
-proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_2.m3u8&statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&timeout=%5B%7Bi%3A3%7D%5D&delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&bitrate=3062896
+proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_2.m3u8&statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&timeout=%5B%7Bi%3A3%7D%5D&delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&bitrate=3062896&level=2
 #EXT-X-STREAM-INF:BANDWIDTH=2316761,AVERAGE-BANDWIDTH=2316761,CODECS="avc1.4d4028,mp4a.40.2",RESOLUTION=1920x1080,FRAME-RATE=25,AUDIO="audio",SUBTITLES="subs"
-proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_3.m3u8&statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&timeout=%5B%7Bi%3A3%7D%5D&delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&bitrate=2316761
+proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_3.m3u8&statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&timeout=%5B%7Bi%3A3%7D%5D&delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D&bitrate=2316761&level=3
 
 #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",LANGUAGE="en",NAME="English stereo",CHANNELS="2",DEFAULT=YES,AUTOSELECT=YES,URI="proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_audio-en.m3u8&statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&timeout=%5B%7Bi%3A3%7D%5D&delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D"
 #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",LANGUAGE="sv",NAME="Swedish stereo",CHANNELS="2",DEFAULT=NO,AUTOSELECT=YES,URI="proxy-media.m3u8?url=https%3A%2F%2Fmock.mock.com%2Fstream%2Fhls%2Fmanifest_audio-sv.m3u8&statusCode=%5B%7Bi%3A0%2Ccode%3A404%7D%2C%7Bi%3A2%2Ccode%3A401%7D%5D&timeout=%5B%7Bi%3A3%7D%5D&delay=%5B%7Bi%3A2%2Cms%3A2000%7D%5D"
