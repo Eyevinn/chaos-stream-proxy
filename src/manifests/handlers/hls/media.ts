@@ -34,10 +34,9 @@ export default async function hlsMediaHandler(
       fixUrl(query.url)
     );
     if (!originalMediaManifestResponse.ok) {
-      const data = await originalMediaManifestResponse.json();
       return generateErrorResponse({
         status: originalMediaManifestResponse.status,
-        message: 'Unsuccessful Source Manifest fetch: ' + data.message
+        message: 'Unsuccessful Source Manifest fetch'
       });
     }
 
