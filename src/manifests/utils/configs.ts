@@ -1,3 +1,4 @@
+import { STATEFUL } from '../../shared/utils';
 import { ServiceError, TargetIndex, TargetLevel } from '../../shared/types';
 
 // export type SegmentCorruptorConfigItem = {
@@ -52,7 +53,8 @@ export interface CorruptorConfigUtils {
    */
   getAllManifestConfigs: (
     mseq?: number,
-    isDash?: boolean
+    isDash?: boolean,
+    mseqOffset?: number
   ) => [
     ServiceError | null,
     IndexedCorruptorConfigMap | null,
@@ -129,7 +131,7 @@ export const corruptorConfigUtils = function (
       }
       return this;
     },
-    getAllManifestConfigs(mseq = 0, isDash = false) {
+    getAllManifestConfigs(mseq = 0, isDash = false, mseqOffset = 0) {
       const outputMap = new CorruptorIndexMap();
       const levelMap = new CorruptorLevelMap();
       const configs = (
@@ -144,12 +146,36 @@ export const corruptorConfigUtils = function (
         );
         let params = JSON.parse(parsableSearchParam);
 
-        // If bitrate is set, filter out segments that doesn't match
         if (Array.isArray(params)) {
+          // Check if we are trying to use stateful feature without statefulness enabled
+          const hasRelativeSequences = params.some(
+            (param) => param.rsq != undefined
+          );
+          if (hasRelativeSequences && !STATEFUL && !isDash) {
+            return [
+              {
+                status: 400,
+                message:
+                  'Relative sequence numbers on HLS are only supported when proxy is running in stateful mode'
+              },
+              null
+            ];
+          }
+
+          // If bitrate is set, filter out segments that doesn't match
           params = params.filter(
             (config) =>
               !config?.br || config?.br === '*' || config?.br === segmentBitrate
           );
+
+          // Replace relative sequence numbers with absolute ones
+          params = params.map((param) => {
+            if (param.rsq) {
+              param.sq = Number(param.rsq) + mseqOffset;
+              delete param.rsq;
+            }
+            return param;
+          });
         }
 
         const [error, configList] = config.getManifestConfigs(params);

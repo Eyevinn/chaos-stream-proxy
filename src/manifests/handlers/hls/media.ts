@@ -2,9 +2,12 @@ import fetch, { Response } from 'node-fetch';
 import { ALBEvent, ALBResult } from 'aws-lambda';
 import {
   fixUrl,
+  STATEFUL,
   generateErrorResponse,
+  getState,
   isValidUrl,
   parseM3U8Text,
+  putState,
   refineALBEventQuery
 } from '../../../shared/utils';
 import delaySCC from '../../utils/corruptions/delay';
@@ -58,8 +61,30 @@ export default async function hlsMediaHandler(
       .register(timeoutSCC)
       .register(throttleSCC);
 
+    const mediaSequence = mediaM3U.get('mediaSequence');
+    let mediaSequenceOffset = 0;
+    if (STATEFUL) {
+      const stateKey = reqQueryParams.get('state');
+      if (stateKey) {
+        const state = getState(stateKey);
+        if (state.initialSequenceNumber == undefined) {
+          putState(stateKey, {
+            ...state,
+            initialSequenceNumber: mediaSequence
+          });
+          mediaSequenceOffset = mediaSequence;
+        } else {
+          mediaSequenceOffset = state.initialSequenceNumber;
+        }
+      }
+    }
+
     const [error, allMutations, levelMutations] =
-      configUtils.getAllManifestConfigs(mediaM3U.get('mediaSequence'));
+      configUtils.getAllManifestConfigs(
+        mediaSequence,
+        false,
+        mediaSequenceOffset
+      );
     if (error) {
       return generateErrorResponse(error);
     }

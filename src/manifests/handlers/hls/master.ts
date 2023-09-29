@@ -5,7 +5,9 @@ import {
   isValidUrl,
   parseM3U8Text,
   refineALBEventQuery,
-  generateErrorResponse
+  generateErrorResponse,
+  STATEFUL,
+  newState
 } from '../../../shared/utils';
 
 // To be able to reuse the handlers for AWS lambda function - input should be ALBEvent
@@ -40,11 +42,16 @@ export default async function hlsMasterHandler(event: ALBEvent) {
       });
     }
 
+    const stateKey = STATEFUL
+      ? newState({ initialSequenceNumber: undefined })
+      : undefined;
+
     const reqQueryParams = new URLSearchParams(query);
     const manifestUtils = hlsManifestUtils();
     const proxyManifest = manifestUtils.createProxyMasterManifest(
       masterM3U,
-      reqQueryParams
+      reqQueryParams,
+      stateKey
     );
 
     return {
