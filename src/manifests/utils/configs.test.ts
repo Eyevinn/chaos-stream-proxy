@@ -2,7 +2,8 @@ import {
   corruptorConfigUtils,
   SegmentCorruptorQueryConfig,
   CorruptorConfig,
-  CorruptorIndexMap
+  CorruptorIndexMap,
+  CorruptorLevelMap
 } from './configs';
 
 describe('configs', () => {
@@ -89,18 +90,32 @@ describe('configs', () => {
     it('should handle matching config with url query params', () => {
       // Arrange
       const configs = corruptorConfigUtils(
-        new URLSearchParams('test1=[{i:0,ms:150}]&test2=[{i:1,ms:250}]')
+        new URLSearchParams(
+          'test1=[{i:0,ms:150}]&test2=[{i:1,ms:250}]&test3=[{l:1,ms:400}]'
+        )
       );
       const config1: SegmentCorruptorQueryConfig = {
         name: 'test1',
         getManifestConfigs: () => [null, [{ i: 0, fields: { ms: 150 } }]],
         getSegmentConfigs: () => [null, { fields: null }]
       };
+      const config2: SegmentCorruptorQueryConfig = {
+        name: 'test2',
+        getManifestConfigs: () => [null, [{ i: 1, fields: { ms: 250 } }]],
+        getSegmentConfigs: () => [null, { fields: null }]
+      };
+      const config3: SegmentCorruptorQueryConfig = {
+        name: 'test3',
+        getManifestConfigs: () => [null, [{ l: 1, fields: { ms: 400 } }]],
+        getSegmentConfigs: () => [null, { fields: null }]
+      };
 
       // Act
       configs.register(config1);
-      const [err, actual] = configs.getAllManifestConfigs(0);
-      const expected = new CorruptorIndexMap([
+      configs.register(config2);
+      configs.register(config3);
+      const [err, actualIndex, actualLevel] = configs.getAllManifestConfigs(0);
+      const expectedIndex = new CorruptorIndexMap([
         [
           0,
           new Map([
@@ -112,11 +127,38 @@ describe('configs', () => {
               }
             ]
           ])
+        ],
+        [
+          1,
+          new Map([
+            [
+              'test2',
+              {
+                fields: { ms: 250 },
+                i: 1
+              }
+            ]
+          ])
+        ]
+      ]);
+      const expectedLevel = new CorruptorLevelMap([
+        [
+          1,
+          new Map([
+            [
+              'test3',
+              {
+                fields: { ms: 400 },
+                l: 1
+              }
+            ]
+          ])
         ]
       ]);
       // Assert
       expect(err).toBeNull();
-      expect(actual).toEqual(expected);
+      expect(actualIndex).toEqual(expectedIndex);
+      expect(actualLevel).toEqual(expectedLevel);
     });
   });
 

@@ -101,6 +101,7 @@ Delay Corruption:
 ```typescript
 {
     i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
+    l?: number | "*",  // index of ABR rung to delay media playlist. (Starts on 1 and only applicable to HLS)
     sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
     rsq?: number,      // relative sequence number from where a livestream is currently at
     ms?: number,       // time to delay in milliseconds
@@ -191,7 +192,13 @@ https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3
 7. LIVE: With response of status code 404 on segment with sequence number 105:
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8&statusCode=[{sq:105,code:400}]
+https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://demo.vc.eyevinn.technology/channels/demo/master.m3u8&statusCode=[{sq:105,code:400}]
+```
+
+8. LIVE: Delay response of media manifest ladder 1 and 2 with 500 ms
+
+```
+https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://demo.vc.eyevinn.technology/channels/demo/master.m3u8&delay=[{l:1,ms:500},{l:2,ms:500}]
 ```
 
 ### Example corruptions on MPEG-DASH Streams

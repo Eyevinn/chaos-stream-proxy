@@ -93,7 +93,7 @@ describe('manifest.utils.corruptions.delay', () => {
       const expected = [
         {
           message:
-            "Incorrect delay query format. Either 'i' or 'sq' is required in a single query object.",
+            "Incorrect delay query format. Either 'i', 'l' or 'sq' is required in a single query object.",
           status: 400
         },
         null
@@ -131,7 +131,7 @@ describe('manifest.utils.corruptions.delay', () => {
       const expected = [
         {
           message:
-            'Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.',
+            'Incorrect delay query format. Expected format: [{i?:number, l?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.',
           status: 400
         },
         null
@@ -151,7 +151,7 @@ describe('manifest.utils.corruptions.delay', () => {
       const expected = [
         {
           message:
-            'Incorrect delay query format. Expected format: [{i?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.',
+            'Incorrect delay query format. Expected format: [{i?:number, l?:number, sq?:number, br?:number, ms:number}, ...n] where i and sq are mutually exclusive.',
           status: 400
         },
         null

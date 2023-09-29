@@ -1,7 +1,8 @@
-import { ServiceError, TargetIndex } from '../../shared/types';
+import { ServiceError, TargetIndex, TargetLevel } from '../../shared/types';
 
 // export type SegmentCorruptorConfigItem = {
 //   index: TargetIndex;
+//   level: TargetLevel;
 //   seq: TargetIndex;
 //   name: string;
 //   queryValue: string;
@@ -20,6 +21,7 @@ export interface SegmentCorruptorQueryConfig {
 // TODO sequence might not be relevant as a generic property
 export interface CorruptorConfig {
   i?: TargetIndex;
+  l?: TargetLevel;
   sq?: TargetIndex;
   br?: TargetIndex;
   /**
@@ -37,6 +39,7 @@ export interface CorruptorConfig {
 }
 
 export type IndexedCorruptorConfigMap = Map<TargetIndex, CorruptorConfigMap>;
+export type LevelCorruptorConfigMap = Map<TargetLevel, CorruptorConfigMap>;
 
 export type CorruptorConfigMap = Map<string, CorruptorConfig>;
 
@@ -50,7 +53,11 @@ export interface CorruptorConfigUtils {
   getAllManifestConfigs: (
     mseq?: number,
     isDash?: boolean
-  ) => [ServiceError | null, IndexedCorruptorConfigMap | null];
+  ) => [
+    ServiceError | null,
+    IndexedCorruptorConfigMap | null,
+    LevelCorruptorConfigMap | null
+  ];
 
   getAllSegmentConfigs: () => [ServiceError | null, CorruptorConfigMap | null];
 
@@ -75,6 +82,23 @@ export class CorruptorIndexMap extends Map<TargetIndex, CorruptorConfigMap> {
       this.set(index, new Map());
     }
     const indexMap = this.get(index);
+    if (overwrite || !indexMap.has(configName)) {
+      indexMap.set(configName, value);
+    }
+  }
+}
+
+export class CorruptorLevelMap extends Map<TargetLevel, CorruptorConfigMap> {
+  deepSet(
+    level: TargetLevel,
+    configName: string,
+    value: CorruptorConfig,
+    overwrite = true
+  ) {
+    if (!this.has(level)) {
+      this.set(level, new Map());
+    }
+    const indexMap = this.get(level);
     if (overwrite || !indexMap.has(configName)) {
       indexMap.set(configName, value);
     }
@@ -107,6 +131,7 @@ export const corruptorConfigUtils = function (
     },
     getAllManifestConfigs(mseq = 0, isDash = false) {
       const outputMap = new CorruptorIndexMap();
+      const levelMap = new CorruptorLevelMap();
       const configs = (
         (this.registered || []) as SegmentCorruptorQueryConfig[]
       ).filter(({ name }) => urlSearchParams.get(name));
@@ -141,9 +166,12 @@ export const corruptorConfigUtils = function (
               outputMap.deepSet(item.sq - mseq, config.name, item, false);
             }
           }
+          if (item.l != undefined) {
+            levelMap.deepSet(item.l, config.name, item, false);
+          }
         });
       }
-      return [null, outputMap];
+      return [null, outputMap, levelMap];
     },
     getAllSegmentConfigs() {
       const outputMap = new Map();
