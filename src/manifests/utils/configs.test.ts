@@ -173,46 +173,52 @@ describe('configs', () => {
       expect(actualLevel).toEqual(expectedLevel);
     });
 
-    it('should handle media sequence offsets', () => {
-      // Arrange
-      process.env.STATEFUL = 'true';
+    describe('in stateful mode', () => {
+      let statefulConfig;
+      beforeAll(() => {
+        process.env.STATEFUL = 'true';
+        statefulConfig = require('./configs');
+      });
 
-      const configs = corruptorConfigUtils(
-        new URLSearchParams(
-          'statusCode=[{rsq:15,code:400}]&throttle=[{sq:15,rate:1000}]'
-        )
-      );
+      it('should handle media sequence offsets', () => {
+        // Arrange
+        const configs = statefulConfig.corruptorConfigUtils(
+          new URLSearchParams(
+            'statusCode=[{rsq:15,code:400}]&throttle=[{sq:15,rate:1000}]'
+          )
+        );
 
-      configs.register(statusCodeConfig).register(throttleConfig);
+        configs.register(statusCodeConfig).register(throttleConfig);
 
-      // Act
+        // Act
 
-      const [err, actual] = configs.getAllManifestConfigs(0, false, 100);
+        const [err, actual] = configs.getAllManifestConfigs(0, false, 100);
 
-      // Assert
-      expect(err).toBeNull();
-      expect(actual.get(115)).toEqual(
-        new Map([
-          [
-            'statusCode',
-            {
-              fields: { code: 400 },
-              sq: 115
-            }
-          ]
-        ])
-      );
-      expect(actual.get(15)).toEqual(
-        new Map([
-          [
-            'throttle',
-            {
-              fields: { rate: 1000 },
-              sq: 15
-            }
-          ]
-        ])
-      );
+        // Assert
+        expect(err).toBeNull();
+        expect(actual.get(115)).toEqual(
+          new Map([
+            [
+              'statusCode',
+              {
+                fields: { code: 400 },
+                sq: 115
+              }
+            ]
+          ])
+        );
+        expect(actual.get(15)).toEqual(
+          new Map([
+            [
+              'throttle',
+              {
+                fields: { rate: 1000 },
+                sq: 15
+              }
+            ]
+          ])
+        );
+      });
     });
   });
 
