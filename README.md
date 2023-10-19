@@ -97,10 +97,10 @@ To specify the configurations for a particular corruption, you will need to add 
 Each corruption has a unique configuration JSON object template. Each object can be used to target one specific segment for corruption.
 e.i. `https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=<some_url>?some_corruption=[{i:0},{i:1},{i:2}, ... ,{i:N}]`
 
-Across all coruptions, there are 3 ways to target a segment in a playlist for corruption.
+Across all corruptions, there are 3 ways to target a segment in a playlist for corruption.
 
 1. `i`: The segment's list index in any Media Playlist, with HLS segments starting at 0 and MPEG-DASH segments starting at 1. For a Media Playlist with 12 segments, `i`=11, would target the last segment for HLS and `i`=12, would target the last segment for MPEG-DASH.
-2. `sq`: The segment's Media Sequence Number (**HLS only**). For a Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=111 would target the last segment. When corrupting a live HLS stream it is recommended to target with `sq`.
+2. `sq`: The segment's Media Sequence Number for HLS, or the "$Number$" or "$Time$" part of a segment URL for DASH. For an HLS Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=111 would target the last segment. When corrupting a live HLS stream it is recommended to target with `rsq`.
 3. `rsq`: A relative sequence number, counted from where the live stream is currently at when requesting manifest. (**HLS SUPPORTED ONLY IN STATEFUL MODE**)
 
 Below are configuration JSON object templates for the currently supported corruptions. A query should have its value be an array consisting of any one of these 3 types of items:
@@ -200,7 +200,7 @@ https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3
 
 7. LIVE: With response of status code 404 on segment with sequence number 105:
 
-```
+``` 
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://demo.vc.eyevinn.technology/channels/demo/master.m3u8&statusCode=[{sq:105,code:400}]
 ```
 
@@ -212,31 +212,34 @@ https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3
 
 ### Example corruptions on MPEG-DASH Streams
 
-1. VOD: Example of MPEG-DASH with delay of 1500ms and response code 418 on second segment:
+MPEG-DASH, with individual segments, normally addresses them with a template with either `$Number$` or `$Time$` in the segment URLs.
+Both these patterns are matched to the specified `sq` value.
+
+1. VOD: Example of MPEG-DASH with delay of 1500ms and response code 418 on segment with `$Number$` equal to 2:
 
 ```
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:2,ms:1500}]&statusCode=[{i:2,code:418}]
 ```
 
-2. VOD: Example of MPEG-DASH with response code 404 on third segment:
+2. VOD: Example of MPEG-DASH with response code 404 on segment with `$Number$` equal to 3:
 
 ```
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&statusCode=[{i:3,code:404}]
 ```
 
-3. VOD: Example of MPEG-DASH with segment delay of 1500ms on all segments (except for first and second segment):
+3. VOD: Example of MPEG-DASH with segment delay of 1500ms on all segments (except for segments with `$Number$` equal to 1 or 2.):
 
 ```
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:*,ms:1500},{i:1},{i:2}]
 ```
 
-4. LIVE: Example of uncompressed MPEG-DASH live stream with response of status code 404 on segment with sequence number 3447425:
+4. LIVE: Example of MPEG-DASH live stream with response of status code 404 on segment `$Number$` or `$Time$` equal to 3447425:
 
 ```
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://d2fz24s2fts31b.cloudfront.net/out/v1/3b6879c0836346c2a44c9b4b33520f4e/manifest.mpd&statusCode=[{sq:3447425, code:404}]
 ```
 
-5. LIVE: Example of compressed MPEG-DASH live stream with response of status code 404 on segment with time sequence number 841164350:
+5. LIVE: Example of MPEG-DASH live stream with `$Time$` addressing with response of status code 404 on segment with `$Number$` or `$Time$` equal to 841164350:
 
 ```
 https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd&statusCode=[{sq:841164350, code:404}]
