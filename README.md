@@ -29,7 +29,7 @@ Currently supported stream formats:
 - HLS
 - MPEG-DASH (MPD)
 
-If you want to try it out, a demo version is available at `https://chaos-proxy.prod.eyevinn.technology`.
+If you want to try it out you can sign up for an account at [Eyevinn Open Source Cloud](https://www.osaas.io).
 
 ## Get Started
 
@@ -95,7 +95,7 @@ Currently, the Chaos Stream Proxy supports 4 types of corruptions for HLS and MP
 
 To specify the configurations for a particular corruption, you will need to add a stringified JSON object as a query parameter to the proxied URL.
 Each corruption has a unique configuration JSON object template. Each object can be used to target one specific segment for corruption.
-e.i. `https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=<some_url>?some_corruption=[{i:0},{i:1},{i:2}, ... ,{i:N}]`
+e.i. `https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=<some_url>?some_corruption=[{i:0},{i:1},{i:2}, ... ,{i:N}]`
 
 Across all corruptions, there are 3 ways to target a segment in a playlist for corruption.
 
@@ -164,50 +164,50 @@ When targeting all segments through the input value of `"*"`, it is possible to 
 1. VOD: With segment timeout on third segment:
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&timeout=[{i:2}]
+https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&timeout=[{i:2}]
 ```
 
 2. VOD: With segment delay of 3000ms on first and second segment:
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:0,ms:3000},{i:1,ms:3000}]
+https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:0,ms:3000},{i:1,ms:3000}]
 ```
 
 3. VOD: With response of status code 404 on all segments:
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&statusCode=[{i:*,code:404}]
+https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&statusCode=[{i:*,code:404}]
 ```
 
 4. VOD: With segment delay of 500ms on all segments (except for third and seventh segment):
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:*,ms:500},{i:2},{i:6}]
+https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:*,ms:500},{i:2},{i:6}]
 ```
 
 5. VOD: With segment delay of 1500ms on fifth segment, response code 404 on sixth, and timeout on seventh:
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:4,ms:1500}]&statusCode=[{i:5,code:404}]&timeout=[{i:9}]
+https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:4,ms:1500}]&statusCode=[{i:5,code:404}]&timeout=[{i:9}]
 ```
 
 6. VOD: With segment delay of 1500ms on sixth segment, followed by a response code 400 if the bitrate is 2426000:
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:5,ms:1500}]&statusCode=[{i:5,code:400,br:2426000}]
+https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:5,ms:1500}]&statusCode=[{i:5,code:400,br:2426000}]
 
 ```
 
 7. LIVE: With response of status code 404 on segment with sequence number 105:
 
 ``` 
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://demo.vc.eyevinn.technology/channels/demo/master.m3u8&statusCode=[{sq:105,code:400}]
+https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://demo.vc.eyevinn.technology/channels/demo/master.m3u8&statusCode=[{sq:105,code:400}]
 ```
 
 8. LIVE: Delay response of media manifest ladder 1 and 2 with 500 ms
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/hls/proxy-master.m3u8?url=https://demo.vc.eyevinn.technology/channels/demo/master.m3u8&delay=[{l:1,ms:500},{l:2,ms:500}]
+https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://demo.vc.eyevinn.technology/channels/demo/master.m3u8&delay=[{l:1,ms:500},{l:2,ms:500}]
 ```
 
 ### Example corruptions on MPEG-DASH Streams
@@ -218,37 +218,37 @@ Both these patterns are matched to the specified `sq` value.
 1. VOD: Example of MPEG-DASH with delay of 1500ms and response code 418 on segment with `$Number$` equal to 2:
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:2,ms:1500}]&statusCode=[{i:2,code:418}]
+https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:2,ms:1500}]&statusCode=[{i:2,code:418}]
 ```
 
 2. VOD: Example of MPEG-DASH with response code 404 on segment with `$Number$` equal to 3:
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&statusCode=[{i:3,code:404}]
+https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&statusCode=[{i:3,code:404}]
 ```
 
 3. VOD: Example of MPEG-DASH with segment delay of 1500ms on all segments (except for segments with `$Number$` equal to 1 or 2.):
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:*,ms:1500},{i:1},{i:2}]
+https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&delay=[{i:*,ms:1500},{i:1},{i:2}]
 ```
 
 4. LIVE: Example of MPEG-DASH live stream with response of status code 404 on segment `$Number$` or `$Time$` equal to 3447425:
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://d2fz24s2fts31b.cloudfront.net/out/v1/3b6879c0836346c2a44c9b4b33520f4e/manifest.mpd&statusCode=[{sq:3447425, code:404}]
+https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://d2fz24s2fts31b.cloudfront.net/out/v1/3b6879c0836346c2a44c9b4b33520f4e/manifest.mpd&statusCode=[{sq:3447425, code:404}]
 ```
 
 5. LIVE: Example of MPEG-DASH live stream with `$Time$` addressing with response of status code 404 on segment with `$Number$` or `$Time$` equal to 841164350:
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd&statusCode=[{sq:841164350, code:404}]
+https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd&statusCode=[{sq:841164350, code:404}]
 ```
 
 6. LIVE: Example of MPEG-DASH with a segment download speed limited to 10kB/s on all segments
 
 ```
-https://chaos-proxy.prod.eyevinn.technology/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&throttle=[{i:*,rate:10000}]
+https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&throttle=[{i:*,rate:10000}]
 ```
 
 ## Development Environment
