@@ -193,7 +193,44 @@ describe('configs', () => {
         // Act
 
         const [err, actual] = configs.getAllManifestConfigs(0, false, 100);
+        // Assert
+        expect(err).toBeNull();
+        expect(actual.get(115)).toEqual(
+          new Map([
+            [
+              'statusCode',
+              {
+                fields: { code: 400 },
+                sq: 115
+              }
+            ]
+          ])
+        );
+        expect(actual.get(15)).toEqual(
+          new Map([
+            [
+              'throttle',
+              {
+                fields: { rate: 1000 },
+                sq: 15
+              }
+            ]
+          ])
+        );
+      });
+      it('should handle media sequence offsets with negative rsq value', () => {
+        // Arrange
+        const configs = statefulConfig.corruptorConfigUtils(
+          new URLSearchParams(
+            'statusCode=[{rsq:-1,code:400}]&throttle=[{sq:15,rate:1000}]'
+          )
+        );
 
+        configs.register(statusCodeConfig).register(throttleConfig);
+
+        // Act
+
+        const [err, actual] = configs.getAllManifestConfigs(0, false, 100, 15);
         // Assert
         expect(err).toBeNull();
         expect(actual.get(115)).toEqual(

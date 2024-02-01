@@ -54,7 +54,8 @@ export interface CorruptorConfigUtils {
   getAllManifestConfigs: (
     mseq?: number,
     isDash?: boolean,
-    mseqOffset?: number
+    mseqOffset?: number,
+    playlistSize?: number
   ) => [
     ServiceError | null,
     IndexedCorruptorConfigMap | null,
@@ -131,7 +132,12 @@ export const corruptorConfigUtils = function (
       }
       return this;
     },
-    getAllManifestConfigs(mseq = 0, isDash = false, mseqOffset = 0) {
+    getAllManifestConfigs(
+      mseq = 0,
+      isDash = false,
+      mseqOffset = 0,
+      playlistSize = 0
+    ) {
       const outputMap = new CorruptorIndexMap();
       const levelMap = new CorruptorLevelMap();
       const configs = (
@@ -171,7 +177,11 @@ export const corruptorConfigUtils = function (
           // Replace relative sequence numbers with absolute ones
           params = params.map((param) => {
             if (param.rsq) {
-              param.sq = Number(param.rsq) + mseqOffset;
+              const rsq = Number(param.rsq);
+              param['sq'] =
+                rsq < 0 && playlistSize > 0
+                  ? mseqOffset + playlistSize + rsq + 1
+                  : Number(param.rsq) + mseqOffset;
               delete param.rsq;
             }
             return param;
@@ -182,6 +192,7 @@ export const corruptorConfigUtils = function (
         if (error) {
           return [error, null];
         }
+
         configList.forEach((item) => {
           if (item.i != undefined) {
             outputMap.deepSet(item.i, config.name, item, false);
