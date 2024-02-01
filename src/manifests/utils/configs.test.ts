@@ -232,7 +232,6 @@ describe('configs', () => {
 
         const [err, actual] = configs.getAllManifestConfigs(0, false, 100, 15);
         // Assert
-        console.log(actual);
         expect(err).toBeNull();
         expect(actual.get(115)).toEqual(
           new Map([
