@@ -95,7 +95,7 @@ Currently, the Chaos Stream Proxy supports 4 types of corruptions for HLS and MP
 
 To specify the configurations for a particular corruption, you will need to add a stringified JSON object as a query parameter to the proxied URL.
 Each corruption has a unique configuration JSON object template. Each object can be used to target one specific segment for corruption.
-e.i. `https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=<some_url>?some_corruption=[{i:0},{i:1},{i:2}, ... ,{i:N}]`
+e.i. `https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=<some_url>&some_corruption=[{i:0},{i:1},{i:2}, ... ,{i:N}]`
 
 Across all corruptions, there are 3 ways to target a segment in a playlist for corruption.
 

@@ -182,7 +182,6 @@ export const corruptorConfigUtils = function (
                 rsq < 0 && playlistSize > 0
                   ? mseqOffset + playlistSize + rsq + 1
                   : Number(param.rsq) + mseqOffset;
-              console.log('sq: ' + param.sq + ' | rsq: ' + Number(param.rsq));
               delete param.rsq;
             }
             return param;
