@@ -1,9 +1,5 @@
 import { M3U, Manifest } from '../../shared/types';
-import {
-  newState,
-  proxyPathBuilder,
-  segmentUrlParamString
-} from '../../shared/utils';
+import { proxyPathBuilder, segmentUrlParamString } from '../../shared/utils';
 import { CorruptorConfigMap, IndexedCorruptorConfigMap } from './configs';
 import clone from 'clone';
 
@@ -143,15 +139,13 @@ export default function (): HLSManifestTools {
       configsMap: IndexedCorruptorConfigMap
     ) {
       const m3u: M3U = clone(originalM3U);
+      const playlistSize = m3u.items.PlaylistItem.length;
 
       // configs for each index
-      const corruptions = this.utils.mergeMap(
-        m3u.items.PlaylistItem.length,
-        configsMap
-      );
+      const corruptions = this.utils.mergeMap(playlistSize, configsMap);
 
       // Attach corruptions to manifest
-      for (let i = 0; i < m3u.items.PlaylistItem.length; i++) {
+      for (let i = 0; i < playlistSize; i++) {
         const item = m3u.items.PlaylistItem[i];
         const corruption = corruptions[i];
         let sourceSegURL: string = item.get('uri');

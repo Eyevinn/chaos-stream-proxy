@@ -78,12 +78,12 @@ export default async function hlsMediaHandler(
         }
       }
     }
-
     const [error, allMutations, levelMutations] =
       configUtils.getAllManifestConfigs(
         mediaSequence,
         false,
-        mediaSequenceOffset
+        mediaSequenceOffset,
+        mediaM3U.items.PlaylistItem.length
       );
     if (error) {
       return generateErrorResponse(error);
