@@ -75,8 +75,9 @@ export default function (): DASHManifestTools {
 
       DASH_JSON.MPD.Period.map((period) => {
         period.AdaptationSet.map((adaptationSet) => {
-          if (adaptationSet.SegmentTemplate) {
-            // There should only be one segment template with this format
+          // If there is a SegmentTemplate directly in the adaptationSet there should only be one
+          // But if it has no media property it is invalid and we should try the Representation instead
+          if (adaptationSet.SegmentTemplate?.[0]?.$?.media) {
             const segmentTemplate = adaptationSet.SegmentTemplate[0];
 
             // Media attr
