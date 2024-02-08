@@ -40,7 +40,12 @@ export default async function dashSegmentHandler(
     const [, reqSegmentIndexStr, representationIdStr, bitrateStr] =
       pathStem.split('_');
     // Build correct Source Segment url
-    let segmentUrl = url.replace('$Number$', reqSegmentIndexStr);
+    // segment templates may contain a width parameter "$Number%0[width]d$", and then we need to zero-pad them to that length
+    let segmentUrl = url
+      .replace(/\$Number%0(\d+)d\$/, (_, width) =>
+        reqSegmentIndexStr.padStart(Number(width), '0')
+      )
+      .replace('$Number$', reqSegmentIndexStr);
     const reqSegmentIndexInt = parseInt(reqSegmentIndexStr);
     // Replace RepresentationID in url if present
     if (representationIdStr) {
