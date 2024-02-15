@@ -108,6 +108,37 @@ describe('dashManifestTools', () => {
       const expected: string = builder.buildObject(DASH_JSON);
       expect(proxyManifest).toEqual(expected);
     });
+
+    it('should use the period baseUrl if it exists', async () => {
+      // Arrange
+      const mockManifestPath =
+        '../../testvectors/dash/dash_period_baseurl/manifest.xml';
+      const mockDashManifest = fs.readFileSync(
+        path.join(__dirname, mockManifestPath),
+        'utf8'
+      );
+      const manifestUtils = dashManifestUtils();
+      const proxyManifest: string = manifestUtils.createProxyDASHManifest(
+        mockDashManifest,
+        new URLSearchParams(
+          'url=https://mock.mock.com/stream/dash/period_base_url/manifest.mpd'
+        )
+      );
+      const proxyManifestPath =
+        '../../testvectors/dash/dash_period_baseurl/proxy-manifest.xml';
+      const dashFile: string = fs.readFileSync(
+        path.join(__dirname, proxyManifestPath),
+        'utf8'
+      );
+      let DASH_JSON;
+      const parser = new xml2js.Parser();
+      const builder = new xml2js.Builder();
+      parser.parseString(dashFile, function (err, result) {
+        DASH_JSON = result;
+      });
+      const expected: string = builder.buildObject(DASH_JSON);
+      expect(proxyManifest).toEqual(expected);
+    });
   });
 });
 

@@ -1,0 +1,32 @@
+<MPD xmlns="urn:mpeg:DASH:schema:MPD:2011" minBufferTime="PT1.500S" type="static" mediaPresentationDuration="PT0H0M10.000S" maxSegmentDuration="PT0H0M1.000S" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd">
+  <Period id="0" start="PT0H0M0.000S">
+    <BaseURL>http://vm2.dashif.org/livesim-dev/periods_60/</BaseURL>
+    <AdaptationSet mimeType="video/mp4" codecs="avc1.4D401E" frameRate="30000/1001" lang="und">
+      <SegmentTemplate timescale="1000" media="video_$Number$.mp4" initialization="video_init.mp4" startNumber="1" presentationTimeOffset="0">
+        <SegmentTimeline>
+          <S t="0" d="10000"/>
+          <S t="10000" d="10000"/>
+          <S t="20000" d="10000"/>
+          <S t="30000" d="10000"/>
+          <S t="40000" d="10000"/>
+          <S t="50000" d="10000"/>
+          <S t="60000" d="10000"/>
+          <S t="70000" d="10000"/>
+          <S t="80000" d="10000"/>
+          <S t="90000" d="10000"/>
+        </SegmentTimeline>
+      </SegmentTemplate>
+    </AdaptationSet>
+    <AdaptationSet mimeType="audio/mp4" lang="und">
+      <SegmentTemplate timescale="1000" media="audio_$Number$.mp4" initialization="audio_init.mp4" startNumber="1" presentationTimeOffset="0">
+        <SegmentTimeline>
+          <S t="0" d="10000"/>
+          <S t="10000" d="10000"/>
+          <S t="20000" d="10000"/>
+          <S t="30000" d="10000"/>
+        </SegmentTimeline>
+      </SegmentTemplate>
+
+    </AdaptationSet>
+  </Period>
+</MPD>
