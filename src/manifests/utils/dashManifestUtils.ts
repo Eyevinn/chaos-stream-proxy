@@ -63,17 +63,23 @@ export default function (): DASHManifestTools {
         DASH_JSON = result;
       });
 
-      let baseUrl;
+      let globalBaseUrl;
       if (DASH_JSON.MPD.BaseURL) {
         // There should only ever be one baseurl according to schema
-        baseUrl = DASH_JSON.MPD.BaseURL[0];
-        // Remove base url from manifest since we are using relative paths for proxy
+        globalBaseUrl = DASH_JSON.MPD.BaseURL[0];
       }
+      // Remove base url from manifest since we are using relative paths for proxy
       delete DASH_JSON.MPD.BaseURL;
 
       let staticQueryUrl: URLSearchParams;
 
       DASH_JSON.MPD.Period.map((period) => {
+        let baseUrl = globalBaseUrl;
+        if (period.BaseURL?.[0]) {
+          baseUrl = period.BaseURL[0];
+          // Remove base url from manifest since we are using relative paths for proxy
+          delete period.BaseURL;
+        }
         period.AdaptationSet.map((adaptationSet) => {
           // If there is a SegmentTemplate directly in the adaptationSet there should only be one
           // But if it has no media property it is invalid and we should try the Representation instead
