@@ -37,7 +37,7 @@ export default async function dashSegmentHandler(
     const urlSearchParams = new URLSearchParams(event.queryStringParameters);
     const pathStem = path.basename(event.path).replace('.mp4', '');
     // Get the number part after "segment_"
-    const [, reqSegmentIndexStr, representationIdStr, bitrateStr] =
+    const [, reqSegmentIndexStr, representationIdStr, bitrateStr, timeStr] =
       pathStem.split('_');
     // Build correct Source Segment url
     // segment templates may contain a width parameter "$Number%0[width]d$", and then we need to zero-pad them to that length
@@ -53,6 +53,9 @@ export default async function dashSegmentHandler(
         '$RepresentationID$',
         representationIdStr
       );
+    }
+    if (timeStr) {
+      segmentUrl = segmentUrl.replace('$Time$', timeStr);
     }
     if (bitrateStr) {
       urlSearchParams.set('bitrate', bitrateStr);
