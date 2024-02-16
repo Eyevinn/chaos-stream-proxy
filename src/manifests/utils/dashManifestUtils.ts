@@ -103,7 +103,7 @@ export default function (): DASHManifestTools {
             segmentTemplate.$.media = proxyPathBuilder(
               mediaUrl.match(/^http/) ? mediaUrl : baseUrl + mediaUrl,
               urlQuery,
-              'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$'
+              'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$_$Time$'
             );
             // Initialization attr.
             const initUrl = segmentTemplate.$.initialization;
