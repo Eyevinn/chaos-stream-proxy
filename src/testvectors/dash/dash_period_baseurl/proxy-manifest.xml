@@ -1,7 +1,7 @@
 <MPD xmlns="urn:mpeg:DASH:schema:MPD:2011" minBufferTime="PT1.500S" type="static" mediaPresentationDuration="PT0H0M10.000S" maxSegmentDuration="PT0H0M1.000S" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd">
   <Period id="0" start="PT0H0M0.000S">
     <AdaptationSet mimeType="video/mp4" codecs="avc1.4D401E" frameRate="30000/1001" lang="und">
-       <SegmentTemplate timescale="1000" media="proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$_$Time$?url=http%3A%2F%2Fvm2.dashif.org%2Flivesim-dev%2Fperiods_60%2Fvideo_%24Number%24.mp4" initialization="http://vm2.dashif.org/livesim-dev/periods_60/video_init.mp4" startNumber="1" presentationTimeOffset="0">
+       <SegmentTemplate timescale="1000" media="proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$?url=http%3A%2F%2Fvm2.dashif.org%2Flivesim-dev%2Fperiods_60%2Fvideo_%24Number%24.mp4" initialization="http://vm2.dashif.org/livesim-dev/periods_60/video_init.mp4" startNumber="1" presentationTimeOffset="0">
         <SegmentTimeline>
           <S t="0" d="10000"/>
           <S t="10000" d="10000"/>
@@ -17,7 +17,7 @@
       </SegmentTemplate>
     </AdaptationSet>
     <AdaptationSet mimeType="audio/mp4" lang="und">
-      <SegmentTemplate timescale="1000" media="proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$_$Time$?url=http%3A%2F%2Fvm2.dashif.org%2Flivesim-dev%2Fperiods_60%2Faudio_%24Number%24.mp4" initialization="http://vm2.dashif.org/livesim-dev/periods_60/audio_init.mp4" startNumber="1" presentationTimeOffset="0">
+      <SegmentTemplate timescale="1000" media="proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$?url=http%3A%2F%2Fvm2.dashif.org%2Flivesim-dev%2Fperiods_60%2Faudio_%24Number%24.mp4" initialization="http://vm2.dashif.org/livesim-dev/periods_60/audio_init.mp4" startNumber="1" presentationTimeOffset="0">
         <SegmentTimeline>
           <S t="0" d="10000"/>
           <S t="10000" d="10000"/>
