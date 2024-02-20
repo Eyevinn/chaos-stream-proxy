@@ -102,24 +102,11 @@ export default function (): DASHManifestTools {
             const proxy = proxyPathBuilder(
               mediaUrl.match(/^http/) ? mediaUrl : baseUrl + mediaUrl,
               urlQuery,
-              // 'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$_$Time$'
               hasTime
-                ? {
-                    base: 'proxy-segment/segment_$Time$_$RepresentationID$_$Bandwidth$',
-                    time: true,
-                    representationId: true,
-                    bandwidth: true
-                  }
-                : {
-                    base: 'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$',
-                    number: true,
-                    representationId: true,
-                    bandwidth: true
-                  }
-              // ? 'proxy-segment/segment_$Time$_$RepresentationID$_$Bandwidth$'
-              // : `proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$`
+                ? 'proxy-segment/segment_$Time$_$RepresentationID$_$Bandwidth$'
+                : 'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$'
             );
-            segmentTemplate.$.media = proxy.url;
+            segmentTemplate.$.media = proxy;
             // Initialization attr.
             const initUrl = segmentTemplate.$.initialization;
             if (!initUrl.match(/^http/)) {
@@ -164,19 +151,10 @@ export default function (): DASHManifestTools {
                     mediaUrl,
                     urlQuery,
                     hasTime
-                      ? {
-                          base: 'proxy-segment/segment_$Time$.mp4',
-                          time: true
-                        }
-                      : {
-                          base: 'proxy-segment/segment_$Number$.mp4',
-                          number: true
-                        }
-                    // ? 'proxy-segment/segment_$Time$_$RepresentationID$_$Bandwidth$'
-                    // : `proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$`
-                    // 'proxy-segment/segment_$Number$.mp4'
+                      ? 'proxy-segment/segment_$Time$.mp4'
+                      : 'proxy-segment/segment_$Number$.mp4'
                   );
-                  segmentTemplate.$.media = proxy.url;
+                  segmentTemplate.$.media = proxy;
                   // Initialization attr.
                   const masterDashUrl = originalUrlQuery.get('url');
                   const initUrl = segmentTemplate.$.initialization;

@@ -183,15 +183,13 @@ export function refineALBEventQuery(
   return queryStringParameters;
 }
 
-type ProxyBasenames = {
-  base: string;
-  url?: string;
-  number?: boolean;
-  numberWidth?: boolean;
-  time?: boolean;
-  representationId?: boolean;
-  bandwidth?: boolean;
-};
+type ProxyBasenames =
+  | 'proxy-media.m3u8'
+  | '../../segments/proxy-segment'
+  | 'proxy-segment/segment_$Number$.mp4'
+  | 'proxy-segment/segment_$Time$.mp4'
+  | 'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$'
+  | 'proxy-segment/segment_$Time$_$RepresentationID$_$Bandwidth$';
 
 /**
  * Adjust paths based on directory navigation
@@ -223,9 +221,9 @@ export function proxyPathBuilder(
   itemUri: string,
   urlSearchParams: URLSearchParams,
   proxy: ProxyBasenames
-): ProxyBasenames {
+): string {
   if (!urlSearchParams) {
-    return { base: '', url: '' };
+    return '';
   }
   const allQueries = new URLSearchParams(urlSearchParams);
   let sourceItemURL = '';
@@ -242,8 +240,7 @@ export function proxyPathBuilder(
     allQueries.set('url', sourceItemURL);
   }
   const allQueriesString = allQueries.toString();
-  proxy.url = `${proxy.base}${allQueriesString ? `?${allQueriesString}` : ''}`;
-  return proxy;
+  return `${proxy}${allQueriesString ? `?${allQueriesString}` : ''}`;
 }
 
 export function segmentUrlParamString(

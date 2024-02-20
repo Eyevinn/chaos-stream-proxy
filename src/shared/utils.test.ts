@@ -11,15 +11,17 @@ describe('shared.utils', () => {
       );
 
       // Act
-      const actual = proxyPathBuilder(itemUri, urlSearchParams, {
-        base: 'proxy-media.m3u8'
-      });
+      const actual = proxyPathBuilder(
+        itemUri,
+        urlSearchParams,
+        'proxy-media.m3u8'
+      );
       const expected = `proxy-media.m3u8?url=${encodeURIComponent(
         'https://mock.stream.origin.se/hls/vods/asset41/video-variants/variant_3.m3u8'
       )}&delay=${encodeURIComponent('[{i:3,ms:200}]')}`;
 
       // Assert
-      expect(actual.url).toEqual(expected);
+      expect(actual).toEqual(expected);
     });
 
     it('should return correct format with value in all parameters, when source url is already an absolut url', () => {
@@ -30,15 +32,17 @@ describe('shared.utils', () => {
       );
 
       // Act
-      const actual = proxyPathBuilder(itemUri, urlSearchParams, {
-        base: 'proxy-media.m3u8'
-      });
+      const actual = proxyPathBuilder(
+        itemUri,
+        urlSearchParams,
+        'proxy-media.m3u8'
+      );
       const expected = `proxy-media.m3u8?url=${encodeURIComponent(
         'https://different.origin.se/hls/variant_3.m3u8'
       )}&delay=${encodeURIComponent('[{i:3,ms:200}]')}`;
 
       // Assert
-      expect(actual.url).toEqual(expected);
+      expect(actual).toEqual(expected);
     });
 
     it("should return correct format with value in all parameters, when source url string has '../'", () => {
@@ -49,15 +53,17 @@ describe('shared.utils', () => {
       );
 
       // Act
-      const actual = proxyPathBuilder(itemUri, urlSearchParams, {
-        base: 'proxy-media.m3u8'
-      });
+      const actual = proxyPathBuilder(
+        itemUri,
+        urlSearchParams,
+        'proxy-media.m3u8'
+      );
       const expected = `proxy-media.m3u8?url=${encodeURIComponent(
         'https://mock.stream.origin.se/hls/pathB/path3/variant_3.m3u8'
       )}&delay=${encodeURIComponent('[{i:3,ms:200}]')}`;
 
       // Assert
-      expect(actual.url).toEqual(expected);
+      expect(actual).toEqual(expected);
     });
 
     it('should handle empty parameters', () => {
@@ -66,13 +72,15 @@ describe('shared.utils', () => {
       const urlSearchParams = null;
 
       // Act
-      const actual = proxyPathBuilder(itemUri, urlSearchParams, {
-        base: 'proxy-media.m3u8'
-      });
+      const actual = proxyPathBuilder(
+        itemUri,
+        urlSearchParams,
+        'proxy-media.m3u8'
+      );
       const expected = '';
 
       // Assert
-      expect(actual.url).toEqual(expected);
+      expect(actual).toEqual(expected);
     });
   });
 });

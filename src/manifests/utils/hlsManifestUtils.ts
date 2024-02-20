@@ -100,10 +100,12 @@ export default function (): HLSManifestTools {
         if (stateKey) {
           urlQuery.set('state', stateKey);
         }
-        const proxy = proxyPathBuilder(currentUri, urlQuery, {
-          base: 'proxy-media.m3u8'
-        });
-        streamItem.set('uri', proxy.url);
+        const proxy = proxyPathBuilder(
+          currentUri,
+          urlQuery,
+          'proxy-media.m3u8'
+        );
+        streamItem.set('uri', proxy);
         return streamItem;
       });
 
@@ -119,10 +121,12 @@ export default function (): HLSManifestTools {
         if (stateKey) {
           urlQuery.set('state', stateKey);
         }
-        const proxy = proxyPathBuilder(currentUri, urlQuery, {
-          base: 'proxy-media.m3u8'
-        });
-        mediaItem.set('uri', proxy.url);
+        const proxy = proxyPathBuilder(
+          currentUri,
+          urlQuery,
+          'proxy-media.m3u8'
+        );
+        mediaItem.set('uri', proxy);
         return mediaItem;
       });
 
@@ -162,11 +166,9 @@ export default function (): HLSManifestTools {
         const proxy = proxyPathBuilder(
           item.get('uri'),
           new URLSearchParams(params),
-          {
-            base: '../../segments/proxy-segment'
-          }
+          '../../segments/proxy-segment'
         );
-        item.set('uri', proxy.url);
+        item.set('uri', proxy);
       }
       return m3u.toString();
     }
