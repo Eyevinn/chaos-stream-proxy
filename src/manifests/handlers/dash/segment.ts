@@ -43,7 +43,7 @@ export default async function dashSegmentHandler(
     // segment templates may contain a width parameter "$Number%0[width]d$", and then we need to zero-pad them to that length
     let segmentUrl = url;
 
-    if (url.includes('$Time$')) {
+    if (segmentUrl.includes('$Time$')) {
       segmentUrl = segmentUrl.replace('$Time$', reqSegmentIndexOrTimeStr);
     } else {
       segmentUrl = segmentUrl
