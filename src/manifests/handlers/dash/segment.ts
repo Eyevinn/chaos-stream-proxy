@@ -37,7 +37,6 @@ export default async function dashSegmentHandler(
     const urlSearchParams = new URLSearchParams(event.queryStringParameters);
     const pathStem = path.basename(event.path).replace('.mp4', '');
     // Get the number part after "segment_"
-    // eslint-disable-next-line prefer-const
     const [, reqSegmentIndexOrTimeStr, bitrateStr, ...representationIdStrList] =
       pathStem.split('_');
     const representationIdStr = representationIdStrList.join('_');
