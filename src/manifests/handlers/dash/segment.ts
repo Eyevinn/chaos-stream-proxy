@@ -37,16 +37,25 @@ export default async function dashSegmentHandler(
     const urlSearchParams = new URLSearchParams(event.queryStringParameters);
     const pathStem = path.basename(event.path).replace('.mp4', '');
     // Get the number part after "segment_"
-    const [, reqSegmentIndexStr, representationIdStr, bitrateStr, timeStr] =
+    const [, reqSegmentIndexOrTimeStr, bitrateStr, ...representationIdStrList] =
       pathStem.split('_');
+    const representationIdStr = representationIdStrList.join('_');
     // Build correct Source Segment url
     // segment templates may contain a width parameter "$Number%0[width]d$", and then we need to zero-pad them to that length
-    let segmentUrl = url
-      .replace(/\$Number%0(\d+)d\$/, (_, width) =>
-        reqSegmentIndexStr.padStart(Number(width), '0')
-      )
-      .replace('$Number$', reqSegmentIndexStr);
-    const reqSegmentIndexInt = parseInt(reqSegmentIndexStr);
+
+    let segmentUrl = url;
+
+    if (segmentUrl.includes('$Time$')) {
+      segmentUrl = segmentUrl.replace('$Time$', reqSegmentIndexOrTimeStr);
+    } else {
+      segmentUrl = segmentUrl
+        .replace(/\$Number%0(\d+)d\$/, (_, width) =>
+          reqSegmentIndexOrTimeStr.padStart(Number(width), '0')
+        )
+        .replace('$Number$', reqSegmentIndexOrTimeStr);
+    }
+    const reqSegmentIndexInt = parseInt(reqSegmentIndexOrTimeStr);
+
     // Replace RepresentationID in url if present
     if (representationIdStr) {
       segmentUrl = segmentUrl.replace(
@@ -54,9 +63,7 @@ export default async function dashSegmentHandler(
         representationIdStr
       );
     }
-    if (timeStr) {
-      segmentUrl = segmentUrl.replace('$Time$', timeStr);
-    }
+
     if (bitrateStr) {
       urlSearchParams.set('bitrate', bitrateStr);
     }

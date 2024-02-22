@@ -187,8 +187,11 @@ type ProxyBasenames =
   | 'proxy-media.m3u8'
   | '../../segments/proxy-segment'
   | 'proxy-segment/segment_$Number$.mp4'
-  | 'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$'
-  | 'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$_$Time$';
+  | 'proxy-segment/segment_$Time$.mp4'
+  | 'proxy-segment/segment_$Number$_$RepresentationID$'
+  | 'proxy-segment/segment_$Time$_$RepresentationID$'
+  | 'proxy-segment/segment_$Number$_$Bandwidth$_$RepresentationID$'
+  | 'proxy-segment/segment_$Time$_$Bandwidth$_$RepresentationID$';
 
 /**
  * Adjust paths based on directory navigation

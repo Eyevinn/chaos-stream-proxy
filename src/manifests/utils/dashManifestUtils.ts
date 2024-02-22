@@ -88,7 +88,7 @@ export default function (): DASHManifestTools {
 
             // Media attr
             const mediaUrl = segmentTemplate.$.media;
-
+            const hasTime = mediaUrl.toString().includes('$Time$');
             // Convert relative segment offsets to absolute ones
             // Also clones params to avoid mutating input argument
             const [urlQuery, changed] = convertRelativeToAbsoluteSegmentOffsets(
@@ -99,12 +99,14 @@ export default function (): DASHManifestTools {
             );
 
             if (changed) staticQueryUrl = new URLSearchParams(urlQuery);
-
-            segmentTemplate.$.media = proxyPathBuilder(
+            const proxy = proxyPathBuilder(
               mediaUrl.match(/^http/) ? mediaUrl : baseUrl + mediaUrl,
               urlQuery,
-              'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$_$Time$'
+              hasTime
+                ? 'proxy-segment/segment_$Time$_$Bandwidth$_$RepresentationID$'
+                : 'proxy-segment/segment_$Number$_$Bandwidth$_$RepresentationID$'
             );
+            segmentTemplate.$.media = proxy;
             // Initialization attr.
             const initUrl = segmentTemplate.$.initialization;
             if (!initUrl.match(/^http/)) {
@@ -128,7 +130,7 @@ export default function (): DASHManifestTools {
                 representation.SegmentTemplate.map((segmentTemplate) => {
                   // Media attr.
                   const mediaUrl = segmentTemplate.$.media;
-
+                  const hasTime = mediaUrl.toString().includes('$Time$');
                   // Convert relative segment offsets to absolute ones
                   // Also clones params to avoid mutating input argument
                   const [urlQuery, changed] =
@@ -145,11 +147,14 @@ export default function (): DASHManifestTools {
                     urlQuery.set('bitrate', representation.$.bandwidth);
                   }
 
-                  segmentTemplate.$.media = proxyPathBuilder(
+                  const proxy = proxyPathBuilder(
                     mediaUrl,
                     urlQuery,
-                    'proxy-segment/segment_$Number$.mp4'
+                    hasTime
+                      ? 'proxy-segment/segment_$Time$.mp4'
+                      : 'proxy-segment/segment_$Number$.mp4'
                   );
+                  segmentTemplate.$.media = proxy;
                   // Initialization attr.
                   const masterDashUrl = originalUrlQuery.get('url');
                   const initUrl = segmentTemplate.$.initialization;
