@@ -40,7 +40,7 @@ export default async function dashSegmentHandler(
     // eslint-disable-next-line prefer-const
     const [, reqSegmentIndexOrTimeStr, bitrateStr, ...representationIdStrList] =
       pathStem.split('_');
-    let representationIdStr = representationIdStrList.join('-');
+    const representationIdStr = representationIdStrList.join('_');
     // Build correct Source Segment url
     // segment templates may contain a width parameter "$Number%0[width]d$", and then we need to zero-pad them to that length
 
@@ -57,12 +57,6 @@ export default async function dashSegmentHandler(
     }
     const reqSegmentIndexInt = parseInt(reqSegmentIndexOrTimeStr);
 
-    const possibleId = pathStem.match(
-      /(audio|video)_track_\d+_\d+_[a-zA-Z]{3}=\d+_\d+/
-    );
-    if (possibleId) {
-      representationIdStr = possibleId[0];
-    }
     // Replace RepresentationID in url if present
     if (representationIdStr) {
       segmentUrl = segmentUrl.replace(
