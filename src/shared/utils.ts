@@ -188,8 +188,10 @@ type ProxyBasenames =
   | '../../segments/proxy-segment'
   | 'proxy-segment/segment_$Number$.mp4'
   | 'proxy-segment/segment_$Time$.mp4'
-  | 'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$'
-  | 'proxy-segment/segment_$Time$_$RepresentationID$_$Bandwidth$';
+  | 'proxy-segment/segment_$Number$_$RepresentationID$'
+  | 'proxy-segment/segment_$Time$_$RepresentationID$'
+  | 'proxy-segment/segment_$Number$_$Bandwidth$_$RepresentationID$'
+  | 'proxy-segment/segment_$Time$_$Bandwidth$_$RepresentationID$';
 
 /**
  * Adjust paths based on directory navigation
@@ -225,7 +227,6 @@ export function proxyPathBuilder(
   if (!urlSearchParams) {
     return '';
   }
-  itemUri.replace('-', '/');
   const allQueries = new URLSearchParams(urlSearchParams);
   let sourceItemURL = '';
   // Do not build an absolute source url If ItemUri is already an absolut url.

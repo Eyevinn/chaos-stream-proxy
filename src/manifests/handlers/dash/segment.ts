@@ -37,10 +37,13 @@ export default async function dashSegmentHandler(
     const urlSearchParams = new URLSearchParams(event.queryStringParameters);
     const pathStem = path.basename(event.path).replace('.mp4', '');
     // Get the number part after "segment_"
-    const [, reqSegmentIndexOrTimeStr, representationIdStr, bitrateStr] =
+    // eslint-disable-next-line prefer-const
+    const [, reqSegmentIndexOrTimeStr, bitrateStr, ...representationIdStrList] =
       pathStem.split('_');
+    let representationIdStr = representationIdStrList.join('-');
     // Build correct Source Segment url
     // segment templates may contain a width parameter "$Number%0[width]d$", and then we need to zero-pad them to that length
+
     let segmentUrl = url;
 
     if (segmentUrl.includes('$Time$')) {
@@ -54,6 +57,12 @@ export default async function dashSegmentHandler(
     }
     const reqSegmentIndexInt = parseInt(reqSegmentIndexOrTimeStr);
 
+    const possibleId = pathStem.match(
+      /(audio|video)_track_\d+_\d+_[a-zA-Z]{3}=\d+_\d+/
+    );
+    if (possibleId) {
+      representationIdStr = possibleId[0];
+    }
     // Replace RepresentationID in url if present
     if (representationIdStr) {
       segmentUrl = segmentUrl.replace(

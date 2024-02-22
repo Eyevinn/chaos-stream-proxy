@@ -103,8 +103,8 @@ export default function (): DASHManifestTools {
               mediaUrl.match(/^http/) ? mediaUrl : baseUrl + mediaUrl,
               urlQuery,
               hasTime
-                ? 'proxy-segment/segment_$Time$_$RepresentationID$_$Bandwidth$'
-                : 'proxy-segment/segment_$Number$_$RepresentationID$_$Bandwidth$'
+                ? 'proxy-segment/segment_$Time$_$Bandwidth$_$RepresentationID$'
+                : 'proxy-segment/segment_$Number$_$Bandwidth$_$RepresentationID$'
             );
             segmentTemplate.$.media = proxy;
             // Initialization attr.
