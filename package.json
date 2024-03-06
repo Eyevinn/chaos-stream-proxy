@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "pretty": "prettier --check --ignore-unknown .",
     "deploy:dev": "git tag $(git rev-parse --short HEAD)-dev && git push --tags",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "genJwt": "node dist/genJwt.js"
   },
   "dependencies": {
     "@aws-sdk/client-ssm": "^3.306.0",
@@ -25,6 +26,7 @@
     "fastify": "^3.29.5",
     "fastify-cors": "^6.0.2",
     "jest": "^27.5.1",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.15",
     "nock": "^13.2.4",
     "node-cache": "^5.1.2",
@@ -40,6 +42,7 @@
     "@types/aws-lambda": "^8.10.92",
     "@types/clone": "^2.1.1",
     "@types/jest": "^27.4.0",
+    "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^17.0.18",
     "@types/node-fetch": "^2.5.7",
     "@types/stream-throttle": "^0.1.1",
