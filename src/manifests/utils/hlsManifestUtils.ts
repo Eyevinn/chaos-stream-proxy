@@ -156,6 +156,11 @@ export default function (): HLSManifestTools {
         if (!sourceSegURL.match(/^http/)) {
           sourceSegURL = `${sourceBaseURL}/${item.get('uri')}`;
         }
+        let sourceMapURL: string | undefined = item.get('map-uri');
+        if (sourceMapURL && !sourceMapURL.match(/^http/)) {
+          sourceMapURL = `${sourceBaseURL}/${sourceMapURL}`;
+          item.set('map-uri', sourceMapURL);
+        }
 
         if (!corruption) {
           item.set('uri', sourceSegURL);

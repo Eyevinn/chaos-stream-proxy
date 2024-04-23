@@ -17,8 +17,8 @@ export type TargetLevel = number;
 
 /* eslint-disable */
 export type M3UItem = {
-  get: (key: 'uri' | 'type') => string | any;
-  set: (key: 'uri', value: string) => void;
+  get: (key: 'uri' | 'type' | 'map-uri') => string | any;
+  set: (key: 'uri' | 'map-uri', value: string) => void;
 };
 
 export type M3U = {
