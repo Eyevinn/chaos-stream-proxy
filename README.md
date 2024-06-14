@@ -73,6 +73,16 @@ To try it out, go to your favourite HLS/MPEG-DASH video player such as `https://
 | `statusCode` | Replace the response for a specific segment request with a specified status code response |
 | `timeout`    | Force a timeout for the response of a specific segment request                            |
 | `throttle`   | Send back the segment at a specified speed of bytes per second                            |
+| `token`      | JWT for authentication if `JWT_SECRET` env is set                                         |
+
+### Environmental Variales
+
+| VARIABLE                   | TYPE    | DESCRIPTION                                                                                                                                           |
+| -------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `JWT_SECRET`               | string  | Enables jwt authentication for all endpoints and logs requests from users, provide token with the `token` query parameter. Heartbeat path unaffected. |
+| `LOAD_PARAMS_FROM_AWS_SSM` | boolean | Load manifest url params from AWS SSM, [see below](#load-manifest-url-params-from-aws-ssm-parameter-store-instead)                                    |
+| `AWS_REGION`               | string  | AWS region for SSM parameters, no effect if `LOAD_PARAMS_FROM_AWS_SSM` is false                                                                       |
+| `AWS_SSM_PARAM_KEY`        | string  | Key for AWS SSM params, no effect if `LOAD_PARAMS_FROM_AWS_SSM` is false                                                                              |
 
 ### Stateful Mode
 

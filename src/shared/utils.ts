@@ -2,7 +2,12 @@ import { Response } from 'node-fetch';
 import m3u8 from '@eyevinn/m3u8';
 import { M3U, ServiceError } from './types';
 import clone from 'clone';
-import { ALBEvent, ALBResult, ALBEventQueryStringParameters } from 'aws-lambda';
+import {
+  ALBEvent,
+  ALBResult,
+  ALBEventQueryStringParameters,
+  Context
+} from 'aws-lambda';
 import { ReadStream } from 'fs';
 import { IncomingHttpHeaders } from 'http';
 import path from 'path';
@@ -13,13 +18,14 @@ import {
   RequestPayload,
   FastifyInstance
 } from 'fastify';
-import { addSSMUrlParametersToUrl } from './aws.utils';
+import { addSSMUrlParametersToUrl, awsLogger } from './aws.utils';
 
 import dotenv from 'dotenv';
 import { Readable } from 'stream';
 import NodeCache from 'node-cache';
 import { randomInt } from 'crypto';
 dotenv.config();
+import jwt from 'jsonwebtoken';
 
 const version = process.env.npm_package_version;
 
@@ -343,4 +349,39 @@ export function newState(state: RequestState): string {
   while (stateCache.get(key) != undefined) key = randomStateKey(16);
   stateCache.set(key, state);
   return key;
+}
+
+export type JwtToken = {
+  company: string;
+  email: string;
+};
+
+export function authenticateToken(app: FastifyInstance): void {
+  const secret = process.env.JWT_SECRET;
+  if (secret != undefined) {
+    app.addHook(
+      'onRequest',
+      async (request, reply): Promise<RequestPayload> => {
+        const path = request.raw.url.split('?')[0];
+        if (path != '/') {
+          const token = request.query['token'];
+          if (token == undefined)
+            return reply.code(401).send({ error: 'No token provided' });
+          try {
+            const censoredUrl = request.url.replace(token, 'TOKEN');
+            const decoded = jwt.verify(token, secret) as JwtToken;
+            awsLogger.info(
+              { path: censoredUrl },
+              request['awsLambda']?.['context'] as Context,
+              decoded
+            );
+          } catch (err) {
+            return reply
+              .code(401)
+              .send({ error: 'Invalid authentication token' });
+          }
+        }
+      }
+    );
+  }
 }
