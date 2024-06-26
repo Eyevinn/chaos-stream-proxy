@@ -83,7 +83,8 @@ export default async function dashSegmentHandler(
       .register(throttleSCC);
     const [error, allMutations] = configUtils.getAllManifestConfigs(
       reqSegmentIndexInt,
-      true
+      true,
+      stateKey
     );
     if (error) {
       return generateErrorResponse(error);
@@ -91,8 +92,7 @@ export default async function dashSegmentHandler(
     const dashUtils = dashManifestUtils();
     const mergedMaps = dashUtils.utils.mergeMap(
       reqSegmentIndexInt,
-      allMutations,
-      stateKey
+      allMutations
     );
     const segUrl = new URL(segmentUrl);
     const cleanSegUrl = segUrl.origin + segUrl.pathname;

@@ -56,11 +56,10 @@ export default async function dashSegmentHandler(
         )
         .replace('$Number$', reqSegmentIndexOrTimeStr);
     }
-    const reqSegmentIndexInt = parseInt(reqSegmentIndexOrTimeStr);
-
     const stateKey = STATEFUL
       ? newState({ initialSequenceNumber: undefined })
       : undefined;
+    const reqSegmentIndexInt = parseInt(reqSegmentIndexOrTimeStr);
 
     // Replace RepresentationID in url if present
     if (representationIdStr) {
@@ -91,8 +90,7 @@ export default async function dashSegmentHandler(
     const dashUtils = dashManifestUtils();
     const mergedMaps = dashUtils.utils.mergeMap(
       reqSegmentIndexInt,
-      allMutations,
-      stateKey
+      allMutations
     );
     const segUrl = new URL(segmentUrl);
     const cleanSegUrl = segUrl.origin + segUrl.pathname;

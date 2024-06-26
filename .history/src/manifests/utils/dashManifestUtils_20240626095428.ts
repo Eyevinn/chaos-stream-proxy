@@ -7,8 +7,8 @@ import { URLSearchParams } from 'url';
 interface DASHManifestUtils {
   mergeMap: (
     segmentListSize: number,
-    configsMap: IndexedCorruptorConfigMap,
-    stateKey: string | undefined,
+    configsMap: IndexedCorruptorConfigMap
+    
   ) => CorruptorConfigMap;
 }
 

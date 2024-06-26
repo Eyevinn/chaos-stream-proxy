@@ -7,8 +7,7 @@ import { URLSearchParams } from 'url';
 interface DASHManifestUtils {
   mergeMap: (
     segmentListSize: number,
-    configsMap: IndexedCorruptorConfigMap,
-    stateKey: string | undefined,
+    configsMap: IndexedCorruptorConfigMap
   ) => CorruptorConfigMap;
 }
 
@@ -240,7 +239,7 @@ function convertRelativeToAbsoluteSegmentOffsets(
           delete field.rsq;
           field.sq = firstSegment + relativeOffset;
         }
-      });
+      });xf
 
       const fieldsSerialized = JSON.stringify(fields).replace(/"/g, '');
       urlQuery.set(corruption, fieldsSerialized);

@@ -167,16 +167,7 @@ export const corruptorConfigUtils = function (
               null
             ];
           }
-          if (hasRelativeSequences && !STATEFUL && isDash) {
-            return [
-              {
-                status: 400,
-                message:
-                  'Relative sequence numbers on DASH are only supported when proxy is running in stateful mode'
-              },
-              null
-            ];
-          }
+          
 
           // If bitrate is set, filter out segments that doesn't match
           params = params.filter(

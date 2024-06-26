@@ -172,7 +172,7 @@ export const corruptorConfigUtils = function (
               {
                 status: 400,
                 message:
-                  'Relative sequence numbers on DASH are only supported when proxy is running in stateful mode'
+                  'Relative sequence numbers on HLS are only supported when proxy is running in stateful mode'
               },
               null
             ];

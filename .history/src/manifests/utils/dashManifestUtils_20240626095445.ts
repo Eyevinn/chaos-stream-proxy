@@ -8,7 +8,7 @@ interface DASHManifestUtils {
   mergeMap: (
     segmentListSize: number,
     configsMap: IndexedCorruptorConfigMap,
-    stateKey: string | undefined,
+    stateKey: string,
   ) => CorruptorConfigMap;
 }
 
