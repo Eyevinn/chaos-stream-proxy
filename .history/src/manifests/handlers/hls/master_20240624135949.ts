@@ -35,7 +35,7 @@ export default async function hlsMasterHandler(event: ALBEvent) {
     );
 
     console.log('Successfully fetched master manifest.'); // Log successful fetch
-    
+
     const masterM3U = await parseM3U8Text(originalMasterManifestResponse);
 
     // How to handle if M3U is actually a Media and Not a Master...

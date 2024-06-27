@@ -83,7 +83,7 @@ export default async function dashSegmentHandler(
       .register(throttleSCC);
     const [error, allMutations] = configUtils.getAllManifestConfigs(
       reqSegmentIndexInt,
-      
+
       true
     );
     if (error) {

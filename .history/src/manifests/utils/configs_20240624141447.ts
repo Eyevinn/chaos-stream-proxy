@@ -187,7 +187,6 @@ export const corruptorConfigUtils = function (
           // Replace relative sequence numbers with absolute ones
           params = params.map((param) => {
             if (param.rsq) {
-              
               const rsq = Number(param.rsq);
               param['sq'] =
                 rsq < 0 && playlistSize > 0

@@ -157,8 +157,7 @@ describe('utils.mergeMap', () => {
     // Act
     const actual = dashManifestUtils().utils.mergeMap(
       mockReqSegIndex,
-      mockAllCorruptions,
-      
+      mockAllCorruptions
     );
     const expected = new Map<string, CorruptorConfig>()
       .set('a', { fields: { ms: 100 } })

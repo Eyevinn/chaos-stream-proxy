@@ -92,7 +92,7 @@ export default async function dashSegmentHandler(
     const mergedMaps = dashUtils.utils.mergeMap(
       reqSegmentIndexInt,
       stateKey,
-      allMutations,
+      allMutations
     );
     const segUrl = new URL(segmentUrl);
     const cleanSegUrl = segUrl.origin + segUrl.pathname;

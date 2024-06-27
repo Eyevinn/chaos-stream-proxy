@@ -239,7 +239,8 @@ function convertRelativeToAbsoluteSegmentOffsets(
           delete field.rsq;
           field.sq = firstSegment + relativeOffset;
         }
-      });xf
+      });
+      xf;
 
       const fieldsSerialized = JSON.stringify(fields).replace(/"/g, '');
       urlQuery.set(corruption, fieldsSerialized);

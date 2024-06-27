@@ -34,8 +34,6 @@ export default async function hlsMasterHandler(event: ALBEvent) {
       (value, key) => (originalResHeaders[key] = value)
     );
 
-    
-
     const masterM3U = await parseM3U8Text(originalMasterManifestResponse);
 
     // How to handle if M3U is actually a Media and Not a Master...

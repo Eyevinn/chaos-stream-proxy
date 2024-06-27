@@ -147,8 +147,7 @@ describe('utils.mergeMap', () => {
     // Assign
     const mockReqSegIndex = 3;
     const mockAllCorruptions = new Map<TargetIndex, CorruptorConfigMap>();
-    const mockStateKey =
-    mockAllCorruptions.set(
+    const mockStateKey = mockAllCorruptions.set(
       mockReqSegIndex,
       new Map<string, CorruptorConfig>()
         .set('a', { fields: { ms: 100 } })
@@ -193,7 +192,11 @@ describe('utils.mergeMap', () => {
     const actual: CorruptorConfigMap[] = [];
     for (let segIdx = 0; segIdx < 3; segIdx++) {
       actual.push(
-        dashManifestUtils().utils.mergeMap(segIdx, mockAllCorruptions, undefined)
+        dashManifestUtils().utils.mergeMap(
+          segIdx,
+          mockAllCorruptions,
+          undefined
+        )
       );
     }
 
@@ -228,7 +231,11 @@ describe('utils.mergeMap', () => {
     const actual: CorruptorConfigMap[] = [];
     for (let segIdx = 0; segIdx < 3; segIdx++) {
       actual.push(
-        dashManifestUtils().utils.mergeMap(segIdx, mockAllCorruptions, undefined)
+        dashManifestUtils().utils.mergeMap(
+          segIdx,
+          mockAllCorruptions,
+          undefined
+        )
       );
     }
     const expected = [

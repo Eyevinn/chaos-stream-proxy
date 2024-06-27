@@ -167,7 +167,6 @@ export const corruptorConfigUtils = function (
               null
             ];
           }
-          
 
           // If bitrate is set, filter out segments that doesn't match
           params = params.filter(

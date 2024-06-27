@@ -99,7 +99,10 @@ const delayConfig: SegmentCorruptorQueryConfig = {
         if (!configIndexMap.has(config.i) && !configSqMap.has(config.i)) {
           corruptorConfig.i = config.i;
           configIndexMap.set(config.i, corruptorConfig);
-          console.log(`Set delay configuration for index '*':`, corruptorConfig);
+          console.log(
+            `Set delay configuration for index '*':`,
+            corruptorConfig
+          );
         }
       }
 

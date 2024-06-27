@@ -99,7 +99,10 @@ const delayConfig: SegmentCorruptorQueryConfig = {
         if (!configIndexMap.has(config.i) && !configSqMap.has(config.i)) {
           corruptorConfig.i = config.i;
           configIndexMap.set(config.i, corruptorConfig);
-          console.log(`Set delay configuration for index '*':`, corruptorConfig);
+          console.log(
+            `Set delay configuration for index '*':`,
+            corruptorConfig
+          );
         }
       }
 
@@ -121,7 +124,10 @@ const delayConfig: SegmentCorruptorQueryConfig = {
         if (!configIndexMap.has(config.sq) && !configSqMap.has(config.sq)) {
           corruptorConfig.sq = config.sq;
           configSqMap.set(config.sq, corruptorConfig);
-          console.log(`Set delay configuration for sq index '*':`, corruptorConfig);
+          console.log(
+            `Set delay configuration for sq index '*':`,
+            corruptorConfig
+          );
         }
       }
 

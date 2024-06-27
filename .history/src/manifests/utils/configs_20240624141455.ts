@@ -188,7 +188,7 @@ export const corruptorConfigUtils = function (
           params = params.map((param) => {
             if (param.rsq) {
               console.log('Found rsq:', param.rsq);
-        
+
               const rsq = Number(param.rsq);
               param['sq'] =
                 rsq < 0 && playlistSize > 0

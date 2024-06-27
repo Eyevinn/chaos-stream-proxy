@@ -8,7 +8,6 @@ interface DASHManifestUtils {
   mergeMap: (
     segmentListSize: number,
     configsMap: IndexedCorruptorConfigMap
-    
   ) => CorruptorConfigMap;
 }
 

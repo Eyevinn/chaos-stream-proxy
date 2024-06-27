@@ -147,8 +147,7 @@ describe('utils.mergeMap', () => {
     // Assign
     const mockReqSegIndex = 3;
     const mockAllCorruptions = new Map<TargetIndex, CorruptorConfigMap>();
-    const mockStateKey =
-    mockAllCorruptions.set(
+    const mockStateKey = mockAllCorruptions.set(
       mockReqSegIndex,
       new Map<string, CorruptorConfig>()
         .set('a', { fields: { ms: 100 } })
