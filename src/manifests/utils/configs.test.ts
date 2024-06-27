@@ -261,14 +261,16 @@ describe('configs', () => {
     describe('not in stateful mode', () => {
       let nonStatefulConfig;
       beforeAll(() => {
-        delete process.env.STATEFUL;  // Ensure STATEFUL is not set
+        delete process.env.STATEFUL; // Ensure STATEFUL is not set
         nonStatefulConfig = require('./configs');
       });
 
       it('should handle DASH mode without stateful', () => {
         // Arrange
         const configs = nonStatefulConfig.corruptorConfigUtils(
-          new URLSearchParams('statusCode=[{rsq:15,code:400}]&throttle=[{sq:15,rate:1000}]')
+          new URLSearchParams(
+            'statusCode=[{rsq:15,code:400}]&throttle=[{sq:15,rate:1000}]'
+          )
         );
 
         configs.register(statusCodeConfig).register(throttleConfig);
@@ -280,7 +282,8 @@ describe('configs', () => {
         // Assert
         expect(err).toEqual({
           status: 400,
-          message: 'Relative sequence numbers on DASH are only supported when proxy is running in stateful mode'
+          message:
+            'Relative sequence numbers on DASH are only supported when proxy is running in stateful mode'
         });
         expect(actual).toBeNull();
       });
@@ -288,7 +291,9 @@ describe('configs', () => {
       it('should handle HLS mode without stateful', () => {
         // Arrange
         const configs = nonStatefulConfig.corruptorConfigUtils(
-          new URLSearchParams('statusCode=[{rsq:15,code:400}]&throttle=[{sq:15,rate:1000}]')
+          new URLSearchParams(
+            'statusCode=[{rsq:15,code:400}]&throttle=[{sq:15,rate:1000}]'
+          )
         );
 
         configs.register(statusCodeConfig).register(throttleConfig);
@@ -300,7 +305,8 @@ describe('configs', () => {
         // Assert
         expect(err).toEqual({
           status: 400,
-          message: 'Relative sequence numbers on HLS are only supported when proxy is running in stateful mode'
+          message:
+            'Relative sequence numbers on HLS are only supported when proxy is running in stateful mode'
         });
         expect(actual).toBeNull();
       });
