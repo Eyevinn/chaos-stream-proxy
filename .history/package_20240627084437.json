@@ -73,11 +73,5 @@
     "Emil Karim <emilkarim14@gmail.com> (Eyevinn Technology AB)"
   ],
   "license": "Apache-2.0",
-  "keywords": [
-    "hls",
-    "proxy",
-    "test",
-    "qa",
-    "tools"
-  ]
+  "keywords": ["hls", "proxy", "test", "qa", "tools"]
 }
