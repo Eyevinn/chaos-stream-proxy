@@ -107,8 +107,8 @@ e.i. `https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=<some_url
 Across all corruptions, there are 3 ways to target a segment in a playlist for corruption.
 
 1. `i`: The segment's list index in any Media Playlist, with HLS segments starting at 0 and MPEG-DASH segments starting at 1. For a Media Playlist with 12 segments, `i`=11, would target the last segment for HLS and `i`=12, would target the last segment for MPEG-DASH.
-2. `sq`: The segment's Media Sequence Number for HLS, or the "$Number$" or "$Time$" part of a segment URL for DASH. For an HLS Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=111 would target the last segment. When corrupting a live HLS stream it is recommended to target with `rsq`.
-3. `rsq`: A relative sequence number, counted from where the live stream is currently at when requesting manifest. Can also use a negative integer, which enables counting backwards from the end of the manifest instead. (**HLS SUPPORTED ONLY IN STATEFUL MODE**)
+2. `sq`: The segment's Media Sequence Number for HLS, or the "$Number$" or "$Time$" part of a segment URL for DASH. For an HLS Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=111 would target the last segment. When corrupting a live HLS or DASH stream it is recommended to target with `rsq`.
+3. `rsq`: A relative sequence number, counted from where the live stream is currently at when requesting manifest. Can also use a negative integer, which enables counting backwards from the end of the manifest instead. (**SUPPORTED ONLY IN STATEFUL MODE FOR BOTH HLS AND DASH**)
 
 Below are configuration JSON object templates for the currently supported corruptions. A query should have its value be an array consisting of any one of these 3 types of items:
 
