@@ -258,6 +258,11 @@ https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://livesim
 https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&throttle=[{i:*,rate:10000}]
 ```
 
+7. LIVE: Example of MPEG-DASH with a segment delay of 5000ms on segment with relative sequence number equal to 2:
+
+```
+https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd&delay=[{rsq:2, ms:5000}]
+```
 ## Development Environment
 
 To deploy and update development environment create and push a tag with the suffix `-dev`, for example `my-feat-test-dev`. If you run `npm run deploy:dev` it will automatically create a tag based on git revision with the `-dev` suffix and push it.
