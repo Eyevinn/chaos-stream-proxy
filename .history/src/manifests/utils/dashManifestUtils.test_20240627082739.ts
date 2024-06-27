@@ -192,11 +192,7 @@ describe('utils.mergeMap', () => {
     const actual: CorruptorConfigMap[] = [];
     for (let segIdx = 0; segIdx < 3; segIdx++) {
       actual.push(
-        dashManifestUtils().utils.mergeMap(
-          segIdx,
-          mockAllCorruptions,
-          undefined
-        )
+        dashManifestUtils().utils.mergeMap(segIdx, mockAllCorruptions, undefined)
       );
     }
 
@@ -231,11 +227,7 @@ describe('utils.mergeMap', () => {
     const actual: CorruptorConfigMap[] = [];
     for (let segIdx = 0; segIdx < 3; segIdx++) {
       actual.push(
-        dashManifestUtils().utils.mergeMap(
-          segIdx,
-          mockAllCorruptions,
-          undefined
-        )
+        dashManifestUtils().utils.mergeMap(segIdx, mockAllCorruptions, undefined)
       );
     }
     const expected = [
