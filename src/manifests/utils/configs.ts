@@ -181,7 +181,9 @@ export const corruptorConfigUtils = function (
           // If bitrate is set, filter out segments that doesn't match
           params = params.filter(
             (config) =>
-              !config?.br || config?.br === '*' || (config?.br.toString().includes(segmentBitrate.toString()))  //Checks if .br contains bitrates that need to be filtered
+              !config?.br ||
+              config?.br === '*' ||
+              config?.br.toString().includes(segmentBitrate.toString()) //Checks if .br contains bitrates that need to be filtered
           );
 
           // Replace relative sequence numbers with absolute ones
