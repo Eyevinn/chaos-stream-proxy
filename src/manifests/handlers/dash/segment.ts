@@ -4,7 +4,9 @@ import {
   composeALBEvent,
   generateErrorResponse,
   isValidUrl,
-  segmentUrlParamString
+  segmentUrlParamString,
+  STATEFUL,
+  newState
 } from '../../../shared/utils';
 import delaySCC from '../../utils/corruptions/delay';
 import statusCodeSCC from '../../utils/corruptions/statusCode';
@@ -56,6 +58,10 @@ export default async function dashSegmentHandler(
     }
     const reqSegmentIndexInt = parseInt(reqSegmentIndexOrTimeStr);
 
+    const stateKey = STATEFUL
+      ? newState({ initialSequenceNumber: undefined })
+      : undefined;
+
     // Replace RepresentationID in url if present
     if (representationIdStr) {
       segmentUrl = segmentUrl.replace(
@@ -85,7 +91,8 @@ export default async function dashSegmentHandler(
     const dashUtils = dashManifestUtils();
     const mergedMaps = dashUtils.utils.mergeMap(
       reqSegmentIndexInt,
-      allMutations
+      allMutations,
+      stateKey
     );
     const segUrl = new URL(segmentUrl);
     const cleanSegUrl = segUrl.origin + segUrl.pathname;

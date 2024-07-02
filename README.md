@@ -107,8 +107,8 @@ e.i. `https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=<some_url
 Across all corruptions, there are 3 ways to target a segment in a playlist for corruption.
 
 1. `i`: The segment's list index in any Media Playlist, with HLS segments starting at 0 and MPEG-DASH segments starting at 1. For a Media Playlist with 12 segments, `i`=11, would target the last segment for HLS and `i`=12, would target the last segment for MPEG-DASH.
-2. `sq`: The segment's Media Sequence Number for HLS, or the "$Number$" or "$Time$" part of a segment URL for DASH. For an HLS Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=111 would target the last segment. When corrupting a live HLS stream it is recommended to target with `rsq`.
-3. `rsq`: A relative sequence number, counted from where the live stream is currently at when requesting manifest. Can also use a negative integer, which enables counting backwards from the end of the manifest instead. (**HLS SUPPORTED ONLY IN STATEFUL MODE**)
+2. `sq`: The segment's Media Sequence Number for HLS, or the "$Number$" or "$Time$" part of a segment URL for DASH. For an HLS Media Playlist with 12 segments, and where `#EXT-X-MEDIA-SEQUENCE` is 100, `sq`=111 would target the last segment. When corrupting a live HLS or DASH stream it is recommended to target with `rsq`.
+3. `rsq`: A relative sequence number, counted from where the live stream is currently at when requesting manifest. Can also use a negative integer, which enables counting backwards from the end of the manifest instead. (**SUPPORTED ONLY IN STATEFUL MODE FOR BOTH HLS AND DASH**)
 
 Below are configuration JSON object templates for the currently supported corruptions. A query should have its value be an array consisting of any one of these 3 types of items:
 
@@ -258,6 +258,11 @@ https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://livesim
 https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://f53accc45b7aded64ed8085068f31881.egress.mediapackage-vod.eu-north-1.amazonaws.com/out/v1/1c63bf88e2664639a6c293b4d055e6bb/64651f16da554640930b7ce2cd9f758b/66d211307b7d43d3bd515a3bfb654e1c/manifest.mpd&throttle=[{i:*,rate:10000}]
 ```
 
+7. LIVE: Example of MPEG-DASH with a segment delay of 5000ms on segment with relative sequence number equal to 2:
+
+```
+https://<chaos-proxy>/api/v2/manifests/dash/proxy-master.mpd?url=https://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd&delay=[{rsq:2, ms:5000}]
+```
 ## Development Environment
 
 To deploy and update development environment create and push a tag with the suffix `-dev`, for example `my-feat-test-dev`. If you run `npm run deploy:dev` it will automatically create a tag based on git revision with the `-dev` suffix and push it.

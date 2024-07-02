@@ -14,7 +14,7 @@ import {
   FastifyInstance
 } from 'fastify';
 import { addSSMUrlParametersToUrl } from './aws.utils';
-
+import { URLSearchParams } from 'url';
 import dotenv from 'dotenv';
 import { Readable } from 'stream';
 import NodeCache from 'node-cache';
