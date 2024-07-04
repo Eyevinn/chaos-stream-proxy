@@ -179,12 +179,19 @@ export const corruptorConfigUtils = function (
           }
 
           // If bitrate is set, filter out segments that doesn't match
-          params = params.filter(
-            (config) =>
+          params = params.filter((config) => {
+            if (
               !config?.br ||
               config?.br === '*' ||
-              config?.br.toString().includes(segmentBitrate.toString()) //Checks if .br contains bitrates that need to be filtered
-          );
+              config?.br === segmentBitrate
+            ) {
+              return true;
+            } else if (Array.isArray(config?.br)) {
+              return config?.br.includes(segmentBitrate);
+            } else {
+              return false;
+            }
+          });
 
           // Replace relative sequence numbers with absolute ones
           params = params.map((param) => {
