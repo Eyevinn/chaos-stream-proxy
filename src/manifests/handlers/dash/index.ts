@@ -9,6 +9,7 @@ export default async function dashHandler(event: ALBEvent): Promise<ALBResult> {
    * #2 - const originalManifest = await fetch(originalUrl);
    * #3 - create proxy manifest and return response from it
    */
+  event.queryStringParameters.url = decodeURIComponent(event.queryStringParameters.url);
   const { url } = event.queryStringParameters;
 
   if (!url || !isValidUrl(url)) {
@@ -19,8 +20,9 @@ export default async function dashHandler(event: ALBEvent): Promise<ALBResult> {
   }
 
   try {
-    const originalDashManifestResponse = await fetch(url);
-    const responseCopy = originalDashManifestResponse.clone();
+    console.log(decodeURIComponent(url));
+    const originalDashManifestResponse = await fetch(decodeURIComponent(url));
+    console.log('bwallberg org🙌');
     if (!originalDashManifestResponse.ok) {
       return generateErrorResponse({
         status: originalDashManifestResponse.status,
@@ -28,12 +30,18 @@ export default async function dashHandler(event: ALBEvent): Promise<ALBResult> {
       });
     }
     const reqQueryParams = new URLSearchParams(event.queryStringParameters);
-    const text = await responseCopy.text();
+
+    console.log("bwallberg get text")
+    const text = await originalDashManifestResponse.text();
+    console.log("bwallberg got text")
     const dashUtils = dashManifestUtils();
+    console.log("bwallberg got utils")
     const proxyManifest = dashUtils.createProxyDASHManifest(
       text,
       reqQueryParams
     );
+
+    console.log("bwallberg wat")
 
     return {
       statusCode: 200,
@@ -45,6 +53,7 @@ export default async function dashHandler(event: ALBEvent): Promise<ALBResult> {
       body: proxyManifest
     };
   } catch (err) {
+    console.error(err);
     // for unexpected errors
     return generateErrorResponse({
       status: 500,

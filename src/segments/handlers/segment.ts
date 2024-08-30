@@ -44,12 +44,30 @@ export default async function segmentHandler(
       console.log(`Timing out ${query.url}`);
       return;
     }
-    // apply Delay
+
     if (allSegmentCorr.get('delay')) {
-      const delay = Number(allSegmentCorr.get('delay').fields?.ms);
-      console.log(`Applying ${delay}ms delay to ${query.url}`);
-      await sleep(delay);
+      console.log(`Corrupt ${query.url}`);
+      const request = await fetch(query.url);
+      const response = await request.arrayBuffer();
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': request.headers.get('Content-Type'),
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type, Origin'
+        },
+        body: Buffer.from(
+          response.slice(0, response.byteLength / 2)
+        ) as unknown as string
+      };
     }
+
+    // apply Delay
+    // if (allSegmentCorr.get('delay')) {
+    //   const delay = Number(allSegmentCorr.get('delay').fields?.ms);
+    //   console.log(`Applying ${delay}ms delay to ${query.url}`);
+    //   await sleep(delay);
+    // }
     // apply Status Code
     if (
       allSegmentCorr.get('statusCode') &&

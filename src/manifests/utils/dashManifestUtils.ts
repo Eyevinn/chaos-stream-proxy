@@ -115,7 +115,11 @@ export default function (): DASHManifestTools {
                 if (!baseUrl) {
                   baseUrl = originalUrlQuery.get('url');
                 } else if (!baseUrl.match(/^http/)) {
-                  baseUrl = new URL(baseUrl, originalUrlQuery.get('url')).href;
+                  baseUrl = new URL(
+                    baseUrl,
+                    decodeURIComponent(originalUrlQuery.get('url'))
+                  ).href;
+                  console.log('new base', baseUrl);
                 }
                 const absoluteInitUrl = new URL(initUrl, baseUrl).href;
                 segmentTemplate.$.initialization = absoluteInitUrl;

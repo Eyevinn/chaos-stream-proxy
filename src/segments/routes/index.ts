@@ -4,6 +4,9 @@ import { composeALBEvent, handleOptionsRequest } from '../../shared/utils';
 import { SEGMENTS_PROXY_SEGMENT } from '../constants';
 
 export default async function segmentRoutes(fastify: FastifyInstance) {
+  fastify.head('/*', async (req, res) => {
+    res.code(200).send();
+  });
   fastify.get(SEGMENTS_PROXY_SEGMENT, async (req, res) => {
     const event = await composeALBEvent(req.method, req.url, req.headers);
     const response = await segmentHandler(event);
@@ -18,6 +21,7 @@ export default async function segmentRoutes(fastify: FastifyInstance) {
       res.redirect(302, response.headers.Location as string);
       return;
     }
+    response.headers['Accept-Ranges'] = 'bytes';
     res.code(response.statusCode).headers(response.headers).send(response.body);
   });
   fastify.options('/*', async (req, res) => {
