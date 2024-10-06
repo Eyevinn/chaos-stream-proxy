@@ -195,7 +195,7 @@ https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-v
 5. VOD: With segment delay of 1500ms on fifth segment, response code 404 on sixth, and timeout on seventh:
 
 ```
-https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:4,ms:1500}]&statusCode=[{i:5,code:404}]&timeout=[{i:9}]
+https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:4,ms:1500}]&statusCode=[{i:5,code:404}]&timeout=[{i:6}]
 ```
 
 6. VOD: With segment delay of 1500ms on sixth segment, followed by a response code 400 if the bitrate is 2426000:
