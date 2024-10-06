@@ -121,7 +121,7 @@ Delay Corruption:
     sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
     rsq?: number,      // relative sequence number from where a livestream is currently at
     ms?: number,       // time to delay in milliseconds
-    br?: number | "*", // apply only to specific bitrate
+    br?: number | number[] | "*", // apply only to specific or an array of specific bitrates
 }
 ```
 
@@ -133,7 +133,7 @@ Status Code Corruption:
     sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
     rsq?: number,      // relative sequence number from where a livestream is currently at
     code?: number,     // code to return in http response status header instead of media file
-    br?: number | "*", // apply only to specific bitrate
+    br?: number | number[] | "*", // apply only to specific or an array of specific bitrates
 }
 ```
 
@@ -144,7 +144,7 @@ Timeout Corruption:
     i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
     sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
     rsq?: number,      // relative sequence number from where a livestream is currently at
-    br?: number | "*", // apply only to specific bitrate
+    br?: number | number[] | "*", // apply only to specific or an array of specific bitrates
 }
 ```
 
@@ -155,7 +155,7 @@ Throttle Corruption:
     i?: number | "*",  // index of target segment in playlist. If "*", then target all segments. (Starts on 0 for HLS / 1 for MPEG-DASH)
     sq?: number | "*", // media sequence number of target segment in playlist. If "*", then target all segments
     rsq?: number,      // relative sequence number from where a livestream is currently at
-    br?: number | "*", // apply only to specific bitrate
+    br?: number | number[] | "*", // apply only to specific or an array of specific bitrates
     rate?: number      // rate in bytes per second to limit the segment download speed to
 }
 ```
@@ -204,14 +204,19 @@ https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-v
 https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:5,ms:1500}]&statusCode=[{i:5,code:400,br:2426000}]
 
 ```
+7. VOD: With segment delay of 1500ms on sixth segment, followed by a response code 400 if the bitrate is 1212000 OR 3131000:
 
-7. LIVE: With response of status code 404 on segment with sequence number 105:
+```
+https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://maitv-vod.lab.eyevinn.technology/VINN.mp4/master.m3u8&delay=[{i:5,ms:1500}]&statusCode=[{i:5,code:400,br:[1212000,3131000]}]
+```
+
+8. LIVE: With response of status code 404 on segment with sequence number 105:
 
 ``` 
 https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://demo.vc.eyevinn.technology/channels/demo/master.m3u8&statusCode=[{sq:105,code:400}]
 ```
 
-8. LIVE: Delay response of media manifest ladder 1 and 2 with 500 ms
+9. LIVE: Delay response of media manifest ladder 1 and 2 with 500 ms
 
 ```
 https://<chaos-proxy>/api/v2/manifests/hls/proxy-master.m3u8?url=https://demo.vc.eyevinn.technology/channels/demo/master.m3u8&delay=[{l:1,ms:500},{l:2,ms:500}]
