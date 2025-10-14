@@ -36,7 +36,27 @@ Currently supported stream formats:
 - HLS
 - MPEG-DASH (MPD)
 
-If you want to try it out you can sign up for an account at [Eyevinn Open Source Cloud](https://www.osaas.io).
+## ✨ Try it on Open Source Cloud
+
+Looking to test your streaming service resilience without setting up infrastructure? **Eyevinn Open Source Cloud** provides a hosted Chaos Stream Proxy that's ready to use immediately.
+
+### Why Open Source Cloud?
+
+- **Zero Setup**: Start testing in minutes, no deployment required
+- **Powerful Testing**: Simulate real-world network conditions and streaming errors
+- **CI/CD Ready**: Perfect for automated testing pipelines
+- **Cost Effective**: Pay only for what you use
+
+### Perfect for:
+
+- 🔍 **QA Engineers**: Validate streaming service robustness
+- 🚀 **DevOps Teams**: Integrate resilience testing into CI/CD
+- 📊 **Analytics Teams**: Test monitoring and alerting systems
+- 🏗️ **Platform Architects**: Assess streaming infrastructure limits
+
+**[Sign up for Open Source Cloud →](https://app.osaas.io/browse/eyevinn-chaos-stream-proxy)**
+
+---
 
 ## Get Started
 
@@ -309,25 +329,6 @@ Commit messages are automatically linted via [husky](https://github.com/typicode
 
 Check `package.json` for available scripts.
 
-## Commercial Options
-
-The Chaos Stream Proxy is released as open source but we do offer some commercial options in relation to it. Contact sales@eyevinn.se if you are interested for pricing and more information.
-
-### Hosting
-
-We host the service in our environment for a monthly recurring fee. Included is business hours support on a best effort basis.
-
-### Deployment
-
-We help you deploy and integrate the service in your environment on a time-of-material basis.
-
-### Feature Development
-
-When you need a new feature developed and do not have the capacity or competence of your own to do it, we can on a time-of-material introduce this feature in the current code base and under the current open source license.
-
-### Professional Services and Development
-
-When you need help with building for example integration adaptors or other development in your code base related to this open source project we can offer a development team from us to help out on a time-of-material basis.
 
 ## License (Apache-2.0)
 
