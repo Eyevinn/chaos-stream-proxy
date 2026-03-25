@@ -22,7 +22,7 @@
     "@fastify/aws-lambda": "^3.2.0",
     "aws-lambda": "^1.0.7",
     "dotenv": "^8.2.0",
-    "fastify": "^3.29.5",
+    "fastify": "^5.8.3",
     "fastify-cors": "^6.0.2",
     "jest": "^27.5.1",
     "lodash": "^4.17.15",
