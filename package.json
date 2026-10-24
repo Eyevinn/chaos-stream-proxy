@@ -4,7 +4,7 @@
   "description": "Add some chaos to your HTTP streams to validate player behaviour",
   "main": "index.js",
   "engines": {
-    "node": ">=24.22.1"
+    "node": "^22.23.4 || >=24.22.1"
   },
   "scripts": {
     "postinstall": "tsc",
