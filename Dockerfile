@@ -1,4 +1,4 @@
-FROM node:gallium-alpine3.16
+FROM node:24-alpine
 EXPOSE 80 8000 8080
 LABEL maintainer="Eyevinn Technology <info@eyevinn.se>"
 

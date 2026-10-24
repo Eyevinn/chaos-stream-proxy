@@ -3,6 +3,9 @@
   "version": "0.8.0",
   "description": "Add some chaos to your HTTP streams to validate player behaviour",
   "main": "index.js",
+  "engines": {
+    "node": "^22.23.4 || >=24.22.1"
+  },
   "scripts": {
     "postinstall": "tsc",
     "dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node dist/server.js\"",
